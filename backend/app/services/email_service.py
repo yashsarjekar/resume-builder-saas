@@ -1,33 +1,39 @@
 """
-Email service for sending transactional emails.
-Supports SMTP with HTML and plain text templates.
+Email service for sending transactional emails using Resend HTTP API.
+More reliable than SMTP for cloud deployments.
 """
 
 import os
-import smtplib
 import logging
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from typing import List, Optional
 from pathlib import Path
+import resend
 
 logger = logging.getLogger(__name__)
 
 
 class EmailService:
-    """Service for sending emails via SMTP."""
+    """Service for sending emails via Resend HTTP API."""
 
     def __init__(self):
-        self.smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
-        self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
-        self.smtp_user = os.getenv("SMTP_USER")
-        self.smtp_password = os.getenv("SMTP_PASSWORD")
-        self.from_email = os.getenv("SMTP_FROM_EMAIL", "noreply@resumebuilder.com")
-        self.from_name = os.getenv("SMTP_FROM_NAME", "Resume Builder")
+        # Resend configuration
+        self.resend_api_key = os.getenv("RESEND_API_KEY") or os.getenv("SMTP_PASSWORD")  # Backward compatible
+        self.from_email = os.getenv("RESEND_FROM_EMAIL") or os.getenv("SMTP_FROM_EMAIL", "onboarding@resend.dev")
+        self.from_name = os.getenv("RESEND_FROM_NAME") or os.getenv("SMTP_FROM_NAME", "Resume Builder")
         self.enabled = os.getenv("EMAIL_ENABLED", "true").lower() == "true"
+
+        # Set Resend API key
+        if self.resend_api_key:
+            resend.api_key = self.resend_api_key
 
         # Get template directory
         self.template_dir = Path(__file__).parent.parent / "templates" / "emails"
+
+        # Log configuration status
+        if not self.resend_api_key:
+            logger.warning("Resend API key not configured - emails will not be sent")
+        else:
+            logger.info("Resend email service initialized successfully")
 
     def send_email(
         self,
@@ -39,13 +45,13 @@ class EmailService:
         bcc: Optional[List[str]] = None
     ) -> bool:
         """
-        Send an email.
+        Send an email using Resend HTTP API.
 
         Args:
             to_email: Recipient email address
             subject: Email subject
             html_content: HTML content of the email
-            text_content: Plain text content (fallback)
+            text_content: Plain text content (fallback) - optional for Resend
             cc: List of CC recipients
             bcc: List of BCC recipients
 
@@ -56,45 +62,39 @@ class EmailService:
             logger.info(f"Email service disabled. Would have sent: {subject} to {to_email}")
             return True
 
-        if not self.smtp_user or not self.smtp_password:
-            logger.error("SMTP credentials not configured")
+        if not self.resend_api_key:
+            logger.error("Resend API key not configured")
             return False
 
         try:
-            # Create message
-            msg = MIMEMultipart('alternative')
-            msg['Subject'] = subject
-            msg['From'] = f"{self.from_name} <{self.from_email}>"
-            msg['To'] = to_email
+            # Prepare email parameters
+            params = {
+                "from": f"{self.from_name} <{self.from_email}>",
+                "to": [to_email],
+                "subject": subject,
+                "html": html_content,
+            }
+
+            # Add optional fields
+            if text_content:
+                params["text"] = text_content
 
             if cc:
-                msg['Cc'] = ', '.join(cc)
+                params["cc"] = cc
+
             if bcc:
-                msg['Bcc'] = ', '.join(bcc)
+                params["bcc"] = bcc
 
-            # Attach plain text and HTML parts
-            if text_content:
-                part1 = MIMEText(text_content, 'plain')
-                msg.attach(part1)
+            # Send email via Resend HTTP API
+            response = resend.Emails.send(params)
 
-            part2 = MIMEText(html_content, 'html')
-            msg.attach(part2)
-
-            # Send email
-            with smtplib.SMTP(self.smtp_host, self.smtp_port) as server:
-                server.starttls()
-                server.login(self.smtp_user, self.smtp_password)
-
-                recipients = [to_email]
-                if cc:
-                    recipients.extend(cc)
-                if bcc:
-                    recipients.extend(bcc)
-
-                server.sendmail(self.from_email, recipients, msg.as_string())
-
-            logger.info(f"Email sent successfully to {to_email}: {subject}")
-            return True
+            # Resend returns an object with 'id' on success
+            if response and hasattr(response, 'get') and response.get('id'):
+                logger.info(f"Email sent successfully to {to_email}: {subject} (ID: {response['id']})")
+                return True
+            else:
+                logger.error(f"Unexpected response from Resend: {response}")
+                return False
 
         except Exception as e:
             logger.error(f"Failed to send email to {to_email}: {str(e)}")
