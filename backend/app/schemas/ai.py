@@ -18,7 +18,7 @@ class ATSAnalysisRequest(BaseModel):
         job_description: Target job description
     """
     resume_content: Dict[str, Any] = Field(..., description="Resume data")
-    job_description: str = Field(..., min_length=50, max_length=5000)
+    job_description: str = Field(..., min_length=50, max_length=7000)
 
     @field_validator('job_description')
     @classmethod
@@ -30,24 +30,97 @@ class ATSAnalysisRequest(BaseModel):
         return v
 
 
+class DimensionScores(BaseModel):
+    """Scores for each ATS analysis dimension."""
+    role_alignment: int = Field(..., ge=0, le=100)
+    technical_compatibility: int = Field(..., ge=0, le=100)
+    content_match: int = Field(..., ge=0, le=100)
+    experience_quality: int = Field(..., ge=0, le=100)
+
+
+class RoleAnalysis(BaseModel):
+    """Analysis of role match between job and resume."""
+    job_role_type: str
+    resume_role_type: str
+    match_level: str  # DIRECT/ADJACENT/PIVOT/MISMATCH
+    explanation: str
+
+
+class TechnicalIssue(BaseModel):
+    """Individual technical ATS issue."""
+    issue: str
+    severity: str  # HIGH/MEDIUM/LOW
+    fix: str
+
+
+class KeywordAnalysis(BaseModel):
+    """Keyword matching analysis."""
+    matched_keywords: List[str]
+    missing_critical_keywords: List[str]
+    missing_recommended_keywords: List[str]
+    keyword_density: str  # OPTIMAL/LOW/STUFFED
+
+
+class StrengthItem(BaseModel):
+    """Individual strength."""
+    category: str
+    detail: str
+
+
+class WeaknessItem(BaseModel):
+    """Individual weakness."""
+    category: str
+    detail: str
+    priority: str  # HIGH/MEDIUM/LOW
+
+
+class ActionableSuggestion(BaseModel):
+    """Actionable improvement suggestion."""
+    action: str
+    rationale: str
+    priority: str  # HIGH/MEDIUM/LOW
+    example: Optional[str] = None
+
+
+class MissingElements(BaseModel):
+    """Missing resume elements."""
+    required_skills: List[str]
+    required_qualifications: List[str]
+    recommended_additions: List[str]
+
+
 class ATSAnalysisResponse(BaseModel):
     """
-    Response schema for ATS score analysis.
+    Comprehensive ATS analysis response.
 
     Attributes:
-        ats_score: Score from 0-100
-        category: Score category (Excellent/Good/Fair/Poor)
-        strengths: List of strengths found
-        weaknesses: List of areas for improvement
-        missing_keywords: Keywords from job description not in resume
-        suggestions: Specific improvement suggestions
+        overall_ats_score: Overall score from 0-100
+        category: Score category
+        dimension_scores: Scores by dimension
+        role_analysis: Role matching analysis
+        technical_issues: ATS technical parsing issues
+        keyword_analysis: Keyword matching details
+        strengths: Resume strengths
+        weaknesses: Areas for improvement
+        actionable_suggestions: Prioritized action items
+        missing_elements: Missing required/recommended elements
     """
-    ats_score: int = Field(..., ge=0, le=100)
+    overall_ats_score: int = Field(..., ge=0, le=100)
     category: str
-    strengths: List[str]
-    weaknesses: List[str]
-    missing_keywords: List[str]
-    suggestions: List[str]
+    dimension_scores: DimensionScores
+    role_analysis: RoleAnalysis
+    technical_issues: List[TechnicalIssue]
+    keyword_analysis: KeywordAnalysis
+    strengths: List[StrengthItem]
+    weaknesses: List[WeaknessItem]
+    actionable_suggestions: List[ActionableSuggestion]
+    missing_elements: MissingElements
+
+    # Backwards compatibility fields (deprecated but kept for old API calls)
+    @property
+    def ats_score(self) -> int:
+        """Alias for overall_ats_score (backwards compatibility)."""
+        return self.overall_ats_score
 
 
 class ResumeOptimizationRequest(BaseModel):
@@ -60,8 +133,48 @@ class ResumeOptimizationRequest(BaseModel):
         optimization_level: Level of optimization (light/moderate/aggressive)
     """
     resume_content: Dict[str, Any]
-    job_description: str = Field(..., min_length=50, max_length=5000)
+    job_description: str = Field(..., min_length=50, max_length=7000)
     optimization_level: str = Field(default="moderate", pattern="^(light|moderate|aggressive)$")
+
+
+class RoleCompatibility(BaseModel):
+    """Role compatibility assessment."""
+    job_role: str
+    resume_role: str
+    match_level: str  # DIRECT/ADJACENT/MISMATCH
+    suitable_for_optimization: bool
+
+
+class ChangesMade(BaseModel):
+    """Detailed changes made during optimization."""
+    formatting_fixes: List[str]
+    keyword_additions: List[str]
+    rewording_improvements: List[str]
+    quantification_additions: List[str]
+    reordering: List[str]
+    section_additions: List[str]
+
+
+class KeywordsAdded(BaseModel):
+    """Keywords added during optimization."""
+    from_job_description: List[str]
+    justification: str
+
+
+class EstimatedATSImprovement(BaseModel):
+    """Estimated ATS score improvement."""
+    before_score: int
+    after_score: int
+    improvement: int
+    confidence: str  # HIGH/MEDIUM/LOW
+
+
+class AuthenticityVerification(BaseModel):
+    """Verification that optimization maintained authenticity."""
+    all_companies_unchanged: bool
+    all_dates_unchanged: bool
+    no_fabricated_skills: bool
+    no_invented_projects: bool
 
 
 class ResumeOptimizationResponse(BaseModel):
@@ -69,15 +182,38 @@ class ResumeOptimizationResponse(BaseModel):
     Response schema for resume optimization.
 
     Attributes:
-        optimized_content: Optimized resume content
-        changes_made: List of changes applied
-        ats_score_improvement: Estimated score improvement
-        summary: Summary of optimization
+        optimization_possible: Whether optimization could be performed
+        reason: Reason if optimization not possible
+        role_compatibility: Role match analysis
+        optimized_content: Optimized resume content (or None)
+        changes_made: Detailed changes applied
+        keywords_added: Keywords incorporated with justification
+        estimated_ats_improvement: Before/after score estimates
+        optimization_summary: Summary of changes
+        warnings: List of limitations or concerns
+        authenticity_verification: Verification of maintained authenticity
     """
-    optimized_content: Dict[str, Any]
-    changes_made: List[str]
-    ats_score_improvement: int
-    summary: str
+    optimization_possible: bool
+    reason: Optional[str] = None
+    role_compatibility: RoleCompatibility
+    optimized_content: Optional[Dict[str, Any]] = None
+    changes_made: ChangesMade
+    keywords_added: KeywordsAdded
+    estimated_ats_improvement: EstimatedATSImprovement
+    optimization_summary: str
+    warnings: List[str]
+    authenticity_verification: AuthenticityVerification
+
+    # Backwards compatibility properties
+    @property
+    def ats_score_improvement(self) -> int:
+        """Alias for estimated improvement (backwards compatibility)."""
+        return self.estimated_ats_improvement.improvement
+
+    @property
+    def summary(self) -> str:
+        """Alias for optimization_summary (backwards compatibility)."""
+        return self.optimization_summary
 
 
 class KeywordExtractionRequest(BaseModel):
@@ -88,7 +224,7 @@ class KeywordExtractionRequest(BaseModel):
         job_description: Job description text
         max_keywords: Maximum number of keywords to extract
     """
-    job_description: str = Field(..., min_length=50, max_length=5000)
+    job_description: str = Field(..., min_length=50, max_length=7000)
     max_keywords: int = Field(default=20, ge=5, le=50)
 
 
@@ -120,7 +256,7 @@ class CoverLetterRequest(BaseModel):
         tone: Writing tone (professional/enthusiastic/formal)
     """
     resume_content: Dict[str, Any]
-    job_description: str = Field(..., min_length=50, max_length=5000)
+    job_description: str = Field(..., min_length=50, max_length=7000)
     company_name: str = Field(..., min_length=2, max_length=100)
     hiring_manager: Optional[str] = Field(None, max_length=100)
     tone: str = Field(default="professional", pattern="^(professional|enthusiastic|formal)$")

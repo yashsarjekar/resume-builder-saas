@@ -106,6 +106,8 @@ class ResumeParserService:
         try:
             prompt = f"""You are a resume parsing expert. Extract structured information from the following resume text.
 
+CRITICAL: Preserve the EXACT wording, keywords, and technical terms as written. Do NOT paraphrase, summarize, or reword anything.
+
 Resume Text:
 {resume_text}
 
@@ -123,7 +125,7 @@ Extract and return ONLY a valid JSON object with the following structure. Do not
             "position": "job title",
             "start_date": "start date",
             "end_date": "end date or Present",
-            "description": "job description and achievements"
+            "bullets": ["achievement or responsibility 1", "achievement or responsibility 2", "achievement or responsibility 3"]
         }}
     ],
     "education": [
@@ -147,15 +149,21 @@ Extract and return ONLY a valid JSON object with the following structure. Do not
     "languages": ["language1", "language2"]
 }}
 
-Important:
+CRITICAL INSTRUCTIONS:
+- Copy text VERBATIM - do not paraphrase or summarize
+- Preserve ALL keywords, metrics, and technical terms exactly as written
+- Extract every bullet point completely - do not shorten or combine them
+- Keep all numbers, percentages, and quantifications exactly as stated
+- Maintain the exact phrasing of achievements (e.g., "Led", "Developed", "Implemented")
 - If any field is not found, use null or empty array []
 - Ensure all dates are in readable format
-- Extract all skills mentioned
+- Extract ALL skills mentioned, including technical tools, frameworks, and methodologies
+- For experience bullets: extract EVERY achievement separately, preserving exact wording
 - Return ONLY the JSON object, no additional text"""
 
             response = self.anthropic_client.messages.create(
-                model="claude-3-haiku-20240307",
-                max_tokens=4000,
+                model="claude-sonnet-4-5-20250929",  # Claude 4.5 Sonnet
+                max_tokens=8192,  # Increased for better parsing
                 messages=[{
                     "role": "user",
                     "content": prompt
@@ -165,13 +173,17 @@ Important:
             # Extract JSON from response
             response_text = response.content[0].text.strip()
 
-            # Remove markdown code blocks if present
-            if response_text.startswith("```json"):
-                response_text = response_text[7:]
-            if response_text.startswith("```"):
-                response_text = response_text[3:]
-            if response_text.endswith("```"):
-                response_text = response_text[:-3]
+            # Remove markdown code blocks if present (more robust)
+            if "```json" in response_text:
+                # Extract content between ```json and ```
+                start = response_text.find("```json") + 7
+                end = response_text.find("```", start)
+                response_text = response_text[start:end].strip()
+            elif "```" in response_text:
+                # Extract content between ``` and ```
+                start = response_text.find("```") + 3
+                end = response_text.find("```", start)
+                response_text = response_text[start:end].strip()
 
             response_text = response_text.strip()
 
@@ -255,32 +267,36 @@ Important:
                 "linkedin": "",
                 "github": ""
             },
-            "summary": parsed_data.get("summary", ""),
+            "summary": parsed_data.get("summary") or "",
             "experience": [],
             "education": [],
-            "skills": parsed_data.get("skills", []),
+            "skills": parsed_data.get("skills") or [],
             "projects": [],
-            "certifications": parsed_data.get("certifications", []),
-            "languages": parsed_data.get("languages", [])
+            "certifications": parsed_data.get("certifications") or [],
+            "languages": parsed_data.get("languages") or []
         }
 
-        # Convert experience
-        for exp in parsed_data.get("experience", []):
+        # Convert experience (handle None values)
+        for exp in parsed_data.get("experience") or []:
             # Combine dates into duration string for PDF
             start = exp.get("start_date", "")
             end = exp.get("end_date", "")
             duration = f"{start} - {end}" if start and end else ""
 
+            # Get bullets array, or convert description to single bullet if present
+            bullets = exp.get("bullets") or []
+            if not bullets and exp.get("description"):
+                bullets = [exp.get("description")]
+
             content["experience"].append({
                 "company": exp.get("company", ""),
-                "position": exp.get("position", ""),
+                "title": exp.get("position", ""),  # Changed from "position" to "title" to match frontend
                 "duration": duration,
-                "location": "",
-                "description": exp.get("description", "")
+                "bullets": bullets
             })
 
-        # Convert education
-        for edu in parsed_data.get("education", []):
+        # Convert education (handle None values)
+        for edu in parsed_data.get("education") or []:
             # Combine dates into duration string for PDF
             start = edu.get("start_date", "")
             end = edu.get("end_date", "")
@@ -293,12 +309,12 @@ Important:
                 "gpa": edu.get("gpa", "")
             })
 
-        # Convert projects
-        for proj in parsed_data.get("projects", []):
+        # Convert projects (handle None values)
+        for proj in parsed_data.get("projects") or []:
             content["projects"].append({
                 "name": proj.get("name", ""),
                 "description": proj.get("description", ""),
-                "technologies": proj.get("technologies", []),
+                "technologies": proj.get("technologies") or [],
                 "link": ""
             })
 

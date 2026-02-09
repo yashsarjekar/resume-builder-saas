@@ -215,11 +215,11 @@ class PDFTemplate:
         for exp in experience:
             job_group = []
 
-            # Position and company
-            position = exp.get('position', 'Position')
+            # Title and company (updated field names to match frontend)
+            title = exp.get('title') or exp.get('position', 'Position')
             company = exp.get('company', 'Company')
 
-            job_group.append(Paragraph(position, self.styles['JobTitle']))
+            job_group.append(Paragraph(title, self.styles['JobTitle']))
             job_group.append(Paragraph(company, self.styles['Company']))
 
             # Duration and location
@@ -233,16 +233,18 @@ class PDFTemplate:
                 duration_text = ' | '.join(duration_parts)
                 job_group.append(Paragraph(duration_text, self.styles['Duration']))
 
-            # Description/responsibilities
-            description = exp.get('description', '')
-            if description:
+            # Bullets (updated to use 'bullets' field instead of 'description')
+            bullets = exp.get('bullets') or exp.get('description', [])
+
+            if bullets:
                 # Handle bullet points
-                if isinstance(description, list):
-                    for item in description:
-                        job_group.append(Paragraph(f'• {item}', self.styles['ResumeBody']))
+                if isinstance(bullets, list):
+                    for item in bullets:
+                        if item and item.strip():  # Skip empty bullets
+                            job_group.append(Paragraph(f'• {item}', self.styles['ResumeBody']))
                 else:
-                    # Split by newlines and add bullets
-                    lines = description.split('\n')
+                    # If it's a string, split by newlines and add bullets
+                    lines = str(bullets).split('\n')
                     for line in lines:
                         if line.strip():
                             if not line.strip().startswith('•'):
@@ -250,7 +252,7 @@ class PDFTemplate:
                             job_group.append(Paragraph(line, self.styles['ResumeBody']))
 
             elements.append(KeepTogether(job_group))
-            elements.append(Spacer(1, 0.15 * inch))
+            elements.append(Spacer(1, 0.08 * inch))  # Reduced from 0.15 to minimize spacing
 
         return elements
 

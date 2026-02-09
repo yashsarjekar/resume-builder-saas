@@ -13,7 +13,7 @@ from datetime import datetime
 class ResumeBase(BaseModel):
     """Base resume schema with common fields."""
     title: str = Field(..., min_length=3, max_length=200)
-    job_description: Optional[str] = Field(None, max_length=5000)
+    job_description: Optional[str] = Field(None, max_length=7000)
     template_name: str = Field(default="modern", pattern="^(modern|classic|minimal|professional)$")
 
     @field_validator('title')
@@ -68,7 +68,7 @@ class ResumeUpdate(BaseModel):
         template_name: Updated template
     """
     title: Optional[str] = Field(None, min_length=3, max_length=200)
-    job_description: Optional[str] = Field(None, max_length=5000)
+    job_description: Optional[str] = Field(None, max_length=7000)
     content: Optional[Dict[str, Any]] = None
     template_name: Optional[str] = Field(None, pattern="^(modern|classic|minimal|professional)$")
 
@@ -209,7 +209,7 @@ class ResumeOptimizeRequest(BaseModel):
         job_description: Job description to optimize for
         optimization_level: Optimization intensity
     """
-    job_description: str = Field(..., min_length=50, max_length=5000)
+    job_description: str = Field(..., min_length=50, max_length=7000)
     optimization_level: str = Field(default="moderate", pattern="^(light|moderate|aggressive)$")
 
 
@@ -220,7 +220,7 @@ class ResumeAnalyzeRequest(BaseModel):
     Attributes:
         job_description: Job description to analyze against
     """
-    job_description: str = Field(..., min_length=50, max_length=5000)
+    job_description: str = Field(..., min_length=50, max_length=7000)
 
 
 class PDFDownloadRequest(BaseModel):
@@ -244,8 +244,10 @@ class ResumeStats(BaseModel):
         optimized_count: Number of optimized resumes
         average_ats_score: Average ATS score
         templates_used: Count of each template type
+        most_used_template: Name of the most frequently used template
     """
     total_resumes: int
     optimized_count: int
     average_ats_score: Optional[float] = None
     templates_used: Dict[str, int]
+    most_used_template: Optional[str] = None

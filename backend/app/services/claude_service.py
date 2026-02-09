@@ -47,8 +47,33 @@ class ClaudeService:
     def __init__(self):
         """Initialize Claude service."""
         self.client = anthropic_client
-        self.model = "claude-3-haiku-20240307"  # Claude 3 Haiku model
-        self.max_tokens = 4096
+        self.model = "claude-sonnet-4-5-20250929"  # Claude 4.5 Sonnet - Latest & Best
+        self.max_tokens = 8192  # Increased for Claude 4.5
+
+    @staticmethod
+    def _clean_json_response(response_text: str) -> str:
+        """
+        Clean JSON response by removing markdown code blocks.
+
+        Args:
+            response_text: Raw response from Claude
+
+        Returns:
+            Cleaned JSON string
+        """
+        # Remove markdown code blocks if present
+        if "```json" in response_text:
+            # Extract content between ```json and ```
+            start = response_text.find("```json") + 7
+            end = response_text.find("```", start)
+            response_text = response_text[start:end].strip()
+        elif "```" in response_text:
+            # Extract content between ``` and ```
+            start = response_text.find("```") + 3
+            end = response_text.find("```", start)
+            response_text = response_text[start:end].strip()
+
+        return response_text.strip()
 
     @staticmethod
     def _generate_cache_key(operation: str, **kwargs) -> str:
@@ -180,11 +205,17 @@ class ClaudeService:
             logger.info("Returning cached ATS analysis")
             return cached
 
-        system_prompt = """You are an expert ATS (Applicant Tracking System) analyzer.
-Analyze resumes for ATS compatibility and provide detailed feedback.
-Return your response as valid JSON only, without any markdown formatting."""
+        system_prompt = """You are an expert ATS (Applicant Tracking System) analyzer with deep knowledge
+of both technical parsing and human recruiter evaluation criteria.
 
-        user_prompt = f"""Analyze this resume against the job description for ATS compatibility.
+Analyze resumes for ATS compatibility across three dimensions:
+1. Technical Parseability (can ATS read it?)
+2. Keyword & Content Match (does it match the job?)
+3. Presentation Quality (will humans engage with it?)
+
+Return response as valid JSON only, without markdown formatting."""
+
+        user_prompt = f"""Analyze this resume against the job description for comprehensive ATS compatibility.
 
 Resume:
 {json.dumps(resume_content, indent=2)}
@@ -192,27 +223,120 @@ Resume:
 Job Description:
 {job_description}
 
-Provide analysis in this JSON format:
+ANALYSIS FRAMEWORK:
+
+## PHASE 1: ROLE ALIGNMENT (Weight: 30%)
+1. Identify PRIMARY role type in JD (e.g., Software Engineering, Sales Leadership)
+2. Identify PRIMARY career trajectory in resume
+3. Assess match level:
+   - DIRECT MATCH: Same role/function → 70-100% potential
+   - ADJACENT MATCH: Related field with transferable skills → 40-70% potential
+   - PIVOT MATCH: Different field but with bridging experience/education → 20-50% potential
+   - MISMATCH: Completely different field, no transition indicators → 0-25% potential
+
+## PHASE 2: TECHNICAL ATS COMPATIBILITY (Weight: 20%)
+Check for parsing issues:
+- File format concerns (if detectable)
+- Complex formatting (tables, columns, text boxes)
+- Contact info clarity (phone, email, LinkedIn)
+- Section header recognition (Experience, Education, Skills)
+- Date formats (consistency and parseability)
+- Special characters or symbols
+- Keyword stuffing detection
+
+## PHASE 3: CONTENT MATCHING (Weight: 35%)
+- Hard skills match (technical requirements)
+- Soft skills match
+- Industry-specific terminology
+- Required certifications/education
+- Years of experience alignment
+- Quantifiable achievements presence
+- Action verb usage
+- Keyword density (not just presence)
+- Acronym usage (spell out + abbreviation)
+
+## PHASE 4: EXPERIENCE QUALITY (Weight: 15%)
+- Seniority level alignment
+- Company size/type relevance
+- Industry experience
+- Project scope & impact
+- Leadership/collaboration indicators
+
+PROVIDE ANALYSIS IN THIS JSON FORMAT:
 {{
-    "ats_score": <0-100>,
-    "category": "<Excellent/Good/Fair/Poor>",
-    "strengths": ["strength1", "strength2", ...],
-    "weaknesses": ["weakness1", "weakness2", ...],
-    "missing_keywords": ["keyword1", "keyword2", ...],
-    "suggestions": ["suggestion1", "suggestion2", ...]
+    "overall_ats_score": <0-100>,
+    "category": "<Excellent/Good/Fair/Poor/Critical Issues>",
+
+    "dimension_scores": {{
+        "role_alignment": <0-100>,
+        "technical_compatibility": <0-100>,
+        "content_match": <0-100>,
+        "experience_quality": <0-100>
+    }},
+
+    "role_analysis": {{
+        "job_role_type": "string",
+        "resume_role_type": "string",
+        "match_level": "DIRECT/ADJACENT/PIVOT/MISMATCH",
+        "explanation": "string"
+    }},
+
+    "technical_issues": [
+        {{"issue": "string", "severity": "HIGH/MEDIUM/LOW", "fix": "string"}}
+    ],
+
+    "keyword_analysis": {{
+        "matched_keywords": ["keyword1", "keyword2"],
+        "missing_critical_keywords": ["keyword1", "keyword2"],
+        "missing_recommended_keywords": ["keyword1", "keyword2"],
+        "keyword_density": "OPTIMAL/LOW/STUFFED"
+    }},
+
+    "strengths": [
+        {{"category": "string", "detail": "string"}}
+    ],
+
+    "weaknesses": [
+        {{"category": "string", "detail": "string", "priority": "HIGH/MEDIUM/LOW"}}
+    ],
+
+    "actionable_suggestions": [
+        {{
+            "action": "string",
+            "rationale": "string",
+            "priority": "HIGH/MEDIUM/LOW",
+            "example": "string (optional)"
+        }}
+    ],
+
+    "missing_elements": {{
+        "required_skills": ["skill1"],
+        "required_qualifications": ["qualification1"],
+        "recommended_additions": ["item1"]
+    }}
 }}
 
-Score guidelines:
-- 80-100: Excellent - Strong match with job requirements
-- 60-79: Good - Decent match with room for improvement
-- 40-59: Fair - Moderate match, needs optimization
-- 0-39: Poor - Weak match, significant improvements needed"""
+SCORING GUIDELINES:
+- 90-100: Excellent - Strong role match, ATS-friendly, comprehensive keyword coverage
+- 75-89: Good - Clear role fit, minor technical/keyword gaps
+- 60-74: Fair - Acceptable match, several improvements needed
+- 40-59: Poor - Significant gaps in role match or ATS compatibility
+- 20-39: Critical Issues - Major role mismatch OR severe technical problems
+- 0-19: Not Viable - Wrong career path AND poor ATS structure
+
+SPECIAL CONSIDERATIONS:
+- Career changers: Look for bridging experience, certifications, projects
+- Entry-level: Focus on education, internships, relevant coursework
+- Senior roles: Emphasize leadership, strategy, measurable impact
+- Technical roles: Prioritize specific technologies, tools, methodologies
+- Hybrid roles: Assess multi-dimensional skill matches"""
 
         try:
             response_text = self._call_claude(system_prompt, user_prompt)
 
-            # Parse JSON response
-            response_data = json.loads(response_text)
+            # Clean and parse JSON response
+            cleaned_text = self._clean_json_response(response_text)
+            response_data = json.loads(cleaned_text)
 
             # Create response object
             result = ATSAnalysisResponse(**response_data)
@@ -257,44 +381,223 @@ Score guidelines:
             logger.info("Returning cached resume optimization")
             return cached
 
+        # Map optimization levels to numeric values
+        optimization_level_map = {
+            "light": 1,
+            "moderate": 2,
+            "aggressive": 3
+        }
+        optimization_level_num = optimization_level_map.get(optimization_level, 2)
+
         optimization_guidelines = {
-            "light": "Make minimal changes, focus on keyword insertion",
-            "moderate": "Rewrite bullet points and optimize content structure",
-            "aggressive": "Comprehensive rewrite with maximum ATS optimization"
+            1: "CONSERVATIVE - Fix formatting and improve wording only. No new content added. (Safest)",
+            2: "MODERATE - Extract implicit skills, add keywords from actual experience, quantify achievements with estimates. (Recommended)",
+            3: "AGGRESSIVE - Maximum keyword optimization while maintaining truthfulness. Restructure for role focus. (Use carefully)"
         }
 
-        system_prompt = """You are an expert resume writer specializing in ATS optimization.
-Optimize resumes to maximize ATS scores while maintaining authenticity.
-Return your response as valid JSON only."""
+        system_prompt = """You are an expert resume optimization specialist focusing on ATS compatibility.
 
-        user_prompt = f"""Optimize this resume for the job description.
+CORE PRINCIPLE: You optimize how existing experience is PRESENTED,
+you NEVER fabricate, exaggerate, or add information that isn't
+already present in the original resume.
 
-Optimization Level: {optimization_level} - {optimization_guidelines[optimization_level]}
+Return response as valid JSON only, without markdown formatting."""
 
-Resume:
-{json.dumps(resume_content, indent=2)}
+        user_prompt = f"""Optimize this resume for the job description while maintaining complete authenticity.
 
-Job Description:
-{job_description}
+Optimization Level: {optimization_level_num}
+Resume: {json.dumps(resume_content, indent=2)}
+Job Description: {job_description}
 
-Provide optimized resume in this JSON format:
+CRITICAL RULES - NEVER VIOLATE:
+
+1. WHAT YOU CAN CHANGE:
+   ✅ Reword descriptions for clarity and impact
+   ✅ Reorder bullet points to highlight relevance
+   ✅ Add relevant keywords IF they describe existing work
+   ✅ Improve action verbs (e.g., "helped" → "led", "did" → "developed")
+   ✅ Quantify existing achievements with reasonable estimates if not specified
+   ✅ Reorganize sections for better ATS parsing
+   ✅ Fix formatting issues (dates, phone numbers, etc.)
+   ✅ Add missing section headers (Skills, Experience, Education)
+   ✅ Extract implicit skills from experience and list them explicitly
+
+2. WHAT YOU CANNOT CHANGE:
+   ❌ Employment dates
+   ❌ Company names
+   ❌ Job titles (can clarify, not change)
+   ❌ Education degrees or institutions
+   ❌ Add skills/technologies never mentioned or implied
+   ❌ Add projects that don't exist
+   ❌ Fabricate certifications
+   ❌ Invent metrics or achievements
+   ❌ Add tools/languages never used
+   ❌ Change cities or locations
+   ❌ Alter years of experience
+
+3. ROLE COMPATIBILITY CHECK:
+   BEFORE optimizing, determine if resume matches job role:
+
+   ALWAYS proceed with optimization, but assess match level and add warnings:
+
+   - DIRECT MATCH (e.g., Backend Engineer → Senior Backend Engineer):
+     * Same role type, different seniority
+     * Optimize normally
+     * Expected improvement: 15-30%
+     * Warnings: None or minimal
+
+   - ADJACENT MATCH (e.g., Full-Stack → Frontend, Software Engineer → DevOps):
+     * Related field with transferable skills
+     * Optimize by highlighting transferable experience
+     * Expected improvement: 10-25%
+     * Warnings: ["Some experience may not directly align with role requirements"]
+
+   - PIVOT MATCH (e.g., Developer → Technical Project Manager):
+     * Career transition with some relevant skills
+     * Optimize by emphasizing transferable soft skills and technical background
+     * Expected improvement: 5-15%
+     * Warnings: ["Significant role change - some experience may seem irrelevant", "Consider adding transitional projects or certifications"]
+
+   - MISMATCH (e.g., Software Engineer → Sales Director, Teacher → Accountant):
+     * Completely different career paths
+     * Still optimize for formatting, clarity, and transferable skills
+     * Expected improvement: 0-10%
+     * Warnings: ["⚠️ MAJOR ROLE MISMATCH: This resume does not match the job requirements", "Your experience is in a completely different field", "ATS will likely filter this out regardless of optimization", "Recommendation: Apply to roles matching your actual experience"]
+
+   Note: optimization_possible should ALWAYS be true. We optimize what we can, but warn about limitations.
+
+4. OPTIMIZATION STRATEGIES BY LEVEL:
+
+   CONSERVATIVE (optimization_level = 1):
+   - Fix formatting and parsing issues only
+   - Improve action verbs
+   - Add section headers if missing
+   - Reorder bullets to put relevant items first
+   - Estimate: 5-15 point improvement
+
+   MODERATE (optimization_level = 2):
+   - Everything in Conservative, PLUS:
+   - Extract and list implicit skills from experience
+   - Quantify achievements with reasonable estimates
+   - Add industry-standard terminology
+   - Reframe experience to match job keywords (without lying)
+   - Estimate: 15-30 point improvement
+
+   AGGRESSIVE (optimization_level = 3):
+   - Everything in Moderate, PLUS:
+   - Maximum keyword incorporation (while staying truthful)
+   - Restructure entire resume for role focus
+   - Add detailed skill proficiency levels
+   - Create targeted summary statement
+   - Estimate: 25-45 point improvement
+
+   Note: NEVER optimize beyond truthfulness regardless of level
+
+5. KEYWORD INTEGRATION RULES:
+   - Only add keywords for skills actually used in described work
+   - If JD mentions "Python" and resume shows Python work, explicitly list "Python" in skills
+   - Don't add "React" if only used "JavaScript" (unless React specifically mentioned)
+   - Spell out acronyms: "CI/CD (Continuous Integration/Continuous Deployment)"
+
+6. QUANTIFICATION GUIDELINES:
+   - If achievement described but not quantified, add reasonable estimate
+   - Example: "Improved performance" → "Improved performance by approximately 20-30%"
+   - Mark estimates clearly: "reduced processing time by ~25%"
+   - Never invent metrics for unrelated work
+
+7. VALIDATION CHECKLIST:
+   Before returning, verify:
+   ✓ All companies/dates unchanged
+   ✓ All skills were mentioned or clearly implied in original
+   ✓ No fabricated projects or achievements
+   ✓ Job titles accurate (or clarified, not changed)
+   ✓ Education unchanged
+
+PROVIDE OPTIMIZATION IN THIS JSON FORMAT:
 {{
-    "optimized_content": {{<same structure as input resume with optimized content>}},
-    "changes_made": ["change1", "change2", ...],
-    "ats_score_improvement": <estimated score improvement 0-100>,
-    "summary": "<brief summary of optimization>"
+    "optimization_possible": true/false,
+    "reason": "string (if optimization_possible = false)",
+    "role_compatibility": {{
+        "job_role": "extracted from JD",
+        "resume_role": "extracted from resume",
+        "match_level": "DIRECT/ADJACENT/MISMATCH",
+        "suitable_for_optimization": true/false
+    }},
+    "optimized_content": {{
+        // Same structure as input resume with optimized content
+        // OR null if optimization not possible
+    }},
+    "changes_made": {{
+        "formatting_fixes": ["fix1", "fix2"],
+        "keyword_additions": ["keyword1: added to Skills section, was implied by Django REST work"],
+        "rewording_improvements": ["original phrase → improved phrase"],
+        "quantification_additions": ["Added ~25% estimate to performance improvement claim"],
+        "reordering": ["Moved most relevant experience to top"],
+        "section_additions": ["Added Skills section", "Added Professional Summary"]
+    }},
+    "keywords_added": {{
+        "from_job_description": ["keyword1", "keyword2"],
+        "justification": "These keywords describe work already present in resume"
+    }},
+    "estimated_ats_improvement": {{
+        "before_score": <estimated original score>,
+        "after_score": <estimated optimized score>,
+        "improvement": <difference>,
+        "confidence": "HIGH/MEDIUM/LOW"
+    }},
+    "optimization_summary": "string describing changes",
+    "warnings": [
+        "List any limitations or concerns"
+    ],
+    "authenticity_verification": {{
+        "all_companies_unchanged": true/false,
+        "all_dates_unchanged": true/false,
+        "no_fabricated_skills": true/false,
+        "no_invented_projects": true/false
+    }}
 }}
 
-Guidelines:
-- Maintain truthful information
-- Incorporate relevant keywords naturally
-- Improve action verbs and impact statements
-- Optimize formatting for ATS parsing
-- Highlight relevant experience"""
+EXAMPLES OF ACCEPTABLE OPTIMIZATION:
+
+✅ GOOD - Extracting implicit skills:
+Original: "Built REST APIs using Django framework"
+Optimized: "Developed RESTful APIs using Django REST Framework, Python, and PostgreSQL"
+Justification: If they built Django REST APIs, they used Python and likely PostgreSQL
+
+✅ GOOD - Improving action verbs:
+Original: "Helped with deployment automation"
+Optimized: "Implemented deployment automation reducing release time by ~40%"
+Justification: More impactful verb, reasonable metric estimate
+
+✅ GOOD - Adding relevant keywords:
+Original: "Created automated testing"
+Optimized: "Developed automated testing suite using pytest, achieving 85% code coverage"
+Justification: If they did Python testing, pytest is industry standard
+
+❌ BAD - Fabricating skills:
+Original: "Frontend development with React"
+Optimized: "Full-stack development with React, Vue, Angular, Node.js, MongoDB"
+Reason: Added frameworks never mentioned
+
+❌ BAD - Inventing achievements:
+Original: "Worked on performance improvements"
+Optimized: "Led performance optimization initiative, reducing latency by 70% and saving $200K annually"
+Reason: Numbers completely fabricated
+
+❌ BAD - Changing facts:
+Original: "Junior Developer at TechCorp (2022-2023)"
+Optimized: "Senior Software Engineer at TechCorp (2020-2024)"
+Reason: Changed title and dates
+
+REMEMBER: You are helping people present their REAL experience in the best light,
+not helping them lie to employers. When in doubt, be conservative.
+
+Optimization Level Guidance: {optimization_guidelines[optimization_level_num]}"""
 
         try:
             response_text = self._call_claude(system_prompt, user_prompt)
-            response_data = json.loads(response_text)
+            cleaned_text = self._clean_json_response(response_text)
+            response_data = json.loads(cleaned_text)
             result = ResumeOptimizationResponse(**response_data)
 
             await self._cache_response(cache_key, result)
@@ -364,7 +667,8 @@ Focus on:
 
         try:
             response_text = self._call_claude(system_prompt, user_prompt)
-            response_data = json.loads(response_text)
+            cleaned_text = self._clean_json_response(response_text)
+            response_data = json.loads(cleaned_text)
             result = KeywordExtractionResponse(**response_data)
 
             await self._cache_response(cache_key, result)
@@ -445,7 +749,8 @@ Requirements:
 
         try:
             response_text = self._call_claude(system_prompt, user_prompt)
-            response_data = json.loads(response_text)
+            cleaned_text = self._clean_json_response(response_text)
+            response_data = json.loads(cleaned_text)
             result = CoverLetterResponse(**response_data)
 
             await self._cache_response(cache_key, result)
@@ -518,7 +823,8 @@ Focus on:
 
         try:
             response_text = self._call_claude(system_prompt, user_prompt)
-            response_data = json.loads(response_text)
+            cleaned_text = self._clean_json_response(response_text)
+            response_data = json.loads(cleaned_text)
             result = LinkedInOptimizationResponse(**response_data)
 
             await self._cache_response(cache_key, result)

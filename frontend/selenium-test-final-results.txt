@@ -1,0 +1,76 @@
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║     🌐 SELENIUM UI TESTING - LIVE BROWSER TESTS 🌐         ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+
+Starting Chrome browser...
+
+✅ Chrome browser started successfully
+
+═══════════════════════════════════════════════════════════
+
+
+✅ PASS: Landing Page - Load and Display
+
+✅ PASS: Navigation - Landing to Signup
+
+✅ PASS: Signup - Form Validation
+   📸 Screenshot saved: screenshot_Signup_-_Create_New_User_1770527635946.png
+
+❌ FAIL: Signup - Create New User
+   Error: Did not redirect to dashboard after signup
+Wait timed out after 30121ms
+   📸 Screenshot saved: screenshot_Dashboard_-_Access_and_Display_1770527666322.png
+
+❌ FAIL: Dashboard - Access and Display
+   Error: Element not found: By(xpath, //*[contains(text(), "Subscription")])
+   📸 Screenshot saved: screenshot_Dashboard_-_Create_Resume_Button_1770527696596.png
+
+❌ FAIL: Dashboard - Create Resume Button
+   Error: Element not found: By(xpath, //a[contains(text(), "Create Resume")] | //button[contains(text(), "Create Resume")])
+   📸 Screenshot saved: screenshot_Resume_Builder_-_Form_Elements_1770527696656.png
+
+❌ FAIL: Resume Builder - Form Elements
+   Error: Missing element: Resume Title
+
+✅ PASS: Pricing - Page Load and Display
+   ℹ️  User not authenticated, redirected to login (expected if session expired)
+
+✅ PASS: AI Tools - Keywords Extractor Access
+
+✅ PASS: Authentication - Logout
+   ✅ Successfully logged in
+
+✅ PASS: Login - Existing User
+
+✅ PASS: UI - Responsive Design (Mobile)
+
+
+Closing browser...
+
+╔════════════════════════════════════════════════════════════╗
+║                     TEST SUMMARY                           ║
+╚════════════════════════════════════════════════════════════╝
+
+📊 Total Tests: 12
+✅ Passed: 8
+❌ Failed: 4
+
+Failed Tests:
+  • Signup - Create New User
+    Did not redirect to dashboard after signup
+Wait timed out after 30121ms
+  • Dashboard - Access and Display
+    Element not found: By(xpath, //*[contains(text(), "Subscription")])
+  • Dashboard - Create Resume Button
+    Element not found: By(xpath, //a[contains(text(), "Create Resume")] | //button[contains(text(), "Create Resume")])
+  • Resume Builder - Form Elements
+    Missing element: Resume Title
+
+Pass Rate: 66.67%
+
+❌ Multiple failures detected.
+
+════════════════════════════════════════════════════════════
+

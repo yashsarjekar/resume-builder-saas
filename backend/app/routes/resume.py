@@ -25,10 +25,12 @@ from app.schemas.resume import (
     ResumeStats,
     PDFDownloadRequest,
 )
+from app.schemas.ai import ATSAnalysisResponse
 from app.dependencies import get_current_user
 from app.config import get_settings
 from app.services.pdf_service import pdf_service
 from app.services.resume_parser_service import resume_parser_service
+from app.services.claude_service import claude_service
 
 # Initialize router and logger
 router = APIRouter()
@@ -492,11 +494,17 @@ async def get_resume_stats(
         template = resume.template_name
         templates_used[template] = templates_used.get(template, 0) + 1
 
+    # Find most used template
+    most_used_template = None
+    if templates_used:
+        most_used_template = max(templates_used, key=templates_used.get)
+
     return ResumeStats(
         total_resumes=total_resumes,
         optimized_count=optimized_count,
         average_ats_score=average_ats_score,
-        templates_used=templates_used
+        templates_used=templates_used,
+        most_used_template=most_used_template
     )
 
 
@@ -551,15 +559,14 @@ async def download_resume_pdf(
         )
 
     # Determine which content to use
-    if use_optimized:
-        if not resume.has_optimization():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Optimized content not available. Please optimize the resume first."
-            )
+    # If optimized content requested and available, use it; otherwise use original
+    if use_optimized and resume.has_optimization():
         content = resume.optimized_content
+        logger.info(f"Using optimized content for resume {resume_id}")
     else:
         content = resume.content
+        if use_optimized and not resume.has_optimization():
+            logger.info(f"Optimized content requested but not available for resume {resume_id}, using original")
 
     # Ensure content is a dictionary (parse if it's a JSON string)
     import json
@@ -756,4 +763,166 @@ async def upload_resume(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to parse resume. Please ensure the file is valid and try again."
+        )
+
+
+@router.post("/parse")
+async def parse_resume_file(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Parse a resume file and return structured content without saving to database.
+
+    This endpoint is useful for temporary parsing operations like LinkedIn optimization
+    where we need to extract content but don't want to create a new resume.
+
+    Supported formats:
+    - PDF (.pdf)
+    - Microsoft Word (.docx, .doc)
+
+    Args:
+        file: Uploaded resume/profile file
+        current_user: Authenticated user
+
+    Returns:
+        dict: Parsed resume content in structured format
+
+    Raises:
+        HTTPException 400: If file format is invalid or parsing fails
+        HTTPException 500: If server error occurs
+
+    Example:
+        POST /api/resume/parse
+        Content-Type: multipart/form-data
+        File: linkedin_profile.pdf
+    """
+    try:
+        # Validate file size (max 10MB)
+        MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+        file_content = await file.read()
+
+        if len(file_content) > MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File size exceeds 10MB limit"
+            )
+
+        if not file_content:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Uploaded file is empty"
+            )
+
+        logger.info(f"Parsing file: {file.filename} for user {current_user.id}")
+
+        # Parse the resume file
+        parsed_data = resume_parser_service.parse_resume_file(
+            file_content=file_content,
+            filename=file.filename
+        )
+
+        # Convert to our resume format
+        resume_content = resume_parser_service.convert_to_resume_format(parsed_data)
+
+        logger.info(f"Successfully parsed {file.filename} for user {current_user.id}")
+
+        return {
+            "content": resume_content,
+            "filename": file.filename,
+            "message": "File parsed successfully"
+        }
+
+    except ValueError as e:
+        # File format or parsing errors
+        logger.error(f"File parsing validation error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"File parsing failed for user {current_user.id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to parse file. Please ensure the file is valid and try again."
+        )
+
+
+@router.post("/{resume_id}/analyze-ats", response_model=ATSAnalysisResponse)
+async def analyze_resume_ats(
+    resume_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Analyze ATS compatibility for a specific resume.
+
+    This endpoint loads a saved resume and analyzes its ATS compatibility
+    against the job description stored with the resume.
+
+    Args:
+        resume_id: ID of the resume to analyze
+        current_user: Authenticated user
+        db: Database session
+
+    Returns:
+        ATSAnalysisResponse: ATS score, strengths, weaknesses, suggestions
+
+    Raises:
+        HTTPException 403: If ATS analysis limit exceeded
+        HTTPException 404: If resume not found
+        HTTPException 500: If analysis fails
+
+    Example:
+        POST /api/resume/123/analyze-ats
+    """
+    # Check subscription limits
+    ats_limit = settings.get_ats_limit(current_user.subscription_type)
+    if current_user.ats_analysis_count >= ats_limit:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"ATS analysis limit ({ats_limit}) reached. Upgrade your subscription."
+        )
+
+    try:
+        # Get the resume
+        resume = db.query(Resume).filter(
+            Resume.id == resume_id,
+            Resume.user_id == current_user.id
+        ).first()
+
+        if not resume:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Resume not found"
+            )
+
+        # Perform ATS analysis
+        result = await claude_service.analyze_ats_score(
+            resume_content=resume.content,
+            job_description=resume.job_description
+        )
+
+        # Update resume with ATS score
+        resume.ats_score = result.ats_score
+
+        # Increment usage count
+        current_user.ats_analysis_count += 1
+        db.commit()
+
+        logger.info(
+            f"ATS analysis completed for resume {resume_id}: "
+            f"score={result.ats_score}"
+        )
+
+        return result
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        logger.error(f"ATS analysis failed for resume {resume_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to analyze resume: {str(e)}"
         )

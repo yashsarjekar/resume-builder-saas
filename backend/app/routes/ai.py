@@ -38,9 +38,15 @@ logger = logging.getLogger(__name__)
 settings = get_settings()
 
 
-def check_ats_limit(user: User, db: Session) -> None:
+async def check_ats_limit(user: User, db: Session) -> None:
     """
-    Check if user can perform ATS analysis.
+    Check if user can perform ATS analysis with soft throttling.
+
+    Implements progressive throttling for ATS operations:
+    - 0-70% usage: No delay
+    - 70-85% usage: 2 second delay (ATS is expensive)
+    - 85-100% usage: 4 second delay (heavy throttle)
+    - 100%+ usage: Block with upgrade message
 
     Args:
         user: Current user
@@ -49,14 +55,39 @@ def check_ats_limit(user: User, db: Session) -> None:
     Raises:
         HTTPException: If ATS analysis limit exceeded
     """
+    import asyncio
+
     limit_config = settings.get_limit_config()
     limit = settings.get_ats_limit(user.subscription_type.value)
 
+    # Calculate usage percentage
+    usage_percent = (user.ats_analysis_count / limit * 100) if limit > 0 else 0
+
+    # Hard limit reached
     if user.ats_analysis_count >= limit:
+        logger.warning(
+            f"ATS limit BLOCKED for user {user.id}: "
+            f"{user.ats_analysis_count}/{limit} (100%)"
+        )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"ATS analysis limit ({limit}) reached. Upgrade your subscription."
+            detail=f"ATS analysis limit ({limit}) reached. "
+                   f"Upgrade to get more analyses."
         )
+
+    # Soft throttling for ATS (more aggressive since it's expensive)
+    throttle_delay = 0
+    if usage_percent >= 85:
+        throttle_delay = 4  # Heavy throttle near limit
+    elif usage_percent >= 70:
+        throttle_delay = 2  # Moderate throttle
+
+    if throttle_delay > 0:
+        logger.info(
+            f"Soft throttling ATS for user {user.id}: "
+            f"{user.ats_analysis_count}/{limit} ({usage_percent:.1f}%) - {throttle_delay}s delay"
+        )
+        await asyncio.sleep(throttle_delay)
 
 
 def increment_ats_count(user: User, db: Session) -> None:
@@ -76,7 +107,14 @@ async def check_ai_assist_limit(
     current_user: User = Depends(get_current_user)
 ) -> User:
     """
-    Check daily AI assist quota using Redis.
+    Check daily AI assist quota using Redis with soft throttling.
+
+    Implements progressive throttling:
+    - 0-70% usage: No delay (full speed)
+    - 70-85% usage: 1 second delay (slight slowdown)
+    - 85-95% usage: 2 second delay (noticeable slowdown)
+    - 95-100% usage: 3 second delay (heavy throttle)
+    - 100%+ usage: Block with upgrade message
 
     Args:
         current_user: Authenticated user
@@ -88,6 +126,7 @@ async def check_ai_assist_limit(
         HTTPException: If daily AI assist limit exceeded
     """
     from app.services.redis_service import get_redis_service
+    import asyncio
 
     try:
         redis = get_redis_service()
@@ -98,18 +137,44 @@ async def check_ai_assist_limit(
         current_count = await redis.get_quota(key)
         limit = settings.get_ai_assist_limit(current_user.subscription_type.value)
 
+        # Calculate usage percentage
+        usage_percent = (current_count / limit * 100) if limit > 0 else 0
+
+        # Hard limit reached - block request
         if current_count >= limit:
+            logger.warning(
+                f"AI assist limit BLOCKED for user {current_user.id}: "
+                f"{current_count}/{limit} (100%)"
+            )
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail=f"AI assist limit reached ({limit}/day). Upgrade or wait 24h."
+                detail=f"Daily AI assist limit reached ({limit}/day). "
+                       f"Upgrade to PRO for unlimited access or wait 24 hours."
             )
+
+        # Soft throttling based on usage percentage
+        throttle_delay = 0
+        if usage_percent >= 95:
+            throttle_delay = 3  # Heavy throttle near limit
+        elif usage_percent >= 85:
+            throttle_delay = 2  # Moderate throttle
+        elif usage_percent >= 70:
+            throttle_delay = 1  # Light throttle
+
+        # Apply throttle delay if needed
+        if throttle_delay > 0:
+            logger.info(
+                f"Soft throttling user {current_user.id}: "
+                f"{current_count}/{limit} ({usage_percent:.1f}%) - {throttle_delay}s delay"
+            )
+            await asyncio.sleep(throttle_delay)
 
         # Increment quota
         await redis.increment_quota(key, 86400)  # 24h TTL
 
         logger.info(
             f"AI assist quota check for user {current_user.id}: "
-            f"{current_count + 1}/{limit}"
+            f"{current_count + 1}/{limit} ({usage_percent:.1f}%)"
         )
 
         return current_user
@@ -152,8 +217,8 @@ async def analyze_ats(
             "job_description": "Looking for Python developer..."
         }
     """
-    # Check subscription limits
-    check_ats_limit(current_user, db)
+    # Check subscription limits (with throttling)
+    await check_ats_limit(current_user, db)
 
     try:
         # Perform ATS analysis using Claude
@@ -234,8 +299,8 @@ async def optimize_resume(
             detail="Not authorized to optimize this resume"
         )
 
-    # Check ATS analysis limit
-    check_ats_limit(current_user, db)
+    # Check ATS analysis limit (with throttling)
+    await check_ats_limit(current_user, db)
 
     try:
         # Optimize resume using Claude
@@ -244,6 +309,29 @@ async def optimize_resume(
             job_description=request_data.job_description,
             optimization_level=request_data.optimization_level
         )
+
+        # Increment usage count (always count, even if optimization not possible)
+        increment_ats_count(current_user, db)
+
+        # Check if optimization was possible
+        if not optimization_result.optimization_possible:
+            logger.warning(
+                f"Resume {resume_id} optimization not possible: "
+                f"{optimization_result.reason}"
+            )
+
+            # Return full optimization response (including reason for failure)
+            return {
+                "optimization_possible": False,
+                "reason": optimization_result.reason,
+                "role_compatibility": {
+                    "job_role": optimization_result.role_compatibility.job_role,
+                    "resume_role": optimization_result.role_compatibility.resume_role,
+                    "match_level": optimization_result.role_compatibility.match_level,
+                    "suitable_for_optimization": False
+                },
+                "message": "Optimization not possible - role mismatch detected"
+            }
 
         # Get ATS score for optimized content
         ats_result = await claude_service.analyze_ats_score(
@@ -254,29 +342,58 @@ async def optimize_resume(
         # Update resume with optimization
         resume.set_optimization(
             optimized_content=optimization_result.optimized_content,
-            ats_score=ats_result.ats_score
+            ats_score=ats_result.overall_ats_score
         )
         resume.job_description = request_data.job_description
-
-        # Increment usage count
-        increment_ats_count(current_user, db)
 
         db.commit()
         db.refresh(resume)
 
         logger.info(
             f"Resume {resume_id} optimized for user {current_user.id}: "
-            f"score={ats_result.ats_score}"
+            f"score={ats_result.overall_ats_score}, "
+            f"improvement={optimization_result.estimated_ats_improvement.improvement}"
         )
 
+        # Return comprehensive optimization response
         return {
+            "optimization_possible": True,
+            "role_compatibility": {
+                "job_role": optimization_result.role_compatibility.job_role,
+                "resume_role": optimization_result.role_compatibility.resume_role,
+                "match_level": optimization_result.role_compatibility.match_level,
+                "suitable_for_optimization": True
+            },
+            "changes_made": {
+                "formatting_fixes": optimization_result.changes_made.formatting_fixes,
+                "keyword_additions": optimization_result.changes_made.keyword_additions,
+                "rewording_improvements": optimization_result.changes_made.rewording_improvements,
+                "quantification_additions": optimization_result.changes_made.quantification_additions,
+                "reordering": optimization_result.changes_made.reordering,
+                "section_additions": optimization_result.changes_made.section_additions
+            },
+            "keywords_added": {
+                "from_job_description": optimization_result.keywords_added.from_job_description,
+                "justification": optimization_result.keywords_added.justification
+            },
+            "estimated_ats_improvement": {
+                "before_score": optimization_result.estimated_ats_improvement.before_score,
+                "after_score": optimization_result.estimated_ats_improvement.after_score,
+                "improvement": optimization_result.estimated_ats_improvement.improvement,
+                "confidence": optimization_result.estimated_ats_improvement.confidence
+            },
+            "optimization_summary": optimization_result.optimization_summary,
+            "warnings": optimization_result.warnings,
+            "authenticity_verification": {
+                "all_companies_unchanged": optimization_result.authenticity_verification.all_companies_unchanged,
+                "all_dates_unchanged": optimization_result.authenticity_verification.all_dates_unchanged,
+                "no_fabricated_skills": optimization_result.authenticity_verification.no_fabricated_skills,
+                "no_invented_projects": optimization_result.authenticity_verification.no_invented_projects
+            },
             "message": "Resume optimized successfully",
             "resume_id": resume.id,
-            "ats_score": ats_result.ats_score,
-            "ats_category": resume.get_ats_score_category(),
-            "changes_made": optimization_result.changes_made,
-            "summary": optimization_result.summary,
-            "estimated_improvement": optimization_result.ats_score_improvement
+            "ats_score": ats_result.overall_ats_score,
+            "ats_category": resume.get_ats_score_category()
         }
 
     except ValueError as e:
@@ -334,8 +451,8 @@ async def analyze_resume_ats(
             detail="Not authorized to analyze this resume"
         )
 
-    # Check limits
-    check_ats_limit(current_user, db)
+    # Check limits (with throttling)
+    await check_ats_limit(current_user, db)
 
     try:
         # Analyze ATS score

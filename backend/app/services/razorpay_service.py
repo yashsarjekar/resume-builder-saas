@@ -34,33 +34,35 @@ logger = logging.getLogger(__name__)
 class RazorpayService:
     """Service for handling Razorpay payment operations."""
 
-    # Pricing in INR (Indian Rupees)
+    # Pricing in INR (Indian Rupees) - Affordable for Indian market
     PRICING = {
         "starter": {
-            1: 299,      # Monthly
+            1: 299,      # Monthly - Perfect for job seekers
             3: 799,      # Quarterly (11% discount)
             6: 1499,     # Half-yearly (16% discount)
-            12: 2799,    # Yearly (22% discount)
+            12: 2799,    # Yearly (22% discount) - ₹233/month
         },
         "pro": {
-            1: 599,      # Monthly
-            3: 1599,     # Quarterly (11% discount)
-            6: 2999,     # Half-yearly (16% discount)
-            12: 5599,    # Yearly (22% discount)
+            1: 999,      # Monthly - Best value for professionals
+            3: 2699,     # Quarterly (10% discount)
+            6: 4999,     # Half-yearly (17% discount)
+            12: 8999,    # Yearly (25% discount) - ₹749/month
         }
     }
 
     # Plan features and limits
     PLAN_FEATURES = {
         "starter": {
-            "resume_limit": 10,
-            "ats_analysis_limit": 20,
+            "resume_limit": 5,
+            "ats_analysis_limit": 10,
             "features": [
-                "10 Resume Creations per month",
-                "20 ATS Analysis per month",
-                "AI-Powered Resume Optimization",
-                "Cover Letter Generation",
-                "4 Professional PDF Templates",
+                "5 Resume Creations",
+                "10 ATS Analyses",
+                "50 AI Assists per day",
+                "AI Resume Optimization",
+                "Cover Letter Generator",
+                "Keyword Extraction",
+                "4 Premium Templates",
                 "Email Support"
             ],
             "is_popular": False
@@ -70,14 +72,15 @@ class RazorpayService:
             "ats_analysis_limit": -1,  # Unlimited
             "features": [
                 "Unlimited Resume Creations",
-                "Unlimited ATS Analysis",
-                "AI-Powered Resume Optimization",
-                "Cover Letter Generation",
-                "LinkedIn Profile Optimization",
-                "4 Professional PDF Templates",
-                "Keyword Extraction & Suggestions",
+                "Unlimited ATS Analyses",
+                "Unlimited AI Assists",
+                "AI Resume Optimization",
+                "Cover Letter Generator",
+                "LinkedIn Profile Optimizer",
+                "Keyword Extraction",
+                "4 Premium Templates",
                 "Priority Email Support",
-                "Early Access to New Features"
+                "Early Access to Features"
             ],
             "is_popular": True
         }
@@ -494,8 +497,8 @@ class RazorpayService:
         """
         if plan.upper() == "FREE":
             return {
-                "resume_limit": 3,
-                "ats_analysis_limit": 5
+                "resume_limit": 1,
+                "ats_analysis_limit": 2
             }
 
         if plan in self.PLAN_FEATURES:
