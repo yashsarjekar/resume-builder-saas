@@ -354,9 +354,9 @@ export default function DashboardPage() {
             <div className="p-4 border border-gray-200 rounded-lg">
               <h3 className="text-sm font-medium text-gray-600 mb-1">Current Plan</h3>
               <p className="text-xl font-bold text-gray-900 capitalize">{user.subscription_type}</p>
-              {user.subscription_end_date && (
+              {user.subscription_expiry && (
                 <p className="text-xs text-gray-500 mt-1">
-                  Renews: {formatDate(user.subscription_end_date)}
+                  Expires: {formatDate(user.subscription_expiry)}
                 </p>
               )}
             </div>

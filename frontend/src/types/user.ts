@@ -3,6 +3,7 @@ export interface User {
   email: string;
   name: string;
   subscription_type: 'free' | 'starter' | 'pro';
+  subscription_expiry: string | null;
   resume_count: number;
   ats_analysis_count: number;
   created_at: string;
