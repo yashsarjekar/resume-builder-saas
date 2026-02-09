@@ -78,6 +78,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       localStorage.setItem('token', access_token);
       console.log('✅ Token stored');
 
+      // Small delay to avoid rate limiting before fetching user data
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       // Step 3: Fetch user data with the token
       const userResponse = await api.get('/api/auth/me');
       console.log('✅ User data fetched');
