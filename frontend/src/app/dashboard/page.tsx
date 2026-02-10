@@ -396,7 +396,7 @@ export default function DashboardPage() {
                             {payment.plan}
                           </td>
                           <td className="px-4 py-2 text-sm text-gray-900">
-                            ₹{(payment.amount / 100).toFixed(2)}
+                            ₹{(Number(payment.amount) / 100).toFixed(0)}
                           </td>
                           <td className="px-4 py-2 text-sm">
                             <span className={`px-2 py-1 rounded-full text-xs ${
