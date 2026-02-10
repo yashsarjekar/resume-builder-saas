@@ -60,8 +60,8 @@ class Settings(BaseSettings):
     RATE_LIMIT_PER_HOUR: int = 1000
 
     # Authentication rate limits (per IP)
-    AUTH_RATE_LIMIT_PER_MINUTE: int = 5
-    AUTH_RATE_LIMIT_PER_HOUR: int = 20
+    AUTH_RATE_LIMIT_PER_MINUTE: int = 15  # Allow typos and corrections
+    AUTH_RATE_LIMIT_PER_HOUR: int = 50    # Prevent abuse while allowing legitimate use
 
     # AI endpoint rate limits (per user)
     AI_RATE_LIMIT_PER_MINUTE: int = 10
