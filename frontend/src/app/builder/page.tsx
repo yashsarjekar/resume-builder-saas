@@ -128,7 +128,7 @@ function BuilderContent() {
         });
         alert('Resume updated successfully!');
       } else {
-        const response = await api.post('/api/resume/', {
+        const response = await api.post('/api/resume', {
           title,
           job_description: jobDescription,
           content,
