@@ -310,8 +310,9 @@ async def optimize_resume(
             optimization_level=request_data.optimization_level
         )
 
-        # Increment usage count (always count, even if optimization not possible)
-        increment_ats_count(current_user, db)
+        # NOTE: We don't increment ATS count here because optimization is not the same as analysis
+        # The count should only be incremented when doing actual ATS analysis
+        # This prevents double-counting when users optimize and then analyze
 
         # Check if optimization was possible
         if not optimization_result.optimization_possible:

@@ -213,7 +213,7 @@ export default function DashboardPage() {
               <div
                 className="bg-blue-600 h-2 rounded-full"
                 style={{
-                  width: `${typeof getResumeLimit() === 'number' ? (user.resume_count / (getResumeLimit() as number)) * 100 : 0}%`
+                  width: `${typeof getResumeLimit() === 'number' ? Math.min((user.resume_count / (getResumeLimit() as number)) * 100, 100) : 0}%`
                 }}
               />
             </div>
@@ -228,7 +228,7 @@ export default function DashboardPage() {
               <div
                 className="bg-green-600 h-2 rounded-full"
                 style={{
-                  width: `${typeof getATSLimit() === 'number' ? (user.ats_analysis_count / (getATSLimit() as number)) * 100 : 0}%`
+                  width: `${typeof getATSLimit() === 'number' ? Math.min((user.ats_analysis_count / (getATSLimit() as number)) * 100, 100) : 0}%`
                 }}
               />
             </div>
