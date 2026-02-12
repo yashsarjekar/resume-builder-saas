@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import api from '@/lib/api';
+import { trackStarterPurchase, trackProPurchase } from '@/lib/tracking';
 
 declare global {
   interface Window {
@@ -128,6 +129,14 @@ export default function PricingPage() {
               plan: planName.toLowerCase()
             });
 
+            // Track conversion based on plan
+            const userEmail = user?.email;
+            if (planName.toLowerCase() === 'starter') {
+              trackStarterPurchase(response.razorpay_payment_id, userEmail);
+            } else if (planName.toLowerCase() === 'pro') {
+              trackProPurchase(response.razorpay_payment_id, userEmail);
+            }
+
             alert('Payment successful! Your account has been upgraded.');
             router.push('/dashboard');
           } catch (error: any) {
@@ -190,8 +199,9 @@ export default function PricingPage() {
             Affordable AI-Powered Resume Building
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Pricing designed for India. Start free, upgrade anytime.
-            <span className="block text-green-600 font-semibold mt-2">Starting at just ₹299/month</span>
+            Affordable pricing for everyone. Start free, upgrade anytime.
+            <span className="block text-green-600 font-semibold mt-2">Starting at just ₹299/month (~$3.50 USD)</span>
+            <span className="block text-sm text-gray-500 mt-2">💳 International cards accepted worldwide</span>
           </p>
         </div>
 
@@ -214,7 +224,14 @@ export default function PricingPage() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                 <div className="mb-6">
                   <span className="text-4xl font-bold text-gray-900">₹{plan.price}</span>
-                  {plan.price > 0 && <span className="text-gray-600">/month</span>}
+                  {plan.price > 0 && (
+                    <>
+                      <span className="text-gray-600">/month</span>
+                      <div className="text-sm text-gray-500 mt-1">
+                        ~${(plan.price / 85).toFixed(2)} USD
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <ul className="space-y-3 mb-8">

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { User, LoginData, SignupData } from '@/types/user';
 import api from '@/lib/api';
+import { trackSignup } from '@/lib/tracking';
 
 interface AuthState {
   user: User | null;
@@ -91,6 +92,10 @@ export const useAuthStore = create<AuthState>((set) => ({
         isAuthenticated: true,
         loading: false
       });
+
+      // Track successful signup conversion
+      trackSignup(data.email);
+      console.log('✅ Signup conversion tracked');
     } catch (error) {
       console.error('❌ Signup error:', error);
       set({ loading: false });
