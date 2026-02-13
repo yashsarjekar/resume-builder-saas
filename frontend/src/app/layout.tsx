@@ -21,6 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <GoogleTag />
+        <meta name="google-site-verification" content="wZapaecBNA7JnRyWDaovLzqvuIgNiWQqOdf6clNRBd8" />
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <Header />
