@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       locale: 'en_IN',
     },
     alternates: {
-      canonical: `https://resumebuilder.in/resume/${jobTitle}`,
+      canonical: `https://resumebuilder.pulsestack.in/resume/${jobTitle}`,
     },
   };
 }

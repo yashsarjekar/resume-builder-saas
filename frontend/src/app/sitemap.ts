@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getAllJobSlugs, getAllCompanySlugs } from '@/data/jobs';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://resumebuilder.in';
+  const baseUrl = 'https://resumebuilder.pulsestack.in';
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
