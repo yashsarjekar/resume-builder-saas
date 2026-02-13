@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-50 border-t border-gray-200 mt-auto">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -33,6 +33,37 @@ export default function Footer() {
               <li>
                 <Link href="/dashboard" className="text-gray-600 hover:text-gray-900 text-sm">
                   Dashboard
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-900 mb-4">Resume Templates</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/resume/software-engineer" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Software Engineer
+                </Link>
+              </li>
+              <li>
+                <Link href="/resume/data-analyst" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Data Analyst
+                </Link>
+              </li>
+              <li>
+                <Link href="/resume/java-developer" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Java Developer
+                </Link>
+              </li>
+              <li>
+                <Link href="/resume/mba-fresher" className="text-gray-600 hover:text-gray-900 text-sm">
+                  MBA Fresher
+                </Link>
+              </li>
+              <li>
+                <Link href="/resume/company/tcs" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Resume for TCS
                 </Link>
               </li>
             </ul>
