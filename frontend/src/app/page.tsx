@@ -211,10 +211,10 @@ export default function HomePage() {
           </div>
           <div className="text-center mt-8">
             <Link
-              href="/resume/company/tcs"
+              href="/resume"
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
-              View company-specific templates (TCS, Infosys, etc.) &rarr;
+              View all resume templates &rarr;
             </Link>
           </div>
         </div>
