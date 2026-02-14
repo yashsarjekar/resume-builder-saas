@@ -31,8 +31,8 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/resume" className="text-gray-600 hover:text-gray-900">
-              Templates
+            <Link href="/#features" className="text-gray-600 hover:text-gray-900">
+              Features
             </Link>
             <Link href="/blog" className="text-gray-600 hover:text-gray-900">
               Blog
