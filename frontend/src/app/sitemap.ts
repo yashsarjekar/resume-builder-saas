@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getAllJobSlugs, getAllCompanySlugs } from '@/data/jobs';
+import { getAllBlogSlugs } from '@/data/blog';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://resumebuilder.pulsestack.in';
@@ -54,6 +55,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
   ];
 
   // Job resume pages
@@ -74,5 +81,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  return [...staticPages, ...jobPages, ...companyPages];
+  // Blog posts
+  const blogSlugs = getAllBlogSlugs();
+  const blogPages: MetadataRoute.Sitemap = blogSlugs.map((slug) => ({
+    url: `${baseUrl}/blog/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
+
+  return [...staticPages, ...jobPages, ...companyPages, ...blogPages];
 }
