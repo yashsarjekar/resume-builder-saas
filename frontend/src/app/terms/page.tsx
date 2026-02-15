@@ -1,3 +1,13 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Terms of Service | Resume Builder',
+  description: 'Read the terms and conditions for using Resume Builder. Understand your rights and responsibilities when using our AI-powered resume service.',
+  alternates: {
+    canonical: 'https://resumebuilder.pulsestack.in/terms',
+  },
+};
+
 export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-gray-50 py-12">

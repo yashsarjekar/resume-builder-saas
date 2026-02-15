@@ -1,3 +1,13 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Refund Policy | Resume Builder',
+  description: 'Learn about our refund policy for Resume Builder subscriptions. Understand the conditions and process for requesting refunds.',
+  alternates: {
+    canonical: 'https://resumebuilder.pulsestack.in/refund',
+  },
+};
+
 export default function RefundPolicyPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-12">

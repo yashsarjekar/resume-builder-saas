@@ -1,3 +1,13 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy | Resume Builder',
+  description: 'Learn how Resume Builder collects, uses, and protects your personal information. Read our comprehensive privacy policy.',
+  alternates: {
+    canonical: 'https://resumebuilder.pulsestack.in/privacy',
+  },
+};
+
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-12">

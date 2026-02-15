@@ -1,4 +1,39 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'AI Resume Builder | Create ATS-Optimized Resumes Free - Resume Builder',
+  description: 'Build professional, ATS-friendly resumes with AI. Get more interviews with optimized resume templates, keyword extraction, and cover letter generation. Free to start.',
+  keywords: [
+    'AI resume builder',
+    'ATS resume',
+    'resume builder India',
+    'free resume maker',
+    'resume optimization',
+    'ATS friendly resume',
+    'job resume format',
+    'professional resume templates',
+  ],
+  openGraph: {
+    title: 'AI Resume Builder | Create ATS-Optimized Resumes Free',
+    description: 'Build professional, ATS-friendly resumes with AI. Get more interviews with optimized resume templates.',
+    type: 'website',
+    locale: 'en_IN',
+    siteName: 'Resume Builder',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI Resume Builder | Create ATS-Optimized Resumes Free',
+    description: 'Build professional, ATS-friendly resumes with AI.',
+  },
+  alternates: {
+    canonical: 'https://resumebuilder.pulsestack.in',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function HomePage() {
   return (

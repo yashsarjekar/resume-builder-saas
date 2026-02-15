@@ -31,8 +31,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="text-gray-600 hover:text-gray-900 text-sm">
-                  Dashboard
+                <Link href="/resume" className="text-gray-600 hover:text-gray-900 text-sm">
+                  All Templates
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Career Blog
                 </Link>
               </li>
             </ul>
@@ -80,6 +85,11 @@ export default function Footer() {
               <li>
                 <Link href="/terms" className="text-gray-600 hover:text-gray-900 text-sm">
                   Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Refund Policy
                 </Link>
               </li>
             </ul>
