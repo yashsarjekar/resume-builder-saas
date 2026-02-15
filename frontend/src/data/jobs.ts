@@ -923,6 +923,896 @@ export const jobsData: Record<string, JobData> = {
 
     relatedJobs: ["software-engineer", "java-developer", "python-developer", "web-developer"],
   },
+
+  "business-analyst": {
+    slug: "business-analyst",
+    title: "Business Analyst",
+    titleVariants: ["BA", "IT Business Analyst", "Systems Analyst", "Requirements Analyst"],
+
+    overview: {
+      description: "Business Analysts bridge the gap between business needs and technology solutions. They analyze processes, gather requirements, and work with stakeholders to deliver solutions that meet organizational goals.",
+      averageSalaryIndia: { fresher: "4-7 LPA", mid: "10-18 LPA", senior: "20-35+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["TCS", "Infosys", "Wipro", "Accenture", "Cognizant", "Deloitte", "EY", "KPMG"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Requirements Gathering & Documentation",
+        "Business Process Modeling",
+        "Stakeholder Management",
+        "Data Analysis & SQL",
+        "Agile/Scrum Methodology",
+        "Communication & Presentation",
+      ],
+      niceToHaveSkills: [
+        "JIRA & Confluence",
+        "Power BI/Tableau",
+        "UML & Flowcharting",
+        "Domain Knowledge (BFSI/Healthcare/Retail)",
+        "API Understanding",
+        "User Story Writing",
+      ],
+      certifications: [
+        "CBAP - Certified Business Analysis Professional",
+        "PMI-PBA - Professional in Business Analysis",
+        "ECBA - Entry Certificate in Business Analysis",
+        "Scrum Master Certification",
+      ],
+      keyAchievementExamples: [
+        "Led requirements gathering for CRM implementation serving 50K+ customers",
+        "Reduced process cycle time by 40% through workflow automation recommendations",
+        "Managed UAT for banking application with zero critical defects post-launch",
+        "Delivered 15+ BRDs and FRDs for enterprise digital transformation project",
+      ],
+      actionVerbs: [
+        "Analyzed", "Documented", "Facilitated", "Gathered", "Identified",
+        "Collaborated", "Translated", "Presented", "Validated", "Streamlined",
+        "Coordinated", "Recommended", "Mapped", "Defined", "Managed",
+      ],
+      atsKeywords: [
+        "Business Analysis", "Requirements", "BRD", "FRD", "User Stories",
+        "Agile", "Scrum", "JIRA", "SQL", "Stakeholder Management",
+        "UAT", "Process Improvement", "Data Analysis", "Documentation", "SDLC",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "MBA graduate with strong analytical and communication skills. Completed internship in business analysis involving requirements documentation and process mapping. Proficient in SQL, Excel, and JIRA. Eager to apply problem-solving skills in a Business Analyst role.",
+      midLevel: "Business Analyst with 4+ years of experience in BFSI domain. Led requirements gathering for 10+ projects involving digital banking and payment solutions. Expert in Agile methodologies, stakeholder management, and creating comprehensive BRDs and user stories.",
+      senior: "Senior Business Analyst with 8+ years of experience leading BA teams and managing complex enterprise projects. Delivered digital transformation initiatives impacting 1M+ users. Expert in domain analysis, solution design, and cross-functional team collaboration.",
+    },
+
+    experienceBullets: [
+      "Gathered and documented requirements from 20+ stakeholders for enterprise CRM implementation",
+      "Created detailed BRDs, FRDs, and user stories for Agile development teams",
+      "Conducted gap analysis identifying 30+ process improvement opportunities",
+      "Facilitated UAT sessions with business users ensuring 98% acceptance rate",
+      "Collaborated with developers and QA to resolve 50+ requirement clarifications",
+    ],
+
+    faqs: [
+      {
+        question: "What qualifications are needed for Business Analyst roles?",
+        answer: "MBA or engineering degree is preferred. Domain knowledge in BFSI, Healthcare, or Retail adds value. Technical understanding of SQL and basic programming helps. Certifications like CBAP or ECBA boost your profile.",
+      },
+      {
+        question: "Is coding required for Business Analysts?",
+        answer: "Not mandatory, but SQL knowledge is essential for data analysis. Basic understanding of APIs, databases, and software architecture helps communicate effectively with development teams.",
+      },
+      {
+        question: "How to transition from developer to Business Analyst?",
+        answer: "Leverage your technical background as an advantage. Focus on soft skills, learn BA tools and techniques, understand business processes. Your tech knowledge will help in technical BA roles.",
+      },
+      {
+        question: "What is the difference between Business Analyst and Product Manager?",
+        answer: "BA focuses on requirements and process analysis, working within defined scope. PM owns product vision, strategy, and roadmap. PMs have more decision-making authority while BAs are more execution-focused.",
+      },
+    ],
+
+    relatedJobs: ["product-manager", "data-analyst", "mba-fresher", "software-engineer"],
+  },
+
+  "ui-ux-designer": {
+    slug: "ui-ux-designer",
+    title: "UI/UX Designer",
+    titleVariants: ["UX Designer", "UI Designer", "Product Designer", "Interaction Designer"],
+
+    overview: {
+      description: "UI/UX Designers create intuitive and visually appealing digital experiences. They research user needs, design interfaces, create prototypes, and ensure products are both functional and delightful to use.",
+      averageSalaryIndia: { fresher: "4-7 LPA", mid: "10-20 LPA", senior: "22-45+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["Google", "Microsoft", "Flipkart", "Swiggy", "Razorpay", "CRED", "Myntra", "Zomato"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Figma/Sketch/Adobe XD",
+        "User Research & Personas",
+        "Wireframing & Prototyping",
+        "Visual Design Principles",
+        "Information Architecture",
+        "Usability Testing",
+      ],
+      niceToHaveSkills: [
+        "HTML/CSS Basics",
+        "Design Systems",
+        "Motion Design (After Effects)",
+        "A/B Testing",
+        "Analytics Tools",
+        "Accessibility Standards (WCAG)",
+      ],
+      certifications: [
+        "Google UX Design Certificate",
+        "Nielsen Norman UX Certification",
+        "IDF Interaction Design Foundation",
+        "Adobe Certified Professional",
+      ],
+      keyAchievementExamples: [
+        "Redesigned checkout flow increasing conversion rate by 35%",
+        "Created design system used across 5 products by 20+ designers",
+        "Led UX research with 50+ user interviews improving NPS by 25 points",
+        "Designed mobile app achieving 4.7 rating on Play Store with 1M+ downloads",
+      ],
+      actionVerbs: [
+        "Designed", "Created", "Prototyped", "Researched", "Conducted",
+        "Collaborated", "Iterated", "Tested", "Delivered", "Led",
+        "Improved", "Analyzed", "Conceptualized", "Streamlined", "Developed",
+      ],
+      atsKeywords: [
+        "UI Design", "UX Design", "Figma", "Sketch", "Adobe XD", "Prototype",
+        "Wireframe", "User Research", "Usability Testing", "Design System",
+        "Visual Design", "Interaction Design", "Mobile Design", "Web Design", "User Journey",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "Design graduate with strong visual design skills and passion for creating user-centered experiences. Proficient in Figma and Adobe Creative Suite. Completed Google UX Design certification with portfolio of 5+ projects including mobile app and e-commerce redesign.",
+      midLevel: "UI/UX Designer with 4+ years of experience designing consumer products used by millions. Led end-to-end design for fintech app with 500K+ users. Expert in user research, prototyping, and creating scalable design systems.",
+      senior: "Senior Product Designer with 7+ years of experience leading design teams at scale. Managed design for products generating Rs. 100Cr+ revenue. Expert in design strategy, team mentorship, and driving design culture across organizations.",
+    },
+
+    experienceBullets: [
+      "Designed end-to-end user experience for mobile app with 500K+ monthly active users",
+      "Conducted user research with 30+ interviews identifying key pain points and opportunities",
+      "Created comprehensive design system with 100+ components used across 3 products",
+      "Collaborated with PM and engineering to ship 20+ features with 95% design fidelity",
+      "Improved task completion rate by 40% through iterative usability testing and refinement",
+    ],
+
+    faqs: [
+      {
+        question: "What software should UI/UX designers learn?",
+        answer: "Figma is the industry standard now. Also learn Adobe Creative Suite (Photoshop, Illustrator) for visual assets. Sketch is still used but declining. Prototyping tools like Principle or ProtoPie are nice to have.",
+      },
+      {
+        question: "Is coding necessary for UI/UX designers?",
+        answer: "Not mandatory, but basic HTML/CSS understanding helps communicate with developers and understand technical constraints. It's increasingly valued, especially for product designer roles.",
+      },
+      {
+        question: "How important is a portfolio for designers?",
+        answer: "Extremely important - it's more valued than your resume. Include 3-5 case studies showing your process, not just final designs. Explain problems, research, iterations, and results with metrics.",
+      },
+      {
+        question: "What is the difference between UI and UX design?",
+        answer: "UX (User Experience) focuses on how products work - research, information architecture, user flows. UI (User Interface) focuses on how products look - visual design, typography, colors. Most roles combine both.",
+      },
+    ],
+
+    relatedJobs: ["product-manager", "web-developer", "software-engineer", "digital-marketing-manager"],
+  },
+
+  "cloud-architect": {
+    slug: "cloud-architect",
+    title: "Cloud Architect",
+    titleVariants: ["AWS Architect", "Azure Architect", "Solutions Architect", "Cloud Solutions Engineer"],
+
+    overview: {
+      description: "Cloud Architects design and oversee cloud computing strategy including cloud adoption plans, architecture design, and application migration. They ensure scalability, security, and cost optimization of cloud infrastructure.",
+      averageSalaryIndia: { fresher: "8-12 LPA", mid: "18-35 LPA", senior: "40-80+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["Amazon", "Microsoft", "Google", "TCS", "Infosys", "Wipro", "Accenture", "HCL"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "AWS/Azure/GCP Services",
+        "Cloud Architecture Patterns",
+        "Infrastructure as Code (Terraform)",
+        "Containerization (Docker/Kubernetes)",
+        "Security & Compliance",
+        "Cost Optimization",
+      ],
+      niceToHaveSkills: [
+        "Multi-Cloud Strategy",
+        "Serverless Architecture",
+        "DevOps Practices",
+        "Database Migration",
+        "Networking (VPC, Load Balancers)",
+        "Disaster Recovery Planning",
+      ],
+      certifications: [
+        "AWS Solutions Architect Professional",
+        "Azure Solutions Architect Expert",
+        "Google Cloud Professional Architect",
+        "HashiCorp Terraform Associate",
+      ],
+      keyAchievementExamples: [
+        "Designed multi-region AWS architecture supporting 10M+ users with 99.99% uptime",
+        "Led cloud migration of 100+ applications reducing infrastructure costs by 45%",
+        "Implemented auto-scaling solutions handling 10x traffic spikes during sales events",
+        "Designed disaster recovery solution achieving RPO of 1 hour and RTO of 4 hours",
+      ],
+      actionVerbs: [
+        "Architected", "Designed", "Implemented", "Migrated", "Optimized",
+        "Led", "Automated", "Scaled", "Secured", "Transformed",
+        "Managed", "Deployed", "Configured", "Evaluated", "Planned",
+      ],
+      atsKeywords: [
+        "Cloud Architecture", "AWS", "Azure", "GCP", "Solutions Architect",
+        "Terraform", "Kubernetes", "Docker", "Microservices", "Serverless",
+        "Cloud Migration", "Infrastructure as Code", "DevOps", "Security", "Cost Optimization",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "AWS Certified Solutions Architect with strong foundation in cloud services and infrastructure. Completed hands-on projects in EC2, S3, Lambda, and VPC. B.Tech in Computer Science with passion for cloud computing and distributed systems.",
+      midLevel: "Cloud Architect with 5+ years of experience designing scalable AWS solutions. Led migration of 50+ applications to cloud reducing costs by 35%. Expert in serverless architecture, container orchestration, and infrastructure automation.",
+      senior: "Principal Cloud Architect with 10+ years of experience leading enterprise cloud transformations. Designed multi-cloud strategies for Fortune 500 clients managing $10M+ cloud spend. Expert in cloud security, governance, and team leadership.",
+    },
+
+    experienceBullets: [
+      "Architected microservices infrastructure on AWS serving 5M+ daily active users",
+      "Led cloud migration project moving 75 applications from on-premise to AWS",
+      "Implemented Terraform-based IaC reducing infrastructure provisioning time by 90%",
+      "Designed cost optimization strategy reducing monthly AWS spend by $200K",
+      "Built CI/CD pipelines for 30+ services achieving 50+ deployments per day",
+    ],
+
+    faqs: [
+      {
+        question: "Which cloud platform should I learn first?",
+        answer: "AWS has the largest market share (60%+) in India. Start with AWS, get certified, then learn Azure for enterprise clients. GCP is growing but has fewer jobs currently.",
+      },
+      {
+        question: "What certifications are most valued?",
+        answer: "AWS Solutions Architect (Associate then Professional) is most valued. Azure Administrator and Azure Solutions Architect are important for Microsoft shops. Multiple cloud certifications increase your market value.",
+      },
+      {
+        question: "Can I become a Cloud Architect without coding background?",
+        answer: "Development experience is valuable but not mandatory. Focus on infrastructure, networking, and scripting (Python/Bash). Understanding how applications work helps design better architectures.",
+      },
+      {
+        question: "How do I get hands-on experience without a job?",
+        answer: "Use AWS Free Tier, Azure Free Account, or GCP Free Credits. Build projects: deploy websites, set up databases, create VPCs. Document everything for your portfolio. Cloud certifications include hands-on labs.",
+      },
+    ],
+
+    relatedJobs: ["devops-engineer", "software-engineer", "python-developer", "data-analyst"],
+  },
+
+  "hr-manager": {
+    slug: "hr-manager",
+    title: "HR Manager",
+    titleVariants: ["Human Resources Manager", "HR Business Partner", "People Manager", "Talent Manager"],
+
+    overview: {
+      description: "HR Managers oversee employee relations, recruitment, training, and organizational development. They ensure compliance with labor laws, manage compensation, and drive employee engagement initiatives.",
+      averageSalaryIndia: { fresher: "4-7 LPA", mid: "10-18 LPA", senior: "20-40+ LPA" },
+      demandLevel: "Growing",
+      topHiringCompanies: ["TCS", "Infosys", "Wipro", "Amazon", "Google", "Deloitte", "KPMG", "Flipkart"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Recruitment & Talent Acquisition",
+        "Employee Relations",
+        "HR Policies & Compliance",
+        "Performance Management",
+        "Training & Development",
+        "HRMS Tools (Workday/SAP)",
+      ],
+      niceToHaveSkills: [
+        "HR Analytics",
+        "Compensation & Benefits",
+        "Organizational Development",
+        "Change Management",
+        "Employer Branding",
+        "Labor Law Knowledge",
+      ],
+      certifications: [
+        "SHRM-CP/SHRM-SCP",
+        "PHR/SPHR",
+        "HRCI Certification",
+        "LinkedIn Talent Insights",
+      ],
+      keyAchievementExamples: [
+        "Reduced time-to-hire by 40% through streamlined recruitment process",
+        "Improved employee retention by 25% through engagement initiatives",
+        "Led HRMS implementation for 5000+ employees across 10 locations",
+        "Managed campus hiring program recruiting 500+ freshers annually",
+      ],
+      actionVerbs: [
+        "Managed", "Recruited", "Developed", "Implemented", "Led",
+        "Coordinated", "Facilitated", "Designed", "Improved", "Streamlined",
+        "Conducted", "Trained", "Resolved", "Administered", "Transformed",
+      ],
+      atsKeywords: [
+        "Human Resources", "Recruitment", "Talent Acquisition", "Employee Engagement",
+        "Performance Management", "Training", "HRMS", "Compensation", "Benefits",
+        "Compliance", "Labor Laws", "Onboarding", "HR Analytics", "HRBP", "Retention",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "MBA HR graduate with internship experience in recruitment and employee engagement. Proficient in HRMS tools and MS Excel. Strong communication and interpersonal skills. Eager to contribute to talent management and organizational development.",
+      midLevel: "HR Manager with 5+ years of experience in IT services industry. Managed end-to-end HR operations for 2000+ employees. Expert in talent acquisition, employee engagement, and HR analytics. Successfully reduced attrition by 30%.",
+      senior: "Senior HR Director with 12+ years of experience leading HR transformation. Managed HR for 10,000+ employee organization. Expert in strategic HR planning, M&A integration, and building high-performance cultures.",
+    },
+
+    experienceBullets: [
+      "Managed recruitment for 200+ positions annually with 90% offer acceptance rate",
+      "Implemented employee engagement programs improving eNPS score from 30 to 65",
+      "Designed and rolled out performance management system for 3000+ employees",
+      "Conducted training needs analysis and delivered 100+ training hours monthly",
+      "Ensured compliance with labor laws across 5 states with zero audit findings",
+    ],
+
+    faqs: [
+      {
+        question: "Is MBA mandatory for HR Manager roles?",
+        answer: "MBA HR is preferred for managerial roles but not always mandatory. Experience and certifications like SHRM-CP can compensate. For entry-level HR, any graduate with HR aptitude can start.",
+      },
+      {
+        question: "Which HR specialization is in most demand?",
+        answer: "Talent Acquisition and HR Business Partnering have high demand. HR Analytics is growing rapidly. Compensation & Benefits experts are always needed but require specialized knowledge.",
+      },
+      {
+        question: "What tools should HR professionals know?",
+        answer: "HRMS tools like Workday, SAP SuccessFactors, or Darwinbox. ATS tools like Lever, Greenhouse. MS Excel for analytics. LinkedIn Recruiter for talent acquisition. Learning basic SQL helps.",
+      },
+      {
+        question: "How to transition from IT to HR?",
+        answer: "Start with technical recruitment or HR roles in IT companies where your tech background adds value. Get HR certifications. Your IT experience helps understand business context and communicate with technical teams.",
+      },
+    ],
+
+    relatedJobs: ["mba-fresher", "business-analyst", "product-manager", "digital-marketing-manager"],
+  },
+
+  "machine-learning-engineer": {
+    slug: "machine-learning-engineer",
+    title: "Machine Learning Engineer",
+    titleVariants: ["ML Engineer", "AI Engineer", "Deep Learning Engineer", "Data Scientist"],
+
+    overview: {
+      description: "Machine Learning Engineers design, build, and deploy ML models that solve real-world problems. They work on data pipelines, model training, optimization, and putting models into production at scale.",
+      averageSalaryIndia: { fresher: "8-15 LPA", mid: "18-35 LPA", senior: "40-80+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["Google", "Microsoft", "Amazon", "Meta", "Flipkart", "Swiggy", "Razorpay", "PhonePe"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Python (NumPy, Pandas, Scikit-learn)",
+        "Deep Learning (TensorFlow/PyTorch)",
+        "Machine Learning Algorithms",
+        "Data Preprocessing & Feature Engineering",
+        "Model Training & Evaluation",
+        "SQL & Data Analysis",
+      ],
+      niceToHaveSkills: [
+        "MLOps (MLflow, Kubeflow)",
+        "Cloud ML Services (SageMaker/Vertex AI)",
+        "NLP/Computer Vision",
+        "Big Data (Spark)",
+        "Docker & Kubernetes",
+        "A/B Testing & Experimentation",
+      ],
+      certifications: [
+        "AWS Machine Learning Specialty",
+        "Google Professional ML Engineer",
+        "TensorFlow Developer Certificate",
+        "Deep Learning Specialization (Coursera)",
+      ],
+      keyAchievementExamples: [
+        "Built recommendation engine increasing user engagement by 40%",
+        "Deployed fraud detection model saving Rs. 50Cr annually",
+        "Reduced model inference latency by 70% through optimization",
+        "Created NLP pipeline processing 1M+ documents daily with 95% accuracy",
+      ],
+      actionVerbs: [
+        "Developed", "Built", "Trained", "Deployed", "Optimized",
+        "Designed", "Implemented", "Analyzed", "Improved", "Automated",
+        "Created", "Experimented", "Scaled", "Researched", "Delivered",
+      ],
+      atsKeywords: [
+        "Machine Learning", "Deep Learning", "Python", "TensorFlow", "PyTorch",
+        "NLP", "Computer Vision", "Data Science", "Model Deployment", "MLOps",
+        "Neural Networks", "Feature Engineering", "AWS SageMaker", "Scikit-learn", "AI",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "M.Tech in AI/ML with strong foundation in machine learning algorithms and deep learning. Published research paper on NLP. Proficient in Python, TensorFlow, and PyTorch. Completed projects in image classification and sentiment analysis.",
+      midLevel: "ML Engineer with 4+ years of experience building and deploying production ML systems. Developed recommendation engine serving 10M+ users. Expert in NLP, deep learning, and MLOps practices.",
+      senior: "Senior ML Engineer with 8+ years of experience leading AI initiatives. Built ML platform serving 50+ models in production. Expert in system design for ML, team leadership, and driving AI strategy.",
+    },
+
+    experienceBullets: [
+      "Developed product recommendation model increasing click-through rate by 35%",
+      "Built and deployed NLP pipeline for sentiment analysis processing 500K reviews daily",
+      "Implemented MLOps practices reducing model deployment time from weeks to hours",
+      "Optimized deep learning models achieving 3x inference speedup on production",
+      "Led data labeling and feature engineering for computer vision project",
+    ],
+
+    faqs: [
+      {
+        question: "What is the difference between Data Scientist and ML Engineer?",
+        answer: "Data Scientists focus on analysis, insights, and model development. ML Engineers focus on putting models into production, scaling, and maintaining them. ML Engineers need more software engineering skills.",
+      },
+      {
+        question: "Do I need a Masters degree for ML roles?",
+        answer: "Not mandatory but helpful for research-focused roles. Many ML Engineers have B.Tech with strong portfolio. M.Tech/PhD from good institutes helps at top companies. Experience and projects matter more.",
+      },
+      {
+        question: "Which framework should I learn - TensorFlow or PyTorch?",
+        answer: "PyTorch is more popular in research and startups. TensorFlow is used more in production at large companies. Learn one deeply, then pick up the other. Both are essential for senior roles.",
+      },
+      {
+        question: "How important is mathematics for ML?",
+        answer: "Very important. Need strong foundation in linear algebra, calculus, probability, and statistics. Understanding math helps debug models and design better solutions. Don't just call library functions.",
+      },
+    ],
+
+    relatedJobs: ["data-analyst", "python-developer", "software-engineer", "devops-engineer"],
+  },
+
+  "qa-engineer": {
+    slug: "qa-engineer",
+    title: "QA Engineer",
+    titleVariants: ["Quality Assurance Engineer", "Test Engineer", "SDET", "Automation Tester"],
+
+    overview: {
+      description: "QA Engineers ensure software quality through testing strategies, automation frameworks, and quality processes. They identify defects, create test plans, and work with development teams to deliver reliable software.",
+      averageSalaryIndia: { fresher: "3-6 LPA", mid: "8-16 LPA", senior: "18-35+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["TCS", "Infosys", "Wipro", "Cognizant", "Accenture", "Microsoft", "Amazon", "Flipkart"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Manual Testing",
+        "Test Case Design",
+        "Automation Testing (Selenium)",
+        "API Testing (Postman/RestAssured)",
+        "Defect Management (JIRA)",
+        "Agile/Scrum Testing",
+      ],
+      niceToHaveSkills: [
+        "Performance Testing (JMeter)",
+        "Mobile Testing (Appium)",
+        "CI/CD Integration",
+        "Security Testing Basics",
+        "Programming (Java/Python)",
+        "BDD (Cucumber)",
+      ],
+      certifications: [
+        "ISTQB Foundation Level",
+        "ISTQB Advanced Level",
+        "Selenium Certification",
+        "AWS Certified DevOps Engineer",
+      ],
+      keyAchievementExamples: [
+        "Built automation framework reducing regression testing time by 70%",
+        "Achieved 95% defect detection rate in UAT phase",
+        "Automated 500+ test cases achieving 80% test coverage",
+        "Reduced production defects by 60% through shift-left testing",
+      ],
+      actionVerbs: [
+        "Tested", "Automated", "Developed", "Executed", "Identified",
+        "Designed", "Validated", "Documented", "Collaborated", "Improved",
+        "Reported", "Analyzed", "Implemented", "Reviewed", "Verified",
+      ],
+      atsKeywords: [
+        "Quality Assurance", "Testing", "Selenium", "Automation", "Manual Testing",
+        "API Testing", "JIRA", "Test Cases", "Defect", "Regression",
+        "Agile", "ISTQB", "Test Plan", "QA", "SDET", "Performance Testing",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "B.Tech graduate with ISTQB Foundation certification. Completed internship in software testing involving manual and automation testing using Selenium. Proficient in Java, SQL, and JIRA. Passionate about software quality and testing methodologies.",
+      midLevel: "QA Engineer with 4+ years of experience in web and mobile application testing. Built automation frameworks using Selenium and Appium. Achieved 80% automation coverage reducing testing cycles by 60%. Expert in API testing and CI/CD integration.",
+      senior: "QA Lead with 8+ years of experience managing testing for enterprise applications. Led team of 10 QA engineers across multiple projects. Expert in test strategy, automation architecture, and quality metrics. Drove QA transformation initiatives.",
+    },
+
+    experienceBullets: [
+      "Developed Selenium automation framework with Page Object Model for e-commerce application",
+      "Executed 1000+ test cases across functional, regression, and integration testing",
+      "Automated API testing using RestAssured reducing manual API testing effort by 80%",
+      "Integrated automated tests with Jenkins CI/CD pipeline for continuous testing",
+      "Identified and reported 500+ defects with detailed reproduction steps and severity analysis",
+    ],
+
+    faqs: [
+      {
+        question: "Is coding required for QA roles?",
+        answer: "For manual testing, basic coding helps but isn't mandatory. For automation testing and SDET roles, programming (Java/Python) is essential. The industry is moving towards automation, so learning to code is recommended.",
+      },
+      {
+        question: "Which automation tool should I learn?",
+        answer: "Selenium is the most widely used for web testing. Learn Appium for mobile testing. Cypress is gaining popularity for modern web apps. RestAssured for API automation. Know at least one tool well.",
+      },
+      {
+        question: "What is the career path for QA Engineers?",
+        answer: "QA Engineer → Senior QA → QA Lead → QA Manager → QA Director. You can specialize in automation architecture, performance testing, or security testing. Some transition to DevOps or Product Management.",
+      },
+      {
+        question: "Is QA a good career in 2025?",
+        answer: "Yes, but the role is evolving. Pure manual testing roles are declining. SDET and automation roles are in high demand. Performance, security, and AI testing are growing areas. Upskill in automation and programming.",
+      },
+    ],
+
+    relatedJobs: ["software-engineer", "devops-engineer", "python-developer", "java-developer"],
+  },
+
+  "android-developer": {
+    slug: "android-developer",
+    title: "Android Developer",
+    titleVariants: ["Mobile Developer", "Android Engineer", "Kotlin Developer", "Mobile App Developer"],
+
+    overview: {
+      description: "Android Developers build mobile applications for Android devices using Java or Kotlin. They create user interfaces, integrate APIs, optimize performance, and publish apps on Google Play Store.",
+      averageSalaryIndia: { fresher: "4-8 LPA", mid: "10-20 LPA", senior: "22-45+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["Google", "Flipkart", "Swiggy", "PhonePe", "Paytm", "Amazon", "Microsoft", "Uber"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Kotlin/Java",
+        "Android SDK & Android Studio",
+        "MVVM/MVP Architecture",
+        "REST API Integration",
+        "Material Design",
+        "Git Version Control",
+      ],
+      niceToHaveSkills: [
+        "Jetpack Compose",
+        "Kotlin Coroutines & Flow",
+        "Dependency Injection (Dagger/Hilt)",
+        "Room Database",
+        "Firebase Services",
+        "Unit & UI Testing",
+      ],
+      certifications: [
+        "Associate Android Developer (Google)",
+        "Kotlin Developer Certification",
+        "Firebase Certification",
+        "AWS Mobile Specialty",
+      ],
+      keyAchievementExamples: [
+        "Built Android app with 1M+ downloads and 4.5 rating on Play Store",
+        "Reduced app crash rate by 80% through performance optimization",
+        "Implemented offline-first architecture reducing data usage by 50%",
+        "Led migration from Java to Kotlin improving code maintainability",
+      ],
+      actionVerbs: [
+        "Developed", "Built", "Designed", "Implemented", "Optimized",
+        "Integrated", "Published", "Debugged", "Maintained", "Collaborated",
+        "Created", "Migrated", "Tested", "Delivered", "Enhanced",
+      ],
+      atsKeywords: [
+        "Android", "Kotlin", "Java", "Android Studio", "Mobile Development",
+        "MVVM", "Jetpack", "REST API", "Firebase", "Material Design",
+        "Coroutines", "Room", "Dagger", "Hilt", "Play Store", "Mobile App",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "B.Tech graduate with strong Android development skills. Built 3+ apps using Kotlin and published on Play Store. Proficient in MVVM architecture, Retrofit, and Room database. Google Certified Associate Android Developer.",
+      midLevel: "Android Developer with 4+ years of experience building consumer apps. Delivered apps with 5M+ combined downloads. Expert in Kotlin, Jetpack components, and modern Android architecture. Strong background in performance optimization.",
+      senior: "Senior Android Engineer with 7+ years of experience leading mobile teams. Architected apps serving 10M+ users. Expert in app modularization, build optimization, and team mentorship. Active contributor to Android open source community.",
+    },
+
+    experienceBullets: [
+      "Developed e-commerce Android app with 2M+ downloads and 4.6 rating on Play Store",
+      "Implemented Jetpack Compose UI reducing development time by 40%",
+      "Built offline-first architecture using Room database and WorkManager",
+      "Integrated payment gateways (Razorpay, Paytm) handling Rs. 10Cr+ monthly transactions",
+      "Reduced app size by 35% through ProGuard optimization and resource shrinking",
+    ],
+
+    faqs: [
+      {
+        question: "Should I learn Kotlin or Java for Android?",
+        answer: "Kotlin is the recommended language by Google and industry standard now. Learn Kotlin first. Java knowledge helps for legacy codebases. Most new projects use Kotlin exclusively.",
+      },
+      {
+        question: "Is Jetpack Compose replacing XML layouts?",
+        answer: "Jetpack Compose is the future of Android UI. New projects are adopting it rapidly. XML won't disappear immediately but Compose is becoming essential. Learn both, prioritize Compose for new learning.",
+      },
+      {
+        question: "What projects should I build for portfolio?",
+        answer: "Build apps that demonstrate different skills: one with REST API integration, one with local database, one with real-time features (Firebase). Publish on Play Store if possible. Clone popular apps to show capability.",
+      },
+      {
+        question: "How to transition from web to Android development?",
+        answer: "Your programming fundamentals transfer well. Learn Kotlin basics (similar to other languages), understand Android lifecycle, study common architecture patterns (MVVM). Build small apps to understand the platform.",
+      },
+    ],
+
+    relatedJobs: ["software-engineer", "java-developer", "web-developer", "ui-ux-designer"],
+  },
+
+  "salesforce-developer": {
+    slug: "salesforce-developer",
+    title: "Salesforce Developer",
+    titleVariants: ["Salesforce Engineer", "SFDC Developer", "Salesforce Consultant", "Lightning Developer"],
+
+    overview: {
+      description: "Salesforce Developers customize and extend Salesforce CRM platform using Apex, Lightning, and integrations. They build custom applications, automate processes, and implement CRM solutions for businesses.",
+      averageSalaryIndia: { fresher: "5-9 LPA", mid: "12-25 LPA", senior: "28-55+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["Salesforce", "Accenture", "Deloitte", "Cognizant", "Infosys", "TCS", "Capgemini", "IBM"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Apex Programming",
+        "Lightning Web Components (LWC)",
+        "SOQL & SOSL",
+        "Salesforce Administration",
+        "Process Builder & Flows",
+        "Salesforce Integration",
+      ],
+      niceToHaveSkills: [
+        "Salesforce DX",
+        "REST/SOAP APIs",
+        "JavaScript & HTML",
+        "Visualforce (Legacy)",
+        "Einstein Analytics",
+        "CPQ/Service Cloud/Marketing Cloud",
+      ],
+      certifications: [
+        "Salesforce Platform Developer I",
+        "Salesforce Platform Developer II",
+        "Salesforce Administrator",
+        "Salesforce Application Architect",
+      ],
+      keyAchievementExamples: [
+        "Built custom Lightning application reducing sales process time by 50%",
+        "Integrated Salesforce with 5 external systems using REST APIs",
+        "Automated 100+ business processes using Flows and Process Builder",
+        "Led Salesforce implementation for 500+ users across 3 countries",
+      ],
+      actionVerbs: [
+        "Developed", "Customized", "Integrated", "Automated", "Implemented",
+        "Configured", "Built", "Designed", "Deployed", "Optimized",
+        "Migrated", "Supported", "Collaborated", "Delivered", "Led",
+      ],
+      atsKeywords: [
+        "Salesforce", "Apex", "Lightning", "LWC", "SOQL", "SFDC",
+        "CRM", "Process Builder", "Flow", "Integration", "Visualforce",
+        "Administrator", "Developer", "Platform", "Service Cloud", "Sales Cloud",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "Salesforce Certified Platform Developer I with hands-on experience in Apex and Lightning Web Components. Completed Trailhead Ranger status with 100+ badges. Built 3+ projects including custom applications and integrations. Eager to start career in Salesforce development.",
+      midLevel: "Salesforce Developer with 4+ years of experience in Sales Cloud and Service Cloud implementations. Delivered 15+ projects including custom apps, integrations, and data migrations. Expert in Apex, LWC, and Salesforce DX practices.",
+      senior: "Senior Salesforce Architect with 8+ years of experience leading CRM transformations. Architected solutions for Fortune 500 clients. Expert in multi-cloud implementations, integration patterns, and team leadership. 10+ Salesforce certifications.",
+    },
+
+    experienceBullets: [
+      "Developed custom Lightning application for sales tracking used by 300+ users daily",
+      "Built REST API integrations connecting Salesforce with ERP and marketing systems",
+      "Created automated workflows using Flow Builder reducing manual data entry by 60%",
+      "Implemented Sales Cloud features increasing sales team productivity by 35%",
+      "Led data migration of 2M+ records from legacy CRM to Salesforce",
+    ],
+
+    faqs: [
+      {
+        question: "How to start a career in Salesforce?",
+        answer: "Start with Trailhead (free learning platform by Salesforce). Get Salesforce Administrator certification first, then Platform Developer I. Build projects on free Developer Edition. Salesforce skills are in high demand globally.",
+      },
+      {
+        question: "Is coding required for Salesforce?",
+        answer: "For Administrator roles, minimal coding is needed. For Developer roles, Apex (similar to Java) and JavaScript are essential. Lightning Web Components require JavaScript knowledge. Start with admin, then learn development.",
+      },
+      {
+        question: "What is the earning potential in Salesforce?",
+        answer: "Salesforce professionals are well-paid globally. Certified developers earn 30-50% more. Senior architects can earn Rs. 50L+ in India. International remote opportunities are common. Certifications directly impact salary.",
+      },
+      {
+        question: "Which Salesforce certification should I get first?",
+        answer: "Start with Salesforce Administrator, then Platform Developer I. These two open most doors. Add Platform Developer II, App Builder, or cloud-specific certifications (Sales/Service) based on your specialization.",
+      },
+    ],
+
+    relatedJobs: ["software-engineer", "java-developer", "business-analyst", "web-developer"],
+  },
+
+  "sap-consultant": {
+    slug: "sap-consultant",
+    title: "SAP Consultant",
+    titleVariants: ["SAP Functional Consultant", "SAP Technical Consultant", "SAP ABAP Developer", "SAP FICO Consultant"],
+
+    overview: {
+      description: "SAP Consultants implement, configure, and support SAP ERP systems. They analyze business processes, customize SAP modules, and help organizations optimize operations using SAP solutions.",
+      averageSalaryIndia: { fresher: "5-9 LPA", mid: "12-25 LPA", senior: "28-60+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["SAP", "Accenture", "Deloitte", "IBM", "TCS", "Infosys", "Wipro", "Capgemini"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "SAP Module Expertise (FICO/MM/SD/HCM)",
+        "Business Process Knowledge",
+        "SAP Configuration",
+        "SAP Integration",
+        "Requirements Analysis",
+        "End-User Training",
+      ],
+      niceToHaveSkills: [
+        "SAP S/4HANA",
+        "SAP ABAP Programming",
+        "SAP Fiori/UI5",
+        "SAP BW/BI",
+        "Data Migration",
+        "Change Management",
+      ],
+      certifications: [
+        "SAP Certified Application Associate",
+        "SAP S/4HANA Certification",
+        "SAP ABAP Certification",
+        "SAP SuccessFactors Certification",
+      ],
+      keyAchievementExamples: [
+        "Led SAP S/4HANA implementation for manufacturing company with 2000+ users",
+        "Reduced financial close cycle by 40% through SAP FICO optimization",
+        "Migrated 5M+ records from legacy ERP to SAP with 99.9% accuracy",
+        "Trained 500+ end-users on SAP MM module increasing adoption by 80%",
+      ],
+      actionVerbs: [
+        "Implemented", "Configured", "Analyzed", "Customized", "Migrated",
+        "Trained", "Optimized", "Supported", "Led", "Designed",
+        "Integrated", "Documented", "Tested", "Deployed", "Managed",
+      ],
+      atsKeywords: [
+        "SAP", "ERP", "FICO", "MM", "SD", "HCM", "S/4HANA", "ABAP",
+        "Fiori", "Configuration", "Implementation", "Integration", "Migration",
+        "Functional Consultant", "Technical Consultant", "Business Process",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "SAP Certified Associate in Financial Accounting (FICO). Completed hands-on training in SAP configuration and business process mapping. Strong understanding of finance and accounting principles. Eager to start career as SAP Functional Consultant.",
+      midLevel: "SAP FICO Consultant with 5+ years of experience in full lifecycle implementations. Delivered 8+ projects across manufacturing and retail industries. Expert in S/4HANA migration, financial integration, and user training.",
+      senior: "Senior SAP Solution Architect with 12+ years of experience leading enterprise ERP transformations. Managed programs worth Rs. 100Cr+ across multiple SAP modules. Expert in S/4HANA, integration architecture, and team leadership.",
+    },
+
+    experienceBullets: [
+      "Led SAP FICO implementation for retail company processing Rs. 1000Cr+ annual transactions",
+      "Configured SAP MM module for procurement automation reducing cycle time by 50%",
+      "Managed data migration of 10M+ master records from legacy system to SAP S/4HANA",
+      "Conducted 50+ training sessions for end-users across finance and operations teams",
+      "Designed SAP integration architecture connecting CRM, WMS, and e-commerce systems",
+    ],
+
+    faqs: [
+      {
+        question: "How to start a career in SAP?",
+        answer: "Get SAP certification in one module (FICO is popular for commerce graduates, MM/SD for engineers). Join SAP training institutes or do online learning. Entry-level jobs available at IT services companies. Domain knowledge helps.",
+      },
+      {
+        question: "Which SAP module has most demand?",
+        answer: "SAP FICO has consistent demand across industries. SAP MM and SD are needed in manufacturing and retail. SAP HCM/SuccessFactors for HR domain. S/4HANA skills are increasingly required as companies migrate.",
+      },
+      {
+        question: "What is the difference between Functional and Technical Consultant?",
+        answer: "Functional Consultants focus on business processes and SAP configuration. Technical Consultants write ABAP code, develop custom programs, and handle integrations. Some roles require both skills (Techno-Functional).",
+      },
+      {
+        question: "Is SAP relevant in the age of cloud?",
+        answer: "Yes, SAP is evolving with S/4HANA (cloud-first), SAP BTP, and SuccessFactors. Large enterprises continue using SAP. Cloud SAP skills are in high demand. SAP jobs are stable and well-paying globally.",
+      },
+    ],
+
+    relatedJobs: ["business-analyst", "software-engineer", "data-analyst", "hr-manager"],
+  },
+
+  "cybersecurity-analyst": {
+    slug: "cybersecurity-analyst",
+    title: "Cybersecurity Analyst",
+    titleVariants: ["Security Analyst", "Information Security Analyst", "SOC Analyst", "Security Engineer"],
+
+    overview: {
+      description: "Cybersecurity Analysts protect organizations from cyber threats by monitoring security systems, analyzing vulnerabilities, responding to incidents, and implementing security controls and policies.",
+      averageSalaryIndia: { fresher: "5-9 LPA", mid: "12-25 LPA", senior: "28-55+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["TCS", "Infosys", "Wipro", "IBM", "Deloitte", "EY", "KPMG", "Accenture"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Security Operations (SOC)",
+        "SIEM Tools (Splunk/QRadar)",
+        "Vulnerability Assessment",
+        "Incident Response",
+        "Network Security",
+        "Security Frameworks (NIST/ISO 27001)",
+      ],
+      niceToHaveSkills: [
+        "Penetration Testing",
+        "Cloud Security (AWS/Azure)",
+        "Scripting (Python/Bash)",
+        "Malware Analysis",
+        "Digital Forensics",
+        "Identity & Access Management",
+      ],
+      certifications: [
+        "CompTIA Security+",
+        "CEH - Certified Ethical Hacker",
+        "CISSP",
+        "AWS Security Specialty",
+      ],
+      keyAchievementExamples: [
+        "Detected and contained ransomware attack preventing Rs. 10Cr potential loss",
+        "Reduced security incident response time by 60% through automation",
+        "Led vulnerability assessment identifying 200+ critical issues across infrastructure",
+        "Implemented SIEM solution processing 1M+ events daily for SOC operations",
+      ],
+      actionVerbs: [
+        "Monitored", "Analyzed", "Detected", "Responded", "Investigated",
+        "Implemented", "Protected", "Assessed", "Mitigated", "Documented",
+        "Configured", "Secured", "Led", "Automated", "Reported",
+      ],
+      atsKeywords: [
+        "Cybersecurity", "Security", "SOC", "SIEM", "Incident Response",
+        "Vulnerability", "Penetration Testing", "Network Security", "Firewall",
+        "Malware", "Threat", "Risk", "Compliance", "NIST", "ISO 27001",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "B.Tech CSE graduate with CompTIA Security+ certification. Completed internship in SOC operations including monitoring, alert triage, and incident documentation. Hands-on experience with Splunk and Wireshark. Passionate about cybersecurity and threat hunting.",
+      midLevel: "Cybersecurity Analyst with 4+ years of experience in enterprise security operations. Managed SOC team handling 500+ daily alerts. Expert in incident response, SIEM administration, and vulnerability management. CEH and AWS Security certified.",
+      senior: "Senior Security Architect with 10+ years of experience leading security programs. Built security operations center for 10,000+ user organization. Expert in threat intelligence, security architecture, and compliance frameworks. CISSP certified.",
+    },
+
+    experienceBullets: [
+      "Monitored and analyzed 1000+ daily security alerts using Splunk SIEM",
+      "Led incident response for 50+ security incidents including phishing and malware attacks",
+      "Conducted vulnerability assessments using Nessus identifying 500+ security gaps",
+      "Implemented security automation reducing alert triage time by 70%",
+      "Developed security policies and procedures achieving ISO 27001 compliance",
+    ],
+
+    faqs: [
+      {
+        question: "How to start a career in cybersecurity?",
+        answer: "Start with CompTIA Security+ certification. Learn networking basics (CompTIA Network+). Build home lab for practice. Apply for SOC Analyst Level 1 roles. IT background helps but not mandatory. CTF competitions are great for learning.",
+      },
+      {
+        question: "Which certifications are most valued?",
+        answer: "CompTIA Security+ for entry level. CEH or OSCP for penetration testing. CISSP for senior roles (needs experience). Cloud security certs (AWS/Azure) are increasingly important. Certifications significantly impact salary.",
+      },
+      {
+        question: "Is coding required for cybersecurity?",
+        answer: "Basic scripting (Python/Bash) is very helpful for automation. For penetration testing and security research, coding is essential. SOC analyst roles need less coding. Programming skills open more opportunities.",
+      },
+      {
+        question: "What is the career path in cybersecurity?",
+        answer: "SOC Analyst L1 → L2 → L3 → SOC Manager. Or specialize: Penetration Tester, Incident Responder, Security Architect, GRC Analyst. CISO is the top role. Many paths, growing demand in all areas.",
+      },
+    ],
+
+    relatedJobs: ["devops-engineer", "cloud-architect", "software-engineer", "python-developer"],
+  },
 };
 
 // Company-specific data
