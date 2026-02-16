@@ -52,18 +52,18 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/resume/data-analyst" className="text-gray-600 hover:text-gray-900 text-sm">
-                  Data Analyst
+                <Link href="/resume/data-scientist" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Data Scientist
                 </Link>
               </li>
               <li>
-                <Link href="/resume/java-developer" className="text-gray-600 hover:text-gray-900 text-sm">
-                  Java Developer
+                <Link href="/resume/full-stack-developer" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Full Stack Developer
                 </Link>
               </li>
               <li>
-                <Link href="/resume/mba-fresher" className="text-gray-600 hover:text-gray-900 text-sm">
-                  MBA Fresher
+                <Link href="/resume/react-developer" className="text-gray-600 hover:text-gray-900 text-sm">
+                  React Developer
                 </Link>
               </li>
               <li>

@@ -1813,6 +1813,876 @@ export const jobsData: Record<string, JobData> = {
 
     relatedJobs: ["devops-engineer", "cloud-architect", "software-engineer", "python-developer"],
   },
+
+  "data-scientist": {
+    slug: "data-scientist",
+    title: "Data Scientist",
+    titleVariants: ["ML Scientist", "AI Scientist", "Research Scientist", "Applied Scientist"],
+
+    overview: {
+      description: "Data Scientists extract insights from large datasets using statistical analysis, machine learning, and programming. They build predictive models and communicate findings to drive business decisions.",
+      averageSalaryIndia: { fresher: "5-10 LPA", mid: "12-22 LPA", senior: "25-50+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["Amazon", "Google", "Flipkart", "Swiggy", "Zomato", "PhonePe", "Meesho", "HDFC Bank"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Python (Pandas, NumPy, Scikit-learn)",
+        "Machine Learning Algorithms",
+        "Statistical Analysis & Probability",
+        "Data Visualization (Matplotlib, Seaborn, Tableau)",
+        "SQL & Database Querying",
+        "Feature Engineering",
+      ],
+      niceToHaveSkills: [
+        "Deep Learning (TensorFlow, PyTorch)",
+        "Big Data (Spark, Hadoop)",
+        "Cloud ML (AWS SageMaker, Google Vertex AI)",
+        "NLP & Computer Vision",
+        "A/B Testing",
+        "Business Intelligence Tools",
+      ],
+      certifications: [
+        "Google Professional Data Engineer",
+        "IBM Data Science Professional Certificate",
+        "AWS Certified Machine Learning Specialty",
+        "Coursera Deep Learning Specialization",
+      ],
+      keyAchievementExamples: [
+        "Built churn prediction model achieving 92% accuracy, saving ₹2Cr in annual revenue",
+        "Developed recommendation system increasing user engagement by 35%",
+        "Reduced fraud detection false positives by 60% using ensemble methods",
+        "Automated data pipeline processing 10M+ records daily, saving 40 hours/week",
+      ],
+      actionVerbs: [
+        "Analyzed", "Modeled", "Predicted", "Visualized", "Engineered",
+        "Deployed", "Optimized", "Discovered", "Automated", "Evaluated",
+      ],
+      atsKeywords: [
+        "Machine Learning", "Data Science", "Python", "Deep Learning", "NLP",
+        "Statistical Modeling", "Predictive Analytics", "Data Pipeline", "A/B Testing", "Feature Engineering",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "Data Science graduate with strong foundation in Python, machine learning, and statistical analysis. Completed 3 end-to-end ML projects including sentiment analysis and house price prediction. Eager to apply analytical skills to solve real-world business problems.",
+      midLevel: "Data Scientist with 3+ years building and deploying ML models in production. Expertise in NLP and recommendation systems using Python and TensorFlow. Delivered models that increased revenue by 25% and reduced operational costs by 30% at e-commerce scale.",
+      senior: "Senior Data Scientist with 7+ years leading data science initiatives across fintech and e-commerce. Built and managed teams of 5+ data scientists. Track record of delivering high-impact ML solutions including fraud detection systems and personalization engines serving 10M+ users.",
+    },
+
+    experienceBullets: [
+      "Developed customer segmentation model using K-means clustering, identifying 8 distinct user personas improving marketing ROI by 40%",
+      "Built real-time fraud detection system using XGBoost, processing 50K transactions/day with 98.5% accuracy",
+      "Created NLP pipeline for sentiment analysis of 1M+ customer reviews, enabling product teams to prioritize improvements",
+      "Implemented MLOps pipeline on AWS SageMaker reducing model deployment time from 2 weeks to 2 days",
+      "Conducted A/B tests for pricing optimization resulting in 15% increase in conversion rate",
+    ],
+
+    faqs: [
+      {
+        question: "What skills are needed for a Data Scientist role in India?",
+        answer: "Python is essential - master Pandas, NumPy, Scikit-learn. Statistics and probability are fundamental. SQL is mandatory for data extraction. Machine learning algorithms (regression, classification, clustering). SQL, visualization tools (Tableau/Power BI), and communication skills round out the profile.",
+      },
+      {
+        question: "Data Scientist vs Data Analyst - what's the difference?",
+        answer: "Data Analysts focus on describing past trends using SQL and visualization. Data Scientists build predictive models using ML/statistics. Data Scientists typically need stronger programming (Python) and math skills. Salaries are higher for Data Scientists. Many analysts transition to data science.",
+      },
+      {
+        question: "Is a PhD required to become a Data Scientist?",
+        answer: "No. Most industry data scientist roles in India don't require a PhD. A B.Tech/B.Sc + relevant skills + portfolio is sufficient. PhD helps for research roles at top companies (Google Brain, DeepMind). Strong projects and certifications can compensate for lack of advanced degree.",
+      },
+      {
+        question: "How important is a portfolio for Data Scientists?",
+        answer: "Extremely important. Build 3-5 end-to-end projects on GitHub covering different domains. Include Kaggle competition results. Deploy at least one model as a web app. Projects demonstrate practical skills better than degrees. Write about your projects on Medium/LinkedIn.",
+      },
+    ],
+
+    relatedJobs: ["machine-learning-engineer", "data-analyst", "python-developer", "business-analyst"],
+  },
+
+  "full-stack-developer": {
+    slug: "full-stack-developer",
+    title: "Full Stack Developer",
+    titleVariants: ["Full Stack Engineer", "MEAN Stack Developer", "MERN Stack Developer", "Web Application Developer"],
+
+    overview: {
+      description: "Full Stack Developers work on both frontend and backend development, handling the complete web application stack from UI design to database management and server-side logic.",
+      averageSalaryIndia: { fresher: "4-8 LPA", mid: "10-20 LPA", senior: "22-45+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["Razorpay", "CRED", "Atlassian", "Freshworks", "Zoho", "Postman", "BrowserStack", "Startups"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Frontend: HTML, CSS, JavaScript",
+        "Frontend Framework: React.js or Angular or Vue.js",
+        "Backend: Node.js or Python (Django/Flask) or Java (Spring Boot)",
+        "Database: MySQL/PostgreSQL + MongoDB",
+        "REST API Development",
+        "Version Control (Git)",
+      ],
+      niceToHaveSkills: [
+        "TypeScript",
+        "Cloud Deployment (AWS/Azure/GCP)",
+        "Docker & CI/CD",
+        "GraphQL",
+        "Redis & Caching",
+        "WebSockets & Real-time Features",
+      ],
+      certifications: [
+        "AWS Certified Developer Associate",
+        "MongoDB Developer Certification",
+        "React Developer Certification (Meta)",
+        "Google Associate Cloud Engineer",
+      ],
+      keyAchievementExamples: [
+        "Built and launched SaaS product from scratch serving 10,000+ users",
+        "Reduced page load time by 50% through frontend optimization and CDN implementation",
+        "Designed microservices architecture handling 100K+ API requests daily",
+        "Implemented real-time features (chat, notifications) using WebSockets for 5K concurrent users",
+      ],
+      actionVerbs: [
+        "Built", "Developed", "Designed", "Integrated", "Deployed",
+        "Optimized", "Launched", "Architected", "Implemented", "Maintained",
+      ],
+      atsKeywords: [
+        "MERN Stack", "React.js", "Node.js", "Full Stack", "REST API",
+        "MongoDB", "JavaScript", "TypeScript", "Microservices", "CI/CD",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "Computer Science graduate proficient in MERN Stack (MongoDB, Express, React, Node.js). Built 4 full-stack projects including an e-commerce platform and task management app. Comfortable with REST APIs, Git, and basic cloud deployment. Ready to contribute to production applications.",
+      midLevel: "Full Stack Developer with 4 years building scalable web applications using React and Node.js. Experience across entire SDLC from design to deployment. Delivered 10+ features used by 50K+ users. Proficient in microservices, Docker, and AWS. Strong problem-solver with clean code practices.",
+      senior: "Senior Full Stack Developer with 8+ years architecting and building high-traffic web applications. Led teams of 6 developers. Built platforms processing ₹100Cr+ in annual transactions. Expert in system design, performance optimization, and cloud-native development. Mentor and technical lead.",
+    },
+
+    experienceBullets: [
+      "Developed responsive React.js frontend with TypeScript, improving user retention by 25% through enhanced UX",
+      "Built Node.js REST API handling 500K+ requests/day with 99.9% uptime using Express and PM2",
+      "Designed MongoDB schema and implemented indexing, reducing query response time by 70%",
+      "Integrated Razorpay and Stripe payment gateways processing ₹5Cr+ monthly transactions",
+      "Set up Docker-based CI/CD pipeline on GitHub Actions, reducing deployment time from 2 hours to 15 minutes",
+    ],
+
+    faqs: [
+      {
+        question: "What technologies should a Full Stack Developer know in 2025?",
+        answer: "Frontend: React.js (most in-demand), TypeScript, Next.js. Backend: Node.js or Python FastAPI, REST/GraphQL APIs. Database: PostgreSQL + MongoDB. DevOps basics: Docker, AWS/GCP, CI/CD. The MERN/MEAN stack remains most popular in Indian startups.",
+      },
+      {
+        question: "How long does it take to become a Full Stack Developer?",
+        answer: "With dedicated learning: 6-12 months from scratch. Focus on one frontend framework (React) and one backend (Node.js) rather than learning everything. Build 3-4 complete projects. Most bootcamp graduates get jobs in 8-10 months. CS graduates with basics get to production-ready in 3-4 months.",
+      },
+      {
+        question: "Full Stack vs Specialized Developer - which pays more?",
+        answer: "Specialized developers (senior React or senior backend) typically earn more at FAANG/top companies. Full stack developers are more versatile and better suited for startups. At mid-level, salaries are similar. Full stack is better for entrepreneurship. Choose based on your preferred work style.",
+      },
+      {
+        question: "Which backend language is best for full stack in India?",
+        answer: "Node.js is most popular in startups (same language frontend & backend). Python (Django/FastAPI) is great for data-heavy applications. Java Spring Boot dominates enterprises and service companies. Go is growing. Node.js + React (MERN) is the most in-demand combination.",
+      },
+    ],
+
+    relatedJobs: ["software-engineer", "react-developer", "web-developer", "devops-engineer"],
+  },
+
+  "react-developer": {
+    slug: "react-developer",
+    title: "React Developer",
+    titleVariants: ["React.js Developer", "Frontend React Developer", "React Engineer", "Next.js Developer"],
+
+    overview: {
+      description: "React Developers specialize in building dynamic, component-based user interfaces using the React.js library. They work on frontend development, state management, performance optimization, and integration with backend APIs.",
+      averageSalaryIndia: { fresher: "4-7 LPA", mid: "9-18 LPA", senior: "20-40+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["Razorpay", "CRED", "Freshworks", "Cleartax", "Zerodha", "Groww", "Urban Company", "Meesho"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "React.js (Hooks, Context API, Redux)",
+        "JavaScript (ES6+)",
+        "TypeScript",
+        "HTML5 & CSS3",
+        "REST API Integration",
+        "Git & Version Control",
+      ],
+      niceToHaveSkills: [
+        "Next.js (SSR/SSG)",
+        "Testing (Jest, React Testing Library)",
+        "Performance Optimization (memoization, lazy loading)",
+        "Tailwind CSS or styled-components",
+        "GraphQL & Apollo",
+        "Webpack/Vite configuration",
+      ],
+      certifications: [
+        "Meta React Developer Certificate",
+        "JavaScript Developer Certification (W3Schools)",
+        "AWS Certified Developer",
+        "Google UX Design Certificate",
+      ],
+      keyAchievementExamples: [
+        "Improved Core Web Vitals score from 45 to 92 using code splitting and lazy loading",
+        "Migrated legacy jQuery application to React, reducing bundle size by 60%",
+        "Built reusable component library used across 5 products in the organization",
+        "Implemented micro-frontend architecture enabling independent team deployments",
+      ],
+      actionVerbs: [
+        "Built", "Developed", "Optimized", "Implemented", "Designed",
+        "Migrated", "Refactored", "Integrated", "Deployed", "Created",
+      ],
+      atsKeywords: [
+        "React.js", "Next.js", "TypeScript", "Redux", "JavaScript",
+        "Frontend Development", "Component Library", "REST API", "CSS3", "Performance Optimization",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "Frontend developer with strong React.js skills and hands-on experience building SPAs. Completed 5 React projects including a task manager, weather app, and e-commerce UI. Proficient in Hooks, Context API, and REST API integration. Passionate about clean code and great user experiences.",
+      midLevel: "React Developer with 3+ years building production-grade web applications. Expert in React ecosystem including Next.js, Redux Toolkit, and TypeScript. Delivered 15+ features for fintech products used by 200K+ users. Strong focus on performance, accessibility, and code quality.",
+      senior: "Senior React Developer with 7+ years building large-scale frontend applications. Architect of component library used by 50+ developers. Led frontend guild of 8 engineers. Expert in micro-frontends, performance optimization, and design systems. Improved app performance by 60% across product suite.",
+    },
+
+    experienceBullets: [
+      "Built responsive React dashboard with 30+ custom components, serving 100K+ daily active users",
+      "Implemented Redux Toolkit for state management, reducing component re-renders by 45% and improving performance",
+      "Migrated Create React App to Next.js 14, improving SEO scores and reducing TTFB by 60%",
+      "Developed reusable UI component library with Storybook documentation, reducing development time by 30%",
+      "Optimized bundle size from 2.8MB to 800KB using code splitting, tree shaking, and lazy loading",
+    ],
+
+    faqs: [
+      {
+        question: "What is the difference between React Developer and Full Stack Developer?",
+        answer: "React Developers specialize in frontend only (UI, browser interactions, state management). Full Stack Developers work on both frontend and backend. React developers go deeper into UI performance, accessibility, and design systems. Full stack developers have broader but shallower knowledge. Both are in high demand.",
+      },
+      {
+        question: "Is Next.js necessary for React Developer jobs?",
+        answer: "Increasingly yes. Many companies prefer Next.js for its built-in SSR/SSG, file-based routing, and SEO benefits. Most new React projects start with Next.js. For frontend roles at startups and product companies, Next.js knowledge gives you a significant edge. Learn it alongside React.",
+      },
+      {
+        question: "Do React Developers need to know TypeScript?",
+        answer: "Yes, TypeScript is now an industry standard. Most production React codebases use TypeScript. It catches bugs early, improves code quality, and is required in most job descriptions. Even if not mandatory, listing TypeScript on your resume increases interview calls significantly.",
+      },
+      {
+        question: "How to showcase React projects in a resume?",
+        answer: "Host projects on Vercel/Netlify with live URLs. Include GitHub repo links. Describe technical challenges solved (not just 'built a todo app'). Mention performance metrics, user counts, or business impact. Show progression - simple to complex projects. Contribute to open source React projects for credibility.",
+      },
+    ],
+
+    relatedJobs: ["full-stack-developer", "web-developer", "ui-ux-designer", "software-engineer"],
+  },
+
+  "ios-developer": {
+    slug: "ios-developer",
+    title: "iOS Developer",
+    titleVariants: ["Swift Developer", "iPhone App Developer", "Apple Developer", "Mobile Developer"],
+
+    overview: {
+      description: "iOS Developers design and build applications for Apple devices including iPhone, iPad, and Mac. They use Swift and Objective-C with Apple frameworks to create high-quality mobile experiences.",
+      averageSalaryIndia: { fresher: "4-8 LPA", mid: "10-20 LPA", senior: "22-45+ LPA" },
+      demandLevel: "Medium",
+      topHiringCompanies: ["Apple", "Swiggy", "Zomato", "Ola", "Paytm", "PhonePe", "Dream11", "Byju's"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Swift (Primary Language)",
+        "UIKit or SwiftUI",
+        "Xcode IDE",
+        "iOS SDK & Apple Frameworks",
+        "MVC/MVVM Architecture Patterns",
+        "REST API Integration (URLSession, Alamofire)",
+      ],
+      niceToHaveSkills: [
+        "Objective-C",
+        "Core Data & Realm",
+        "Push Notifications (APNs)",
+        "In-App Purchases (StoreKit)",
+        "Unit Testing (XCTest)",
+        "CI/CD (Fastlane, App Store Connect)",
+      ],
+      certifications: [
+        "Apple Certified iOS Developer",
+        "iOS App Development with Swift (Coursera)",
+        "Stanford CS193p (free)",
+        "Google Associate Android Developer (cross-platform context)",
+      ],
+      keyAchievementExamples: [
+        "Published app to App Store achieving 4.8 rating with 100K+ downloads",
+        "Reduced app crash rate from 2.5% to 0.3% through systematic debugging",
+        "Decreased app launch time by 40% through performance profiling and optimization",
+        "Implemented offline mode using Core Data, improving user retention by 20%",
+      ],
+      actionVerbs: [
+        "Developed", "Published", "Optimized", "Implemented", "Designed",
+        "Integrated", "Debugged", "Shipped", "Migrated", "Architected",
+      ],
+      atsKeywords: [
+        "Swift", "SwiftUI", "UIKit", "iOS Development", "Xcode",
+        "MVVM", "Core Data", "App Store", "Mobile Development", "REST API",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "iOS Developer with strong Swift fundamentals and hands-on app development experience. Built and published 2 apps to the App Store. Proficient in UIKit, SwiftUI, and MVC architecture. Passionate about creating intuitive Apple experiences with attention to Human Interface Guidelines.",
+      midLevel: "iOS Developer with 4 years shipping apps used by millions. Expert in Swift, SwiftUI, and complex UI implementations. Track record of maintaining 4.7+ App Store ratings. Led iOS features for fintech app with ₹500Cr+ monthly transactions. Strong in performance optimization and clean architecture.",
+      senior: "Senior iOS Developer with 8+ years building consumer apps from 0 to 10M+ downloads. Led iOS team of 5. Architected migration from Obj-C to Swift across 200K LOC codebase. Expert in performance, memory management, and design patterns. Published 12 apps, 5 featured by Apple.",
+    },
+
+    experienceBullets: [
+      "Developed UIKit-based mobile banking app serving 2M+ users with features for transfers, investments, and bill payments",
+      "Implemented SwiftUI onboarding flow reducing user drop-off by 35% through improved UX",
+      "Integrated Apple Pay and in-app purchases generating ₹2Cr+ monthly revenue",
+      "Built offline-first architecture using Core Data, enabling full functionality without internet connection",
+      "Optimized memory usage using Instruments profiler, reducing memory footprint by 40% and eliminating crashes",
+    ],
+
+    faqs: [
+      {
+        question: "Swift vs Objective-C - which should I learn?",
+        answer: "Learn Swift first - it's Apple's primary language and used in all new iOS projects. Objective-C is legacy code you may maintain but won't write new. Most job descriptions require Swift. Start with Swift + UIKit, then add SwiftUI. Objective-C knowledge is a bonus, not a requirement for most roles.",
+      },
+      {
+        question: "UIKit vs SwiftUI - which is more important?",
+        answer: "Both. UIKit is mature and still used in most large apps. SwiftUI is Apple's future and growing fast. Many companies have both. Learn UIKit fundamentals first (better debugging, more resources), then learn SwiftUI. Being proficient in both makes you much more hireable.",
+      },
+      {
+        question: "How important is having apps on the App Store?",
+        answer: "Very important for freshers. Even a simple app shows you understand the complete development cycle - building, testing, App Store submission, and maintenance. Aim for at least 1-2 published apps. Active apps with reviews are better. If your app isn't ready, a well-documented GitHub project works too.",
+      },
+      {
+        question: "Is iOS development in demand in India?",
+        answer: "Yes, especially in consumer apps (fintech, food delivery, e-commerce). iOS developers are slightly fewer than Android developers, making them somewhat premium. Top companies like Swiggy, Zomato, PhonePe, and Zerodha actively hire iOS developers. Average salaries are comparable to Android and backend roles.",
+      },
+    ],
+
+    relatedJobs: ["android-developer", "software-engineer", "react-developer", "ui-ux-designer"],
+  },
+
+  "project-manager": {
+    slug: "project-manager",
+    title: "Project Manager",
+    titleVariants: ["Program Manager", "IT Project Manager", "Technical Project Manager", "Delivery Manager"],
+
+    overview: {
+      description: "Project Managers plan, execute, and close projects while managing scope, timeline, budget, and stakeholders. They ensure projects are delivered on time, within budget, and meet quality standards.",
+      averageSalaryIndia: { fresher: "5-9 LPA", mid: "12-22 LPA", senior: "25-50+ LPA" },
+      demandLevel: "High",
+      topHiringCompanies: ["TCS", "Infosys", "Wipro", "Accenture", "IBM", "Capgemini", "HCL", "Cognizant"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Project Planning & Scheduling (MS Project, Jira)",
+        "Agile & Scrum Methodology",
+        "Stakeholder Management",
+        "Risk Management & Mitigation",
+        "Budget & Resource Management",
+        "Team Leadership & Communication",
+      ],
+      niceToHaveSkills: [
+        "PMP Certification",
+        "Program Management (multiple projects)",
+        "Change Management",
+        "PRINCE2 Methodology",
+        "Technical Background (IT/Software)",
+        "Client-facing & Presentation Skills",
+      ],
+      certifications: [
+        "PMP (Project Management Professional) - PMI",
+        "PRINCE2 Foundation/Practitioner",
+        "CSM (Certified Scrum Master)",
+        "CAPM (Certified Associate in Project Management)",
+      ],
+      keyAchievementExamples: [
+        "Delivered 15+ projects on time and within budget managing ₹5Cr+ total value",
+        "Led agile transformation for 3 teams, improving sprint velocity by 40%",
+        "Managed cross-functional team of 25 members across 3 countries for ERP implementation",
+        "Reduced project delivery time by 20% through process improvements and automation",
+      ],
+      actionVerbs: [
+        "Led", "Managed", "Delivered", "Coordinated", "Planned",
+        "Executed", "Facilitated", "Monitored", "Implemented", "Stakeholder",
+      ],
+      atsKeywords: [
+        "Project Management", "Agile", "Scrum", "PMP", "Stakeholder Management",
+        "Risk Management", "SDLC", "Jira", "Budget Management", "Resource Planning",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "MBA graduate with project management internship experience and CSM certification. Managed 3 academic projects end-to-end using Agile methodology. Proficient in Jira, MS Project, and stakeholder communication. Eager to deliver value through structured project execution in IT services.",
+      midLevel: "Project Manager with 5 years delivering IT projects in BFSI and e-commerce sectors. PMP certified with track record of managing ₹2Cr+ projects on time and within budget. Experienced in Agile/Waterfall hybrid models. Led teams of 10-15 across distributed locations.",
+      senior: "Senior Project Manager / Program Manager with 10+ years overseeing multi-million dollar technology programs. PMP and PRINCE2 certified. Managed portfolios of 8-10 concurrent projects with 50+ team members. Delivered digital transformation programs for Fortune 500 clients. Expert in governance, risk, and executive stakeholder management.",
+    },
+
+    experienceBullets: [
+      "Led end-to-end delivery of banking digital transformation project worth ₹3.5Cr, completed 2 weeks ahead of schedule",
+      "Managed cross-functional team of 18 developers, QA, and BA professionals across India and Singapore",
+      "Implemented Agile/Scrum framework for 4 product teams, improving sprint completion rate from 65% to 92%",
+      "Created comprehensive risk management framework identifying and mitigating 25 project risks",
+      "Conducted weekly executive steering committee meetings maintaining 100% stakeholder satisfaction score",
+    ],
+
+    faqs: [
+      {
+        question: "Is PMP certification necessary for a Project Manager role?",
+        answer: "PMP significantly boosts your profile but isn't always required. It's highly valued at large IT services companies (TCS, Infosys, Accenture). For startup/product company PM roles, Agile/Scrum certifications (CSM, CSPO) are often preferred. PMP shows commitment to the profession and typically commands 20-30% higher salary.",
+      },
+      {
+        question: "What is the career path for a Project Manager?",
+        answer: "Business Analyst/Team Lead → Project Manager → Senior PM → Program Manager → Portfolio Manager → PMO Head/VP of Delivery. Alternatively, move to Product Management (PM to Product Manager is common). Consulting is another high-paying path. PMP + domain expertise in BFSI or Healthcare pays very well.",
+      },
+      {
+        question: "Do Project Managers need technical knowledge?",
+        answer: "Technical background is a big advantage in IT projects. You don't need to code but understanding software development, infrastructure, and technical constraints helps greatly. Non-technical PMs do succeed but may face credibility issues with technical teams. Basic IT literacy is minimum; technical degree or experience is a bonus.",
+      },
+      {
+        question: "Agile PM vs Traditional PM - which is more in demand?",
+        answer: "Agile is dominant in product companies and startups. Traditional/Waterfall is still used in government projects, large enterprises, and compliance-heavy industries. Hybrid is most common in IT services. Learn both: Agile/Scrum for flexibility and PMP for comprehensive project management knowledge.",
+      },
+    ],
+
+    relatedJobs: ["business-analyst", "product-manager", "scrum-master", "hr-manager"],
+  },
+
+  "network-engineer": {
+    slug: "network-engineer",
+    title: "Network Engineer",
+    titleVariants: ["Network Administrator", "Network Architect", "Infrastructure Engineer", "Network Security Engineer"],
+
+    overview: {
+      description: "Network Engineers design, implement, and manage computer networks including LAN, WAN, and cloud networking. They ensure network security, performance, and reliability for organizations.",
+      averageSalaryIndia: { fresher: "3-6 LPA", mid: "7-15 LPA", senior: "16-30+ LPA" },
+      demandLevel: "Medium",
+      topHiringCompanies: ["Cisco", "HCL", "Wipro", "TCS", "Airtel", "Jio", "BSNL", "IBM"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Cisco Routing & Switching (IOS)",
+        "TCP/IP Protocols & Networking Fundamentals",
+        "Firewall Configuration (Cisco ASA, Fortinet, Palo Alto)",
+        "LAN/WAN Design & Implementation",
+        "Network Monitoring Tools (SolarWinds, Nagios)",
+        "VPN Configuration & Management",
+      ],
+      niceToHaveSkills: [
+        "Software Defined Networking (SDN)",
+        "Cloud Networking (AWS VPC, Azure Virtual Network)",
+        "Network Automation (Python, Ansible)",
+        "BGP, OSPF, EIGRP Routing Protocols",
+        "Load Balancing (F5, HAProxy)",
+        "Wireless Networking (802.11)",
+      ],
+      certifications: [
+        "CCNA (Cisco Certified Network Associate)",
+        "CCNP (Cisco Certified Network Professional)",
+        "CompTIA Network+",
+        "Juniper Networks JNCIA",
+      ],
+      keyAchievementExamples: [
+        "Designed and implemented network infrastructure for 3,000-user enterprise reducing downtime by 99.5%",
+        "Migrated on-premise network to hybrid cloud reducing infrastructure costs by ₹50L annually",
+        "Deployed SD-WAN solution across 15 branch offices improving bandwidth efficiency by 40%",
+        "Responded to and resolved 500+ network incidents maintaining 99.9% SLA adherence",
+      ],
+      actionVerbs: [
+        "Configured", "Deployed", "Monitored", "Troubleshot", "Designed",
+        "Implemented", "Maintained", "Optimized", "Secured", "Migrated",
+      ],
+      atsKeywords: [
+        "CCNA", "Cisco", "Networking", "Routing & Switching", "Firewall",
+        "TCP/IP", "Network Security", "LAN/WAN", "VPN", "Network Monitoring",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "CCNA certified Network Engineer with hands-on lab experience in Cisco routing, switching, and network security. Completed networking internship managing enterprise LAN/WAN for 500+ users. Strong foundation in TCP/IP, BGP, and firewall configuration. Eager to maintain and optimize complex network environments.",
+      midLevel: "Network Engineer with 4 years managing enterprise network infrastructure for large organizations. CCNP certified with expertise in Cisco, Fortinet, and cloud networking. Managed networks serving 5,000+ users with 99.9% uptime. Experienced in network automation using Python and Ansible.",
+      senior: "Senior Network Architect with 9+ years designing and implementing large-scale network infrastructures. Led network design for ₹10Cr data center migration. Expert in SD-WAN, cloud networking, and zero-trust security architecture. CCIE certified with experience across telecom, BFSI, and manufacturing sectors.",
+    },
+
+    experienceBullets: [
+      "Managed enterprise network infrastructure of 200+ Cisco switches and routers across 5 locations with 99.95% uptime",
+      "Implemented next-generation firewall (Palo Alto) replacing legacy systems, reducing security incidents by 75%",
+      "Deployed SD-WAN for 20 branch offices, reducing WAN costs by 40% while improving performance",
+      "Automated network configuration backups and compliance checks using Python scripts, saving 10 hours/week",
+      "Led network migration to AWS hybrid cloud architecture supporting 10,000+ concurrent users",
+    ],
+
+    faqs: [
+      {
+        question: "Is CCNA sufficient to get a Network Engineer job?",
+        answer: "CCNA is a great foundation and opens entry-level doors. For better roles, pursue CCNP or specialize in security/cloud. Many companies require CCNA + 1-2 years experience. Fresh CCNA holders can get NOC analyst roles to build experience. Practical lab skills matter as much as the cert.",
+      },
+      {
+        question: "Is Network Engineering a good career in 2025?",
+        answer: "Yes, but evolving. Cloud networking (AWS/Azure VPC) and network automation are growing. Traditional on-premise networking is stable in enterprises and telecom. Adding cloud and programming skills (Python for automation) future-proofs your career. Demand from Jio, Airtel, and enterprises remains strong in India.",
+      },
+      {
+        question: "Network Engineer vs Network Security Engineer?",
+        answer: "Network Engineers handle overall infrastructure design and maintenance. Network Security Engineers focus on firewalls, IDS/IPS, VPN, and threat management. Security roles typically pay 20-30% more. Many network engineers specialize in security as their career progresses. CISSP or CEH certifications help transition.",
+      },
+      {
+        question: "What is the salary growth path for Network Engineers?",
+        answer: "Network Engineer (3-6 LPA) → Senior Network Engineer (7-15 LPA) → Network Architect (16-25 LPA) → Infrastructure Manager (25-40 LPA). Specializing in cloud networking or security accelerates growth. Telecom companies (Jio, Airtel) and IT services offer stable career paths.",
+      },
+    ],
+
+    relatedJobs: ["cybersecurity-analyst", "cloud-architect", "devops-engineer", "software-engineer"],
+  },
+
+  "database-administrator": {
+    slug: "database-administrator",
+    title: "Database Administrator",
+    titleVariants: ["DBA", "SQL DBA", "Oracle DBA", "Database Engineer", "Data Engineer"],
+
+    overview: {
+      description: "Database Administrators manage, secure, and optimize databases for organizations. They handle installation, configuration, performance tuning, backups, and disaster recovery to ensure data availability and integrity.",
+      averageSalaryIndia: { fresher: "3-6 LPA", mid: "7-16 LPA", senior: "18-35+ LPA" },
+      demandLevel: "Medium",
+      topHiringCompanies: ["Oracle", "IBM", "TCS", "Infosys", "HDFC Bank", "ICICI Bank", "Accenture", "HCL"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "SQL (Advanced queries, stored procedures, triggers)",
+        "Database Platforms (Oracle, MySQL, PostgreSQL or SQL Server)",
+        "Performance Tuning & Query Optimization",
+        "Backup & Recovery (RMAN, mysqldump)",
+        "Database Security & Access Management",
+        "High Availability & Disaster Recovery",
+      ],
+      niceToHaveSkills: [
+        "NoSQL Databases (MongoDB, Cassandra, Redis)",
+        "Cloud Databases (AWS RDS, Azure SQL, Google Cloud SQL)",
+        "Database Automation (Python, Shell scripting)",
+        "Replication & Clustering",
+        "Data Migration & ETL",
+        "DBMS Monitoring (OEM, SolarWinds DPA)",
+      ],
+      certifications: [
+        "Oracle Certified Professional (OCP) DBA",
+        "Microsoft SQL Server certification",
+        "AWS Database Specialty",
+        "MongoDB Certified DBA",
+      ],
+      keyAchievementExamples: [
+        "Reduced database query response time by 80% through indexing and query optimization",
+        "Implemented Oracle RAC achieving 99.99% database availability for critical banking system",
+        "Automated database maintenance tasks saving 20 hours/week through scripting",
+        "Successfully executed zero-downtime migration of 5TB database to AWS RDS",
+      ],
+      actionVerbs: [
+        "Administered", "Optimized", "Automated", "Migrated", "Configured",
+        "Implemented", "Monitored", "Tuned", "Secured", "Recovered",
+      ],
+      atsKeywords: [
+        "DBA", "Oracle", "SQL Server", "PostgreSQL", "Database Administration",
+        "Performance Tuning", "Backup Recovery", "High Availability", "SQL", "Database Security",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "Database Administration graduate with strong SQL fundamentals and hands-on experience with Oracle and MySQL. Completed DBA internship managing production databases for 10+ applications. OCP certified with expertise in backup, recovery, and performance monitoring. Ready to maintain mission-critical database environments.",
+      midLevel: "Oracle DBA with 5 years managing large-scale databases in BFSI sector. Expertise in Oracle RAC, performance tuning, and disaster recovery. Maintained 99.9% availability for databases supporting 1M+ daily transactions. AWS RDS experience with successful cloud migration projects.",
+      senior: "Senior DBA / Database Architect with 10+ years in enterprise database management. Managed Oracle, SQL Server, and PostgreSQL environments across multiple data centers. Led database modernization initiatives saving ₹1Cr+ annually. Expert in cloud migration, NoSQL integration, and database DevOps.",
+    },
+
+    experienceBullets: [
+      "Administered Oracle 19c RAC database cluster supporting core banking transactions for 2M+ customers",
+      "Performed query optimization and indexing strategy, reducing average query execution time by 70%",
+      "Implemented automated backup and recovery solution with RPO of 15 minutes and RTO of 1 hour",
+      "Migrated 8TB on-premise Oracle database to AWS RDS with zero data loss and 4-hour downtime window",
+      "Created monitoring dashboards for 15 production databases, proactively resolving 90% of issues before user impact",
+    ],
+
+    faqs: [
+      {
+        question: "Which database is best to specialize in for India?",
+        answer: "Oracle is highest-paying and most in-demand in enterprise/BFSI. MySQL/PostgreSQL dominate startups and web companies. SQL Server is common in Microsoft-heavy enterprises. MongoDB for NoSQL. Oracle DBA certification (OCP) commands premium salaries. Cloud databases (AWS RDS) are the future - learn at least one cloud platform.",
+      },
+      {
+        question: "Is Database Administration a good career in 2025?",
+        answer: "Yes, with evolution towards cloud. Cloud DBAs managing AWS RDS, Aurora, DynamoDB are in high demand. Traditional DBAs must add cloud skills to stay relevant. Data engineering (ETL, data pipelines) is a natural adjacent skill. BFSI, healthcare, and government sectors have strong traditional DBA demand.",
+      },
+      {
+        question: "DBA vs Data Engineer - which to choose?",
+        answer: "DBAs focus on database operations, performance, security, and availability. Data Engineers build data pipelines, ETL processes, and data warehouses. Data Engineering pays more and is faster growing (linked to Data Science demand). DBAs provide more stable, operations-focused career. Your interest in operations vs development should guide the choice.",
+      },
+      {
+        question: "What scripting skills does a DBA need?",
+        answer: "Shell scripting (Bash) for automation is essential. PL/SQL for Oracle or T-SQL for SQL Server is mandatory. Python is increasingly important for automation, ETL, and data processing. PowerShell for Windows environments. Good scripting skills can automate 30-40% of routine DBA work.",
+      },
+    ],
+
+    relatedJobs: ["data-analyst", "data-scientist", "cloud-architect", "software-engineer"],
+  },
+
+  "scrum-master": {
+    slug: "scrum-master",
+    title: "Scrum Master",
+    titleVariants: ["Agile Coach", "Agile Scrum Master", "Release Train Engineer", "Agile Delivery Manager"],
+
+    overview: {
+      description: "Scrum Masters facilitate Agile/Scrum processes, remove impediments, and help development teams deliver value iteratively. They coach teams on Agile principles and serve as a bridge between stakeholders and development teams.",
+      averageSalaryIndia: { fresher: "5-9 LPA", mid: "12-22 LPA", senior: "22-45+ LPA" },
+      demandLevel: "Growing",
+      topHiringCompanies: ["TCS", "Infosys", "Wipro", "Accenture", "IBM", "Capgemini", "Ericsson", "SAP"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Scrum Framework (Sprints, Ceremonies, Artifacts)",
+        "Agile Principles & Manifesto",
+        "Impediment Removal & Team Facilitation",
+        "Backlog Grooming & Sprint Planning",
+        "Jira & Confluence",
+        "Stakeholder Communication",
+      ],
+      niceToHaveSkills: [
+        "SAFe (Scaled Agile Framework)",
+        "Kanban Methodology",
+        "Coaching & Conflict Resolution",
+        "Metrics & Reporting (velocity, burndown)",
+        "Technical background (development experience)",
+        "Change Management",
+      ],
+      certifications: [
+        "CSM (Certified Scrum Master) - Scrum Alliance",
+        "PSM I (Professional Scrum Master) - Scrum.org",
+        "SAFe Scrum Master",
+        "PMI-ACP (Agile Certified Practitioner)",
+      ],
+      keyAchievementExamples: [
+        "Improved team sprint velocity by 35% within 6 months through coaching and process improvements",
+        "Led Agile transformation for 3 teams reducing time-to-market by 40%",
+        "Facilitated 100+ sprint ceremonies maintaining team satisfaction score of 4.5/5",
+        "Reduced bug backlog by 60% by implementing Definition of Done and quality practices",
+      ],
+      actionVerbs: [
+        "Facilitated", "Coached", "Led", "Mentored", "Removed",
+        "Improved", "Implemented", "Guided", "Organized", "Resolved",
+      ],
+      atsKeywords: [
+        "Scrum Master", "Agile", "Scrum", "SAFe", "CSM",
+        "Sprint Planning", "Retrospectives", "Kanban", "Jira", "Team Coaching",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "CSM-certified Scrum Master with strong Agile foundation and team facilitation skills. Supported 2 Scrum teams as part of Agile transformation internship. Proficient in Jira, sprint ceremonies, and impediment tracking. Passionate about helping teams achieve high performance through servant leadership.",
+      midLevel: "Experienced Scrum Master with 4 years facilitating Agile teams in IT services. Coached 4 teams to consistently deliver sprint goals with 90%+ completion rate. SAFe certified with experience in scaled agile environments. Expertise in conflict resolution, metrics tracking, and continuous improvement.",
+      senior: "Senior Scrum Master / Agile Coach with 8+ years transforming organizations to Agile. Led SAFe implementation for 6 Agile Release Trains (50+ teams). Coached 200+ team members and stakeholders. Reduced average cycle time by 45% across programs. Speaker at Agile India conferences.",
+    },
+
+    experienceBullets: [
+      "Facilitated daily standups, sprint planning, retrospectives, and reviews for 2 cross-functional teams of 8-10 members",
+      "Identified and removed 30+ impediments per quarter enabling teams to maintain 92% sprint goal achievement",
+      "Implemented team health metrics dashboard tracking velocity, happiness, and quality leading to 40% productivity improvement",
+      "Coached product owners on backlog prioritization and user story writing, improving story quality by 60%",
+      "Led SAFe PI Planning for 4 Agile Release Trains coordinating dependencies across 120+ team members",
+    ],
+
+    faqs: [
+      {
+        question: "CSM vs PSM - which Scrum Master certification is better?",
+        answer: "Both are well-recognized. CSM (Scrum Alliance) requires a 2-day training course - better for networking and brand recognition. PSM I (Scrum.org) is exam-only, harder to pass, and generally considered more rigorous technically. PSM I is often preferred in global product companies. CSM is more common in Indian IT services. Get either to start.",
+      },
+      {
+        question: "Do Scrum Masters need a technical background?",
+        answer: "Not mandatory but very helpful. Understanding code, testing, and deployment helps you remove impediments more effectively and credibility with development teams. Many Scrum Masters come from developer or QA backgrounds. Non-technical SMs succeed in business-domain projects. Technical background opens higher-paying roles in product companies.",
+      },
+      {
+        question: "What is the career growth path for Scrum Masters?",
+        answer: "Scrum Master → Senior Scrum Master → Agile Coach → Release Train Engineer (SAFe) → Enterprise Agile Coach. Alternatively transition to Product Management or Project Management. SAFe certification (SPC, RTE) significantly increases salary. Agile Coaches at large enterprises earn 30-45 LPA+.",
+      },
+      {
+        question: "Is Scrum Master a permanent role or transitional?",
+        answer: "Both. Many professionals see it as a stepping stone to Product Manager, Program Manager, or Engineering Manager. Others build entire careers as Agile Coaches. In India, the role is most common in IT services companies. In product companies, Scrum Masters often evolve into Engineering Managers or Head of Delivery.",
+      },
+    ],
+
+    relatedJobs: ["project-manager", "product-manager", "business-analyst", "hr-manager"],
+  },
+
+  "angular-developer": {
+    slug: "angular-developer",
+    title: "Angular Developer",
+    titleVariants: ["Angular.js Developer", "Frontend Angular Developer", "Angular Engineer", "AngularTS Developer"],
+
+    overview: {
+      description: "Angular Developers build enterprise-grade web applications using Google's Angular framework. They work with TypeScript, component architecture, RxJS, and Angular CLI to create scalable, maintainable frontend applications.",
+      averageSalaryIndia: { fresher: "4-7 LPA", mid: "8-16 LPA", senior: "18-35+ LPA" },
+      demandLevel: "Medium",
+      topHiringCompanies: ["TCS", "Infosys", "Capgemini", "Wipro", "Oracle", "SAP", "Accenture", "L&T Infotech"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "Angular (v12+) Framework",
+        "TypeScript",
+        "RxJS & Reactive Programming",
+        "Angular CLI & Component Architecture",
+        "HTML5, CSS3, SCSS",
+        "REST API Integration (HttpClient)",
+      ],
+      niceToHaveSkills: [
+        "NgRx State Management",
+        "Angular Material & PrimeNG",
+        "Unit Testing (Jasmine, Karma, Cypress)",
+        "Performance Optimization (lazy loading, tree shaking)",
+        "Micro Frontend Architecture",
+        "Node.js & Express (full stack)",
+      ],
+      certifications: [
+        "Google Angular Developer Certification",
+        "JavaScript Developer Certification",
+        "AWS Certified Developer",
+        "TypeScript Advanced (Udemy/Pluralsight)",
+      ],
+      keyAchievementExamples: [
+        "Built Angular enterprise portal used by 50,000 employees across 30 countries",
+        "Reduced initial bundle size by 65% using lazy loading and code splitting",
+        "Migrated AngularJS application to Angular 15, improving performance by 80%",
+        "Developed reusable Angular component library with 40+ components, adopted by 8 teams",
+      ],
+      actionVerbs: [
+        "Developed", "Built", "Migrated", "Optimized", "Implemented",
+        "Designed", "Refactored", "Integrated", "Maintained", "Created",
+      ],
+      atsKeywords: [
+        "Angular", "TypeScript", "RxJS", "NgRx", "Frontend Development",
+        "Angular Material", "SPA", "REST API", "Jasmine", "Lazy Loading",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "Frontend Developer specializing in Angular with strong TypeScript and RxJS skills. Built 4 Angular projects including an enterprise dashboard and e-commerce SPA. Proficient in component-driven development, HttpClient, and Angular Material. Eager to contribute to large-scale enterprise applications.",
+      midLevel: "Angular Developer with 4 years building complex enterprise web applications for BFSI and IT services. Expert in Angular 15+, RxJS, and NgRx state management. Delivered 10+ features for applications with 20K+ daily users. Strong focus on performance, testing, and Angular best practices.",
+      senior: "Senior Angular Architect with 7+ years building large-scale enterprise frontends. Led migration of 5 AngularJS applications to Angular 16. Designed component library used by 15 teams. Expert in micro-frontends, performance optimization, and Angular DevOps. Mentored 8 junior Angular developers.",
+    },
+
+    experienceBullets: [
+      "Developed enterprise HR management portal using Angular 16 with NgRx, serving 25,000 employees across multiple business units",
+      "Implemented lazy loading and route-based code splitting, reducing initial load time from 8 seconds to 2.5 seconds",
+      "Built reusable Angular component library with 35+ components using Angular Material, standardizing UI across 6 applications",
+      "Integrated real-time notifications using WebSockets and RxJS, handling 10,000+ concurrent connections",
+      "Wrote comprehensive unit tests with Jasmine/Karma achieving 85% code coverage across all Angular modules",
+    ],
+
+    faqs: [
+      {
+        question: "Angular vs React - which should I learn?",
+        answer: "React is more popular overall, especially in startups and product companies. Angular is dominant in enterprise projects, IT services (TCS, Infosys, Wipro), and government applications. If you want startup jobs, learn React. If you target IT services or enterprise roles, Angular is very relevant. Angular developers face less competition.",
+      },
+      {
+        question: "Is Angular still relevant in 2025?",
+        answer: "Yes, especially in enterprise and IT services. Angular's opinionated structure, built-in TypeScript, and comprehensive tooling make it preferred for large teams. Google continues actively maintaining it. Banking, insurance, and enterprise software companies heavily use Angular. The market is smaller than React but still strong.",
+      },
+      {
+        question: "How important is RxJS for Angular development?",
+        answer: "Very important - RxJS is fundamental to Angular's async operations, HTTP calls, and event handling. You can build basic apps without deep RxJS knowledge, but for production work, understanding Observables, operators (map, switchMap, mergeMap), and Subject is essential. Most Angular interview questions include RxJS.",
+      },
+      {
+        question: "What is the difference between AngularJS and Angular?",
+        answer: "AngularJS (Angular 1.x) is the old JavaScript-based framework, largely legacy. Angular (2+) is a complete rewrite in TypeScript with component-based architecture, better performance, and modern features. They are entirely different frameworks. Most new projects use Angular 15+. If a job says 'AngularJS', be aware it's older technology.",
+      },
+    ],
+
+    relatedJobs: ["react-developer", "full-stack-developer", "web-developer", "software-engineer"],
+  },
+
+  "embedded-systems-engineer": {
+    slug: "embedded-systems-engineer",
+    title: "Embedded Systems Engineer",
+    titleVariants: ["Embedded Software Engineer", "Firmware Engineer", "RTOS Developer", "IoT Engineer"],
+
+    overview: {
+      description: "Embedded Systems Engineers design and develop software for embedded hardware systems found in automotive, consumer electronics, industrial, and IoT devices. They work close to hardware with real-time operating systems and microcontrollers.",
+      averageSalaryIndia: { fresher: "4-8 LPA", mid: "10-18 LPA", senior: "20-40+ LPA" },
+      demandLevel: "Growing",
+      topHiringCompanies: ["Texas Instruments", "Qualcomm", "Intel", "Bosch", "Continental", "Tata Elxsi", "L&T Technology", "KPIT"],
+    },
+
+    resumeSections: {
+      mustHaveSkills: [
+        "C/C++ Programming (embedded)",
+        "Microcontrollers (ARM Cortex, STM32, PIC, AVR)",
+        "RTOS (FreeRTOS, AUTOSAR, VxWorks)",
+        "Device Drivers Development",
+        "Communication Protocols (UART, SPI, I2C, CAN)",
+        "Debugging (JTAG, oscilloscope, logic analyzer)",
+      ],
+      niceToHaveSkills: [
+        "Automotive Standards (AUTOSAR, MISRA C)",
+        "IoT Protocols (MQTT, CoAP, BLE)",
+        "Python for test automation",
+        "FPGA (Verilog/VHDL)",
+        "Linux Kernel & BSP development",
+        "Functional Safety (ISO 26262, IEC 61508)",
+      ],
+      certifications: [
+        "ARM Accredited Engineer (AAE)",
+        "AUTOSAR System & Software Design",
+        "Certified Embedded Systems Engineer (CEES)",
+        "FreeRTOS Developer Certification",
+      ],
+      keyAchievementExamples: [
+        "Developed AUTOSAR-compliant firmware for automotive ECU reducing boot time by 35%",
+        "Implemented CAN/LIN communication stack for body control module in production vehicle",
+        "Optimized FreeRTOS task scheduling reducing CPU utilization by 25% on ARM Cortex-M4",
+        "Developed OTA firmware update mechanism for IoT fleet of 50,000+ devices",
+      ],
+      actionVerbs: [
+        "Developed", "Implemented", "Optimized", "Integrated", "Debugged",
+        "Designed", "Ported", "Tested", "Validated", "Programmed",
+      ],
+      atsKeywords: [
+        "Embedded Systems", "C/C++", "RTOS", "ARM", "Microcontroller",
+        "Firmware", "Device Drivers", "CAN Protocol", "FreeRTOS", "IoT",
+      ],
+    },
+
+    summaryExamples: {
+      fresher: "Electronics & Communication graduate with strong embedded C programming skills and hands-on microcontroller experience. Completed projects on STM32 including a PID motor controller and IoT weather station. Proficient in FreeRTOS, SPI/I2C protocols, and hardware debugging. Ready to develop reliable firmware for embedded products.",
+      midLevel: "Embedded Software Engineer with 4 years developing firmware for automotive and IoT products. Expertise in ARM Cortex-M, FreeRTOS, and CAN/LIN protocols. Contributed to 3 AUTOSAR-compliant ECU projects in production vehicles. Strong debugging skills with oscilloscope, JTAG, and trace tools.",
+      senior: "Senior Embedded Systems Architect with 9+ years in automotive and industrial embedded software. Led firmware development for 5 mass-production automotive ECUs. Expert in AUTOSAR, ISO 26262 functional safety, and real-time system design. Technical lead for 8-person embedded team delivering ADAS features.",
+    },
+
+    experienceBullets: [
+      "Developed AUTOSAR Classic firmware for body control module in BS6-compliant vehicle using Vector tools (CANoe, CAPL)",
+      "Implemented FreeRTOS-based embedded application on STM32H7, managing 12 concurrent tasks with hard real-time requirements",
+      "Designed and validated CAN communication stack for vehicle diagnostics conforming to ISO 15765-2 (ISO-TP) standard",
+      "Reduced memory footprint of firmware from 512KB to 380KB through code optimization enabling port to lower-cost MCU",
+      "Developed automated hardware-in-the-loop (HIL) test framework, increasing test coverage from 40% to 85%",
+    ],
+
+    faqs: [
+      {
+        question: "Which microcontroller is best to learn for embedded systems?",
+        answer: "ARM Cortex-M (STM32 boards) is industry standard and highly recommended. Arduino for beginners to understand basics. Raspberry Pi for Linux-based embedded. ESP32 for IoT and wireless projects. In India, automotive companies use NXP S32 and Renesas RH850. STM32 + FreeRTOS gives you the most transferable skills.",
+      },
+      {
+        question: "Is embedded systems a good career in India?",
+        answer: "Yes, especially with EV and automotive growth. Companies like Bosch, Continental, KPIT, Tata Elxsi, and L&T Technology have large embedded teams in Bangalore, Pune, and Chennai. Automotive embedded is the highest paying vertical. IoT and semiconductor design (Qualcomm, Intel) also pay very well. Niche but high-value skill.",
+      },
+      {
+        question: "Do embedded engineers need to know Linux?",
+        answer: "Linux kernel and device driver knowledge is crucial for embedded Linux roles (automotive infotainment, industrial computers, networking equipment). For bare-metal or RTOS development, Linux kernel knowledge is less critical but helpful. Embedded Linux and bare-metal RTOS are two distinct tracks in embedded systems.",
+      },
+      {
+        question: "What is the career growth for Embedded Engineers?",
+        answer: "Embedded Engineer → Senior → Lead/Architect → Technical Fellow or Engineering Manager. Automotive embedded is fastest growing in India. Semiconductor companies (Qualcomm, Texas Instruments) offer top salaries. Specializing in AUTOSAR functional safety (ISO 26262) or ADAS commands significant salary premium.",
+      },
+    ],
+
+    relatedJobs: ["software-engineer", "cybersecurity-analyst", "network-engineer", "qa-engineer"],
+  },
 };
 
 // Company-specific data
