@@ -14,12 +14,21 @@ declare global {
 
 interface PricingPlan {
   name: string;
-  priceINR: number;
-  priceUSD: number;
+  priceINR: { [key: number]: number };
+  priceUSD: { [key: number]: number };
   features: string[];
   resume_limit: number | string;
   ats_analysis_limit: number | string;
 }
+
+type BillingCycle = 1 | 3 | 6 | 12;
+
+const billingOptions: { value: BillingCycle; label: string; discount?: string }[] = [
+  { value: 1, label: 'Monthly' },
+  { value: 3, label: 'Quarterly', discount: '10% off' },
+  { value: 6, label: 'Half-Yearly', discount: '17% off' },
+  { value: 12, label: 'Yearly', discount: '25% off' },
+];
 
 export default function PricingPage() {
   const router = useRouter();
@@ -28,15 +37,14 @@ export default function PricingPage() {
   const [selectedPlan, setSelectedPlan] = useState('');
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [countryLoading, setCountryLoading] = useState(true);
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>(1);
 
-  // Plans with region-specific limits
-  // India: Lower limits, lower price
-  // International: Higher limits, higher price
+  // Plans with region-specific limits and multi-duration pricing
   const getPlans = (isIndia: boolean): PricingPlan[] => [
     {
       name: 'FREE',
-      priceINR: 0,
-      priceUSD: 0,
+      priceINR: { 1: 0, 3: 0, 6: 0, 12: 0 },
+      priceUSD: { 1: 0, 3: 0, 6: 0, 12: 0 },
       resume_limit: isIndia ? 1 : 5,
       ats_analysis_limit: isIndia ? 2 : 5,
       features: isIndia ? [
@@ -57,8 +65,8 @@ export default function PricingPage() {
     },
     {
       name: 'STARTER',
-      priceINR: 299,
-      priceUSD: 12.99,
+      priceINR: { 1: 299, 3: 799, 6: 1499, 12: 2699 },
+      priceUSD: { 1: 12.99, 3: 34.99, 6: 64.99, 12: 119.99 },
       resume_limit: isIndia ? 5 : 15,
       ats_analysis_limit: isIndia ? 10 : 15,
       features: isIndia ? [
@@ -83,8 +91,8 @@ export default function PricingPage() {
     },
     {
       name: 'PRO',
-      priceINR: 999,
-      priceUSD: 39.99,
+      priceINR: { 1: 999, 3: 2699, 6: 4999, 12: 8999 },
+      priceUSD: { 1: 39.99, 3: 109.99, 6: 199.99, 12: 359.99 },
       resume_limit: 'Unlimited',
       ats_analysis_limit: 'Unlimited',
       features: [
@@ -141,8 +149,14 @@ export default function PricingPage() {
   const isIndian = userCountry === 'IN';
 
   const getPrice = (plan: PricingPlan) => {
-    if (plan.priceINR === 0) return isIndian ? '₹0' : '$0';
-    return isIndian ? `₹${plan.priceINR}` : `$${plan.priceUSD}`;
+    const price = isIndian ? plan.priceINR[billingCycle] : plan.priceUSD[billingCycle];
+    if (price === 0) return isIndian ? '₹0' : '$0';
+    return isIndian ? `₹${price}` : `$${price}`;
+  };
+
+  const getBillingLabel = () => {
+    const option = billingOptions.find(o => o.value === billingCycle);
+    return option?.label.toLowerCase() || 'month';
   };
 
   const handleUpgrade = async (planName: string) => {
@@ -159,10 +173,10 @@ export default function PricingPage() {
     setSelectedPlan(planName);
 
     try {
-      // Create order with country for gateway routing
+      // Create order with country and duration for gateway routing
       const orderResponse = await api.post('/api/payment/create-order', {
         plan: planName.toLowerCase(),
-        duration_months: 1,
+        duration_months: billingCycle,
         country: userCountry || 'US'
       });
 
@@ -180,7 +194,7 @@ export default function PricingPage() {
         amount: amount,
         currency: currency,
         name: 'Resume Builder',
-        description: `${planName} Plan Subscription`,
+        description: `${planName} Plan - ${getBillingLabel()}`,
         order_id: order_id,
         handler: async function (response: any) {
           try {
@@ -254,7 +268,7 @@ export default function PricingPage() {
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Affordable AI-Powered Resume Building
           </h1>
@@ -272,6 +286,39 @@ export default function PricingPage() {
             </span>
           </p>
         </div>
+
+        {/* Billing Cycle Toggle */}
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex bg-white rounded-lg shadow-sm p-1 border border-gray-200">
+            {billingOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setBillingCycle(option.value)}
+                className={`relative px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  billingCycle === option.value
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                {option.label}
+                {option.discount && billingCycle === option.value && (
+                  <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                    {option.discount}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Savings Banner */}
+        {billingCycle > 1 && (
+          <div className="text-center mb-8">
+            <span className="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
+              Save up to {billingCycle === 12 ? '25%' : billingCycle === 6 ? '17%' : '10%'} with {getBillingLabel()} billing
+            </span>
+          </div>
+        )}
 
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -292,8 +339,8 @@ export default function PricingPage() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                 <div className="mb-6">
                   <span className="text-4xl font-bold text-gray-900">{getPrice(plan)}</span>
-                  {plan.priceINR > 0 && (
-                    <span className="text-gray-600">/month</span>
+                  {plan.priceINR[1] > 0 && (
+                    <span className="text-gray-600">/{getBillingLabel()}</span>
                   )}
                 </div>
 

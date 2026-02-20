@@ -46,6 +46,22 @@ class DodoService:
         }
     }
 
+    # Dodo Product IDs (created in Dodo dashboard)
+    DODO_PRODUCT_IDS = {
+        "starter": {
+            1: "pdt_0NYv1k4YD8smnpDPKSc0s",   # Starter Monthly
+            3: "pdt_0NYv2I4O5BVcQ46oMWSxl",   # Starter Quarterly
+            6: "pdt_0NYv2aHGgT5oeq1oI0fo0",   # Starter Half-Yearly
+            12: "pdt_0NYv2pXX1kzIcdDOGb351",  # Starter Yearly
+        },
+        "pro": {
+            1: "pdt_0NYv2yyI5hTGI7q31pjUR",   # Pro Monthly
+            3: "pdt_0NYv3FYFrkFf6a16jwVGn",   # Pro Quarterly
+            6: "pdt_0NYv3W8cZe2gcnCT3lI7p",   # Pro Half-Yearly
+            12: "pdt_0NYv3jPRGpdjbQDSgsf3M",  # Pro Yearly
+        }
+    }
+
     # Plan features for International users (higher limits than India)
     PLAN_FEATURES = {
         "starter": {
@@ -181,8 +197,10 @@ class DodoService:
             product_name = self.get_product_name(request.plan.value, request.duration_months)
 
             # Create checkout session via Dodo API
-            # Products must be pre-created in Dodo dashboard with matching IDs
-            product_id = f"resume_builder_{request.plan.value}_{request.duration_months}m"
+            # Get product ID from our mapping
+            product_id = self.DODO_PRODUCT_IDS.get(request.plan.value, {}).get(request.duration_months)
+            if not product_id:
+                raise ValueError(f"No Dodo product configured for {request.plan.value} - {request.duration_months} months")
 
             checkout_data = {
                 "billing": {
