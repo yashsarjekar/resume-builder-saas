@@ -12,6 +12,7 @@ interface AuthState {
   signup: (data: SignupData) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -131,6 +132,21 @@ export const useAuthStore = create<AuthState>((set) => ({
         console.warn('[Auth] checkAuth failed but keeping auth state:', error.response?.status || 'network error');
         // Don't change auth state - keep user logged in
       }
+    }
+  },
+
+  refreshUser: async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return;
+    }
+
+    try {
+      const response = await api.get('/api/auth/me');
+      set({ user: response.data });
+      console.log('[Auth] User data refreshed');
+    } catch (error: any) {
+      console.warn('[Auth] refreshUser failed:', error.response?.status || 'network error');
     }
   },
 }));

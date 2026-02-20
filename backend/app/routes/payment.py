@@ -27,6 +27,8 @@ from app.schemas.payment import (
     PaymentResponse,
     SubscriptionDetails,
     PricingResponse,
+    VerifyDodoPaymentRequest,
+    VerifyDodoPaymentResponse,
 )
 
 logger = logging.getLogger(__name__)
@@ -302,6 +304,76 @@ async def get_subscription_details(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve subscription details"
+        )
+
+
+@router.post("/verify-dodo", response_model=VerifyDodoPaymentResponse)
+async def verify_dodo_payment(
+    request: VerifyDodoPaymentRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Verify a Dodo payment and upgrade subscription if successful.
+
+    This endpoint is called from the success page after Dodo redirect
+    to ensure the subscription is upgraded even if webhook fails.
+
+    Args:
+        request: Payment ID from Dodo
+        current_user: Authenticated user
+        db: Database session
+
+    Returns:
+        VerifyDodoPaymentResponse: Verification result
+
+    Example:
+        POST /api/payment/verify-dodo
+        {"payment_id": "pay_xxx"}
+    """
+    try:
+        if not dodo_service.is_configured:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Dodo Payments is not configured"
+            )
+
+        # Verify the payment
+        success, payment_status, user = await dodo_service.verify_payment(
+            payment_id=request.payment_id,
+            db=db
+        )
+
+        if success and user:
+            logger.info(
+                f"Dodo payment verified for user {current_user.id}: "
+                f"subscription={user.subscription_type}"
+            )
+            return VerifyDodoPaymentResponse(
+                success=True,
+                status="success",
+                message="Payment verified successfully",
+                subscription_type=user.subscription_type,
+                subscription_expiry=user.subscription_expiry
+            )
+        elif payment_status == "pending":
+            return VerifyDodoPaymentResponse(
+                success=False,
+                status="pending",
+                message="Payment is still being processed. Please wait a moment."
+            )
+        else:
+            return VerifyDodoPaymentResponse(
+                success=False,
+                status=payment_status,
+                message=f"Payment verification failed: {payment_status}"
+            )
+
+    except Exception as e:
+        logger.error(f"Dodo payment verification failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to verify payment: {str(e)}"
         )
 
 
@@ -616,10 +688,13 @@ async def handle_dodo_webhook(
         body = await request.body()
         payload = body.decode('utf-8')
 
+        # Log raw payload for debugging
+        logger.info(f"[DODO WEBHOOK] Raw payload received: {payload[:500]}...")
+
         # Verify webhook signature (if configured)
         if dodo_service.webhook_secret:
             if not webhook_signature:
-                logger.warning("Dodo webhook received without signature")
+                logger.warning("[DODO WEBHOOK] Received without signature header")
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Missing webhook signature"
@@ -631,18 +706,26 @@ async def handle_dodo_webhook(
             )
 
             if not is_valid:
-                logger.warning("Dodo webhook signature verification failed")
+                logger.warning(f"[DODO WEBHOOK] Signature verification failed. Signature: {webhook_signature[:20]}...")
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Invalid webhook signature"
                 )
+            logger.info("[DODO WEBHOOK] Signature verified successfully")
+        else:
+            logger.warning("[DODO WEBHOOK] No webhook secret configured - skipping signature verification")
 
         # Parse webhook data
         webhook_data = json.loads(payload)
-        event_type = webhook_data.get('type') or webhook_data.get('event_type')
+
+        # Log full parsed data for debugging
+        logger.info(f"[DODO WEBHOOK] Parsed data keys: {list(webhook_data.keys())}")
+
+        event_type = webhook_data.get('type') or webhook_data.get('event_type') or webhook_data.get('event')
         event_data = webhook_data.get('data', webhook_data)
 
-        logger.info(f"Received Dodo webhook event: {event_type}")
+        logger.info(f"[DODO WEBHOOK] Event type: {event_type}")
+        logger.info(f"[DODO WEBHOOK] Event data: {json.dumps(event_data)[:500]}...")
 
         # Process the webhook event
         success = dodo_service.process_webhook_event(
@@ -652,14 +735,16 @@ async def handle_dodo_webhook(
         )
 
         if success:
+            logger.info(f"[DODO WEBHOOK] Event {event_type} processed successfully")
             return {"status": "success", "message": "Dodo webhook processed"}
         else:
+            logger.warning(f"[DODO WEBHOOK] Event {event_type} not fully processed")
             return {"status": "warning", "message": "Webhook event not fully processed"}
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Dodo webhook processing error: {str(e)}")
+        logger.error(f"[DODO WEBHOOK] Processing error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to process Dodo webhook"

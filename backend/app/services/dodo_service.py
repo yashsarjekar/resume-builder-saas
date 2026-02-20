@@ -341,18 +341,24 @@ class DodoService:
             bool: True if event was processed successfully
         """
         try:
-            logger.info(f"Processing Dodo webhook event: {event_type}")
+            logger.info(f"[DODO WEBHOOK] Processing event: {event_type}")
 
-            if event_type == "payment.succeeded":
+            # Handle various event type formats
+            event_type_lower = (event_type or "").lower()
+
+            if event_type_lower in ["payment.succeeded", "payment_succeeded", "payment.completed", "payment_completed", "payment.success"]:
                 return self._handle_payment_succeeded(event_data, db)
-            elif event_type == "payment.failed":
+            elif event_type_lower in ["payment.failed", "payment_failed"]:
                 return self._handle_payment_failed(event_data, db)
             else:
-                logger.info(f"Unhandled Dodo webhook event: {event_type}")
+                logger.info(f"[DODO WEBHOOK] Unhandled event type: {event_type}")
+                # Return True so we don't reject the webhook
                 return True
 
         except Exception as e:
-            logger.error(f"Error processing Dodo webhook: {str(e)}")
+            logger.error(f"[DODO WEBHOOK] Error processing: {str(e)}")
+            import traceback
+            logger.error(f"[DODO WEBHOOK] Traceback: {traceback.format_exc()}")
             return False
 
     def _handle_payment_succeeded(
@@ -361,10 +367,20 @@ class DodoService:
         db: Session
     ) -> bool:
         """Handle successful payment webhook."""
-        payment_id = event_data.get("payment_id") or event_data.get("id")
+        # Try multiple possible payment ID fields
+        payment_id = (
+            event_data.get("payment_id") or
+            event_data.get("id") or
+            event_data.get("payment", {}).get("payment_id") or
+            event_data.get("payment", {}).get("id")
+        )
+
+        logger.info(f"[DODO WEBHOOK] _handle_payment_succeeded called with data keys: {list(event_data.keys())}")
+        logger.info(f"[DODO WEBHOOK] Extracted payment_id: {payment_id}")
 
         if not payment_id:
-            logger.error("Payment succeeded webhook missing payment_id")
+            logger.error("[DODO WEBHOOK] Payment succeeded webhook missing payment_id in all expected fields")
+            logger.error(f"[DODO WEBHOOK] Full event_data: {json.dumps(event_data)}")
             return False
 
         # Find payment by Dodo session/payment ID
@@ -373,12 +389,23 @@ class DodoService:
         ).first()
 
         if not payment:
-            logger.warning(f"Payment not found for Dodo payment_id: {payment_id}")
+            # Try searching with partial match or other fields
+            logger.warning(f"[DODO WEBHOOK] Payment not found for dodo_session_id: {payment_id}")
+
+            # List all pending Dodo payments for debugging
+            pending_payments = db.query(Payment).filter(
+                Payment.payment_gateway == "dodo",
+                Payment.status == PaymentStatus.PENDING
+            ).all()
+            logger.info(f"[DODO WEBHOOK] Pending Dodo payments: {[(p.id, p.dodo_session_id) for p in pending_payments]}")
+
             return False
 
         if payment.status == PaymentStatus.SUCCESS:
-            logger.info(f"Payment {payment.id} already marked as success")
+            logger.info(f"[DODO WEBHOOK] Payment {payment.id} already marked as success")
             return True
+
+        logger.info(f"[DODO WEBHOOK] Found payment record: id={payment.id}, user_id={payment.user_id}, plan={payment.plan}")
 
         # Update payment record
         payment.status = PaymentStatus.SUCCESS
@@ -393,6 +420,7 @@ class DodoService:
             else:
                 expiry_date = datetime.utcnow() + timedelta(days=payment.duration_months * 30)
 
+            old_subscription = user.subscription_type
             user.subscription_type = payment.plan
             user.subscription_expiry = expiry_date
 
@@ -403,8 +431,12 @@ class DodoService:
             user.resume_count = 0
             user.ats_analysis_count = 0
 
+            logger.info(f"[DODO WEBHOOK] User {user.id} upgraded from {old_subscription} to {payment.plan}, expiry: {expiry_date}")
+        else:
+            logger.error(f"[DODO WEBHOOK] User not found for payment.user_id: {payment.user_id}")
+
         db.commit()
-        logger.info(f"Dodo payment {payment.id} marked as success, user {user.id} upgraded to {payment.plan}")
+        logger.info(f"[DODO WEBHOOK] Payment {payment.id} marked as success, user {user.id} upgraded to {payment.plan}")
 
         return True
 
@@ -458,6 +490,106 @@ class DodoService:
             "resume_limit": 0,
             "ats_analysis_limit": 0
         }
+
+    async def verify_payment(
+        self,
+        payment_id: str,
+        db: Session
+    ) -> Tuple[bool, str, Optional[User]]:
+        """
+        Verify a Dodo payment by fetching its status from API.
+
+        Args:
+            payment_id: Dodo payment/session ID
+            db: Database session
+
+        Returns:
+            Tuple[bool, str, Optional[User]]: (success, status, user)
+        """
+        if not self.is_configured:
+            return False, "Dodo Payments is not configured", None
+
+        try:
+            # First, find the payment in our database
+            payment = db.query(Payment).filter(
+                Payment.dodo_session_id == payment_id
+            ).first()
+
+            if not payment:
+                logger.warning(f"Payment not found for Dodo ID: {payment_id}")
+                return False, "Payment not found", None
+
+            # If already verified, return success
+            if payment.status == PaymentStatus.SUCCESS:
+                user = db.query(User).filter(User.id == payment.user_id).first()
+                logger.info(f"Payment {payment_id} already verified")
+                return True, "success", user
+
+            # Fetch payment status from Dodo API
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f"{self.base_url}/payments/{payment_id}",
+                    headers=self._get_headers(),
+                    timeout=30.0
+                )
+
+                if response.status_code == 404:
+                    logger.warning(f"Payment {payment_id} not found in Dodo")
+                    return False, "Payment not found in Dodo", None
+
+                if response.status_code != 200:
+                    logger.error(f"Dodo API error: {response.status_code} - {response.text}")
+                    return False, f"API error: {response.status_code}", None
+
+                payment_data = response.json()
+
+            logger.info(f"Dodo payment status for {payment_id}: {json.dumps(payment_data)}")
+
+            # Check payment status from Dodo
+            dodo_status = payment_data.get("status", "").lower()
+
+            if dodo_status in ["succeeded", "paid", "completed", "success"]:
+                # Payment successful - update our records
+                payment.status = PaymentStatus.SUCCESS
+                payment.dodo_payment_id = payment_data.get("transaction_id") or payment_data.get("id") or payment_id
+
+                # Upgrade user subscription
+                user = db.query(User).filter(User.id == payment.user_id).first()
+                if user:
+                    # Calculate subscription expiry
+                    if user.subscription_expiry and user.subscription_expiry > datetime.utcnow():
+                        expiry_date = user.subscription_expiry + timedelta(days=payment.duration_months * 30)
+                    else:
+                        expiry_date = datetime.utcnow() + timedelta(days=payment.duration_months * 30)
+
+                    user.subscription_type = payment.plan
+                    user.subscription_expiry = expiry_date
+                    user.region = "INTL"
+
+                    # Reset usage counts
+                    user.resume_count = 0
+                    user.ats_analysis_count = 0
+
+                db.commit()
+                logger.info(f"Payment {payment_id} verified and user {user.id} upgraded to {payment.plan}")
+                return True, "success", user
+
+            elif dodo_status in ["pending", "processing", "requires_action"]:
+                return False, "pending", None
+
+            else:
+                # Payment failed
+                payment.status = PaymentStatus.FAILED
+                db.commit()
+                logger.info(f"Payment {payment_id} marked as failed (status: {dodo_status})")
+                return False, "failed", None
+
+        except httpx.RequestError as e:
+            logger.error(f"Dodo API request failed: {str(e)}")
+            return False, f"API request failed: {str(e)}", None
+        except Exception as e:
+            logger.error(f"Payment verification failed: {str(e)}")
+            return False, f"Verification failed: {str(e)}", None
 
 
 # Service instance

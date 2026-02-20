@@ -240,3 +240,31 @@ class PricingResponse(BaseModel):
     """
     plans: list[PricingPlan]
     currency: str = "INR"
+
+
+class VerifyDodoPaymentRequest(BaseModel):
+    """
+    Schema for verifying Dodo payment.
+
+    Attributes:
+        payment_id: Dodo payment/session ID from URL
+    """
+    payment_id: str = Field(..., min_length=1)
+
+
+class VerifyDodoPaymentResponse(BaseModel):
+    """
+    Schema for Dodo payment verification response.
+
+    Attributes:
+        success: Whether payment was verified
+        status: Payment status (pending/success/failed)
+        message: Response message
+        subscription_type: Updated subscription type (if verified)
+        subscription_expiry: Subscription expiry date (if verified)
+    """
+    success: bool
+    status: str
+    message: str
+    subscription_type: Optional[str] = None
+    subscription_expiry: Optional[datetime] = None
