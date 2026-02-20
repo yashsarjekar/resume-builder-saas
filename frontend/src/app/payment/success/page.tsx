@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { trackStarterPurchase, trackProPurchase } from '@/lib/tracking';
@@ -24,84 +24,112 @@ function PaymentSuccessContent() {
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 5;
 
+  // Use refs to prevent re-running verification after success
+  const isVerifiedRef = useRef(false);
+  const isVerifyingRef = useRef(false);
+
+  const verifyPayment = useCallback(async (paymentId: string) => {
+    // Don't re-verify if already successful or currently verifying
+    if (isVerifiedRef.current || isVerifyingRef.current) {
+      return;
+    }
+
+    isVerifyingRef.current = true;
+    setStatus('verifying');
+
+    try {
+      const response = await api.post<VerificationResult>('/api/payment/verify-dodo', {
+        payment_id: paymentId
+      });
+
+      const result = response.data;
+
+      if (result.success) {
+        // Mark as verified to prevent re-runs
+        isVerifiedRef.current = true;
+        isVerifyingRef.current = false;
+        setStatus('success');
+
+        // Track the conversion
+        if (user?.email && result.subscription_type) {
+          if (result.subscription_type === 'starter') {
+            trackStarterPurchase(paymentId, user.email);
+          } else if (result.subscription_type === 'pro') {
+            trackProPurchase(paymentId, user.email);
+          }
+        }
+
+        // Refresh user data to get updated subscription
+        if (refreshUser) {
+          await refreshUser();
+        }
+
+        // Redirect to dashboard after a moment
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 3000);
+
+      } else if (result.status === 'pending') {
+        isVerifyingRef.current = false;
+        // Payment still processing - retry
+        if (retryCount < maxRetries) {
+          setStatus('pending');
+          setTimeout(() => {
+            setRetryCount(prev => prev + 1);
+          }, 3000); // Retry every 3 seconds
+        } else {
+          setStatus('error');
+          setErrorMessage('Payment is still processing. Please check your dashboard in a few minutes.');
+        }
+      } else {
+        isVerifyingRef.current = false;
+        setStatus('error');
+        setErrorMessage(result.message || 'Payment verification failed');
+      }
+    } catch (error: any) {
+      console.error('Payment verification error:', error);
+      isVerifyingRef.current = false;
+
+      // If user not logged in, might need to re-authenticate
+      if (error.response?.status === 401) {
+        setStatus('error');
+        setErrorMessage('Please log in to verify your payment.');
+      } else if (retryCount < maxRetries) {
+        // Network error - retry
+        setStatus('pending');
+        setTimeout(() => {
+          setRetryCount(prev => prev + 1);
+        }, 3000);
+      } else {
+        setStatus('error');
+        setErrorMessage('Failed to verify payment. Please contact support if your subscription is not active.');
+      }
+    }
+  }, [user?.email, refreshUser, router, retryCount]);
+
+  // Initial effect - only runs once on mount
   useEffect(() => {
-    // Get payment ID from URL params
     const paymentId = searchParams.get('payment_id') || searchParams.get('session_id');
 
     if (!paymentId) {
       // No payment ID in URL - might be Razorpay redirect, show success
+      isVerifiedRef.current = true;
       setStatus('success');
       return;
     }
 
-    const verifyPayment = async () => {
-      setStatus('verifying');
+    verifyPayment(paymentId);
+  }, [searchParams, verifyPayment]);
 
-      try {
-        const response = await api.post<VerificationResult>('/api/payment/verify-dodo', {
-          payment_id: paymentId
-        });
+  // Retry effect - only runs when retryCount changes and not yet verified
+  useEffect(() => {
+    if (retryCount === 0 || isVerifiedRef.current) return;
 
-        const result = response.data;
-
-        if (result.success) {
-          setStatus('success');
-
-          // Track the conversion
-          if (user?.email && result.subscription_type) {
-            if (result.subscription_type === 'starter') {
-              trackStarterPurchase(paymentId, user.email);
-            } else if (result.subscription_type === 'pro') {
-              trackProPurchase(paymentId, user.email);
-            }
-          }
-
-          // Refresh user data to get updated subscription
-          if (refreshUser) {
-            await refreshUser();
-          }
-
-          // Redirect to dashboard after a moment
-          setTimeout(() => {
-            router.push('/dashboard');
-          }, 3000);
-
-        } else if (result.status === 'pending') {
-          // Payment still processing - retry
-          if (retryCount < maxRetries) {
-            setStatus('pending');
-            setTimeout(() => {
-              setRetryCount(prev => prev + 1);
-            }, 3000); // Retry every 3 seconds
-          } else {
-            setStatus('error');
-            setErrorMessage('Payment is still processing. Please check your dashboard in a few minutes.');
-          }
-        } else {
-          setStatus('error');
-          setErrorMessage(result.message || 'Payment verification failed');
-        }
-      } catch (error: any) {
-        console.error('Payment verification error:', error);
-
-        // If user not logged in, might need to re-authenticate
-        if (error.response?.status === 401) {
-          setStatus('error');
-          setErrorMessage('Please log in to verify your payment.');
-        } else if (retryCount < maxRetries) {
-          // Network error - retry
-          setTimeout(() => {
-            setRetryCount(prev => prev + 1);
-          }, 3000);
-        } else {
-          setStatus('error');
-          setErrorMessage('Failed to verify payment. Please contact support if your subscription is not active.');
-        }
-      }
-    };
-
-    verifyPayment();
-  }, [searchParams, user, router, refreshUser, retryCount]);
+    const paymentId = searchParams.get('payment_id') || searchParams.get('session_id');
+    if (paymentId) {
+      verifyPayment(paymentId);
+    }
+  }, [retryCount, searchParams, verifyPayment]);
 
   return (
     <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
