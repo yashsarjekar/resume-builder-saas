@@ -1,5 +1,5 @@
 """
-Payment routes for Razorpay integration.
+Payment routes for Razorpay (India) and Dodo Payments (International) integration.
 
 This module provides endpoints for payment operations including order creation,
 payment verification, subscription management, and webhook handling.
@@ -9,12 +9,14 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
 from sqlalchemy.orm import Session
 from typing import Optional
 import logging
+import json
 
 from app.database import get_db
 from app.models.user import User
 from app.models.payment import Payment
 from app.routes.auth import get_current_user
 from app.services.razorpay_service import razorpay_service
+from app.services.dodo_service import dodo_service
 from app.services.email_service import email_service
 from app.schemas.payment import (
     CreateOrderRequest,
@@ -61,15 +63,15 @@ async def create_payment_order(
     db: Session = Depends(get_db)
 ):
     """
-    Create a Razorpay order for payment.
+    Create a payment order (Razorpay for India, Dodo for international).
 
     Args:
-        request: Order creation details (plan and duration)
+        request: Order creation details (plan, duration, country)
         current_user: Authenticated user
         db: Database session
 
     Returns:
-        CreateOrderResponse: Razorpay order details
+        CreateOrderResponse: Payment order details with gateway info
 
     Raises:
         HTTPException: If order creation fails
@@ -78,16 +80,37 @@ async def create_payment_order(
         POST /api/payment/create-order
         {
             "plan": "pro",
-            "duration_months": 12
+            "duration_months": 12,
+            "country": "IN"
         }
     """
     try:
-        order = razorpay_service.create_order(
-            user_id=current_user.id,
-            request=request,
-            db=db
-        )
-        logger.info(f"Order created for user {current_user.id}: {order.order_id}")
+        # Route to appropriate payment gateway based on country
+        if request.country.upper() == "IN":
+            # India - use Razorpay
+            order = razorpay_service.create_order(
+                user_id=current_user.id,
+                request=request,
+                db=db
+            )
+            logger.info(f"Razorpay order created for user {current_user.id}: {order.order_id}")
+        else:
+            # International - use Dodo Payments
+            if not dodo_service.is_configured:
+                logger.warning("Dodo Payments not configured, falling back to Razorpay")
+                order = razorpay_service.create_order(
+                    user_id=current_user.id,
+                    request=request,
+                    db=db
+                )
+            else:
+                order = await dodo_service.create_checkout_session(
+                    user_id=current_user.id,
+                    request=request,
+                    db=db
+                )
+                logger.info(f"Dodo checkout created for user {current_user.id}: {order.order_id}")
+
         return order
 
     except ValueError as e:
@@ -206,8 +229,11 @@ async def get_payment_history(
             PaymentResponse(
                 id=p.id,
                 user_id=p.user_id,
+                payment_gateway=p.payment_gateway,
                 razorpay_order_id=p.razorpay_order_id,
                 razorpay_payment_id=p.razorpay_payment_id,
+                dodo_session_id=p.dodo_session_id,
+                dodo_payment_id=p.dodo_payment_id,
                 amount=p.amount,
                 currency=p.currency,
                 status=p.status.value,
@@ -557,4 +583,84 @@ async def handle_webhook(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to process webhook"
+        )
+
+
+@router.post("/webhook/dodo")
+async def handle_dodo_webhook(
+    request: Request,
+    webhook_signature: Optional[str] = Header(None, alias="webhook-signature"),
+    db: Session = Depends(get_db)
+):
+    """
+    Handle Dodo Payments webhook events.
+
+    Args:
+        request: Raw request object
+        webhook_signature: Dodo webhook signature header
+        db: Database session
+
+    Returns:
+        dict: Success message
+
+    Raises:
+        HTTPException: If signature verification fails
+
+    Example:
+        POST /api/payment/webhook/dodo
+        Headers: webhook-signature: <signature>
+        Body: <webhook payload>
+    """
+    try:
+        # Get raw body
+        body = await request.body()
+        payload = body.decode('utf-8')
+
+        # Verify webhook signature (if configured)
+        if dodo_service.webhook_secret:
+            if not webhook_signature:
+                logger.warning("Dodo webhook received without signature")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Missing webhook signature"
+                )
+
+            is_valid = dodo_service.verify_webhook_signature(
+                payload=payload,
+                signature=webhook_signature
+            )
+
+            if not is_valid:
+                logger.warning("Dodo webhook signature verification failed")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid webhook signature"
+                )
+
+        # Parse webhook data
+        webhook_data = json.loads(payload)
+        event_type = webhook_data.get('type') or webhook_data.get('event_type')
+        event_data = webhook_data.get('data', webhook_data)
+
+        logger.info(f"Received Dodo webhook event: {event_type}")
+
+        # Process the webhook event
+        success = dodo_service.process_webhook_event(
+            event_type=event_type,
+            event_data=event_data,
+            db=db
+        )
+
+        if success:
+            return {"status": "success", "message": "Dodo webhook processed"}
+        else:
+            return {"status": "warning", "message": "Webhook event not fully processed"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Dodo webhook processing error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to process Dodo webhook"
         )

@@ -29,10 +29,15 @@ class Settings(BaseSettings):
     # Claude AI Configuration
     ANTHROPIC_API_KEY: str
 
-    # Razorpay Configuration
+    # Razorpay Configuration (India)
     RAZORPAY_KEY_ID: str
     RAZORPAY_KEY_SECRET: str
     RAZORPAY_WEBHOOK_SECRET: str
+
+    # Dodo Payments Configuration (International)
+    DODO_API_KEY: Optional[str] = None
+    DODO_WEBHOOK_SECRET: Optional[str] = None
+    DODO_ENVIRONMENT: str = "test_mode"  # "test_mode" or "live_mode"
 
     # Application Settings
     ENVIRONMENT: str = "development"

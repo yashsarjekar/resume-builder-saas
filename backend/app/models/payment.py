@@ -46,10 +46,17 @@ class Payment(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
+    # Payment gateway identifier
+    payment_gateway = Column(String(20), default="razorpay", nullable=False)  # "razorpay" or "dodo"
+
     # Razorpay fields
     razorpay_order_id = Column(String, nullable=True, index=True)
     razorpay_payment_id = Column(String, nullable=True, index=True)
     razorpay_signature = Column(String, nullable=True)
+
+    # Dodo Payments fields
+    dodo_session_id = Column(String(255), nullable=True, index=True)
+    dodo_payment_id = Column(String(255), nullable=True)
 
     # Payment details
     amount = Column(Integer, nullable=False)  # Amount in paise
@@ -136,10 +143,13 @@ class Payment(Base):
         return {
             "id": self.id,
             "user_id": self.user_id,
+            "payment_gateway": self.payment_gateway,
             "razorpay_order_id": self.razorpay_order_id,
             "razorpay_payment_id": self.razorpay_payment_id,
+            "dodo_session_id": self.dodo_session_id,
+            "dodo_payment_id": self.dodo_payment_id,
             "amount": self.amount,
-            "amount_rupees": self.get_amount_in_rupees(),
+            "amount_display": self.get_amount_in_rupees() if self.currency == "INR" else self.amount / 100.0,
             "currency": self.currency,
             "status": self.status.value,
             "plan": self.plan,

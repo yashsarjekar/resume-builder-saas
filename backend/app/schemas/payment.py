@@ -25,20 +25,26 @@ class SubscriptionPlan(str, Enum):
     PRO = "pro"
 
 
+class PaymentGateway(str, Enum):
+    """Payment gateway enum."""
+    RAZORPAY = "razorpay"
+    DODO = "dodo"
+
+
 class CreateOrderRequest(BaseModel):
     """
-    Schema for creating a Razorpay order or subscription.
+    Schema for creating a payment order.
 
     Attributes:
         plan: Subscription plan to purchase (starter/pro)
         duration_months: Subscription duration in months (1, 3, 6, 12)
         recurring: Whether to enable auto-renewal (default: False)
-                  If True, creates a recurring subscription
-                  If False, creates a one-time payment
+        country: User's country code (e.g., "IN", "US") - determines payment gateway
     """
     plan: SubscriptionPlan
     duration_months: int = Field(..., ge=1, le=12, description="Duration in months")
     recurring: bool = Field(default=False, description="Enable auto-renewal")
+    country: str = Field(default="IN", description="User's country code")
 
     @field_validator('duration_months')
     @classmethod
@@ -52,26 +58,30 @@ class CreateOrderRequest(BaseModel):
 
 class CreateOrderResponse(BaseModel):
     """
-    Schema for Razorpay order/subscription creation response.
+    Schema for payment order creation response.
 
     Attributes:
-        order_id: Razorpay order ID or subscription ID
-        amount: Order amount in paise
-        currency: Currency code (INR)
+        order_id: Order ID or session ID (Razorpay order ID or Dodo session ID)
+        amount: Order amount in smallest currency unit (paise/cents)
+        currency: Currency code (INR/USD)
         plan: Subscription plan
         duration_months: Duration in months
-        key_id: Razorpay key ID for frontend
+        key_id: Payment gateway key ID for frontend (Razorpay only)
         recurring: Whether this is a recurring subscription
         subscription_id: Razorpay subscription ID (only if recurring)
+        payment_gateway: Which payment gateway to use (razorpay/dodo)
+        checkout_url: Redirect URL for Dodo checkout (Dodo only)
     """
     order_id: str
     amount: int
     currency: str = "INR"
     plan: str
     duration_months: int
-    key_id: str
+    key_id: Optional[str] = None  # Razorpay key ID (None for Dodo)
     recurring: bool = False
     subscription_id: Optional[str] = None
+    payment_gateway: str = "razorpay"  # "razorpay" or "dodo"
+    checkout_url: Optional[str] = None  # Dodo redirect URL
 
 
 class VerifyPaymentRequest(BaseModel):
@@ -113,9 +123,12 @@ class PaymentResponse(BaseModel):
     Attributes:
         id: Payment record ID
         user_id: User ID
+        payment_gateway: Payment gateway used (razorpay/dodo)
         razorpay_order_id: Razorpay order ID
         razorpay_payment_id: Razorpay payment ID (if completed)
-        amount: Payment amount in paise
+        dodo_session_id: Dodo session ID
+        dodo_payment_id: Dodo payment ID (if completed)
+        amount: Payment amount in smallest unit
         currency: Currency code
         status: Payment status
         plan: Subscription plan
@@ -125,8 +138,11 @@ class PaymentResponse(BaseModel):
     """
     id: int
     user_id: int
-    razorpay_order_id: str
+    payment_gateway: str = "razorpay"
+    razorpay_order_id: Optional[str] = None
     razorpay_payment_id: Optional[str] = None
+    dodo_session_id: Optional[str] = None
+    dodo_payment_id: Optional[str] = None
     amount: int
     currency: str
     status: str

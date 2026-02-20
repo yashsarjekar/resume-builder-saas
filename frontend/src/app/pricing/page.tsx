@@ -14,7 +14,8 @@ declare global {
 
 interface PricingPlan {
   name: string;
-  price: number;
+  priceINR: number;
+  priceUSD: number;
   features: string[];
   resume_limit: number | string;
   ats_analysis_limit: number | string;
@@ -25,11 +26,14 @@ export default function PricingPage() {
   const { user, isAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('');
+  const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [countryLoading, setCountryLoading] = useState(true);
 
   const plans: PricingPlan[] = [
     {
       name: 'FREE',
-      price: 0,
+      priceINR: 0,
+      priceUSD: 0,
       resume_limit: 1,
       ats_analysis_limit: 2,
       features: [
@@ -43,7 +47,8 @@ export default function PricingPage() {
     },
     {
       name: 'STARTER',
-      price: 299,
+      priceINR: 299,
+      priceUSD: 12.99,
       resume_limit: 5,
       ats_analysis_limit: 10,
       features: [
@@ -59,7 +64,8 @@ export default function PricingPage() {
     },
     {
       name: 'PRO',
-      price: 999,
+      priceINR: 999,
+      priceUSD: 39.99,
       resume_limit: 'Unlimited',
       ats_analysis_limit: 'Unlimited',
       features: [
@@ -77,17 +83,46 @@ export default function PricingPage() {
     }
   ];
 
+  // Detect user's country on mount
   useEffect(() => {
-    // Load Razorpay script
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
+    const detectCountry = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        setUserCountry(data.country_code || 'US');
+      } catch (error) {
+        console.log('Country detection failed, defaulting to US');
+        setUserCountry('US'); // Default to international (Dodo)
+      } finally {
+        setCountryLoading(false);
+      }
     };
+
+    detectCountry();
   }, []);
+
+  // Load Razorpay script for Indian users
+  useEffect(() => {
+    if (userCountry === 'IN') {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      document.body.appendChild(script);
+
+      return () => {
+        if (document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+      };
+    }
+  }, [userCountry]);
+
+  const isIndian = userCountry === 'IN';
+
+  const getPrice = (plan: PricingPlan) => {
+    if (plan.priceINR === 0) return isIndian ? '₹0' : '$0';
+    return isIndian ? `₹${plan.priceINR}` : `$${plan.priceUSD}`;
+  };
 
   const handleUpgrade = async (planName: string) => {
     if (!isAuthenticated) {
@@ -103,17 +138,24 @@ export default function PricingPage() {
     setSelectedPlan(planName);
 
     try {
-      // Create order
+      // Create order with country for gateway routing
       const orderResponse = await api.post('/api/payment/create-order', {
         plan: planName.toLowerCase(),
-        duration_months: 1  // Default to 1 month (monthly subscription)
+        duration_months: 1,
+        country: userCountry || 'US'
       });
 
-      const { order_id, amount, currency } = orderResponse.data;
+      const { order_id, amount, currency, payment_gateway, checkout_url, key_id } = orderResponse.data;
 
-      // Razorpay options
+      if (payment_gateway === 'dodo' && checkout_url) {
+        // Dodo Payments - redirect to hosted checkout
+        window.location.href = checkout_url;
+        return;
+      }
+
+      // Razorpay - use in-page modal
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
+        key: key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY,
         amount: amount,
         currency: currency,
         name: 'Resume Builder',
@@ -142,7 +184,6 @@ export default function PricingPage() {
           } catch (error: any) {
             console.error('Payment verification failed:', error);
 
-            // Extract error message
             let errorMessage = 'Payment verification failed. Please contact support.';
             if (error.response?.data?.detail) {
               errorMessage = `Payment verification failed: ${error.response.data.detail}`;
@@ -173,7 +214,6 @@ export default function PricingPage() {
     } catch (error: any) {
       console.error('Failed to create order:', error);
 
-      // Extract error message properly
       let errorMessage = 'Failed to create order. Please try again.';
       if (error.response?.data?.detail) {
         errorMessage = error.response.data.detail;
@@ -184,7 +224,6 @@ export default function PricingPage() {
       }
 
       alert(errorMessage);
-    } finally {
       setLoading(false);
       setSelectedPlan('');
     }
@@ -200,8 +239,16 @@ export default function PricingPage() {
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Affordable pricing for everyone. Start free, upgrade anytime.
-            <span className="block text-green-600 font-semibold mt-2">Starting at just ₹299/month (~$3.50 USD)</span>
-            <span className="block text-sm text-gray-500 mt-2">💳 International cards accepted worldwide</span>
+            {isIndian ? (
+              <span className="block text-green-600 font-semibold mt-2">Starting at just ₹299/month</span>
+            ) : (
+              <span className="block text-green-600 font-semibold mt-2">Starting at just $12.99/month</span>
+            )}
+            <span className="block text-sm text-gray-500 mt-2">
+              {countryLoading ? 'Detecting your location...' : (
+                isIndian ? '🇮🇳 Indian Rupee pricing' : '🌍 International pricing (USD)'
+              )}
+            </span>
           </p>
         </div>
 
@@ -216,21 +263,16 @@ export default function PricingPage() {
             >
               {plan.name === 'PRO' && (
                 <div className="bg-blue-600 text-white text-center py-2 text-sm font-semibold">
-                  BEST VALUE 🔥
+                  BEST VALUE
                 </div>
               )}
 
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-gray-900">₹{plan.price}</span>
-                  {plan.price > 0 && (
-                    <>
-                      <span className="text-gray-600">/month</span>
-                      <div className="text-sm text-gray-500 mt-1">
-                        ~${(plan.price / 85).toFixed(2)} USD
-                      </div>
-                    </>
+                  <span className="text-4xl font-bold text-gray-900">{getPrice(plan)}</span>
+                  {plan.priceINR > 0 && (
+                    <span className="text-gray-600">/month</span>
                   )}
                 </div>
 
@@ -254,6 +296,7 @@ export default function PricingPage() {
                   onClick={() => handleUpgrade(plan.name)}
                   disabled={
                     loading ||
+                    countryLoading ||
                     (user?.subscription_type === plan.name.toLowerCase()) ||
                     (plan.name === 'FREE')
                   }
