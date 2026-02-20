@@ -6,6 +6,7 @@ export interface User {
   subscription_expiry: string | null;
   resume_count: number;
   ats_analysis_count: number;
+  region: 'IN' | 'INTL';
   created_at: string;
 }
 

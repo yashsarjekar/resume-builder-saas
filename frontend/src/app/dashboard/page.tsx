@@ -163,18 +163,20 @@ export default function DashboardPage() {
   }
 
   const getResumeLimit = () => {
+    const isInternational = user.region === 'INTL';
     switch (user.subscription_type) {
       case 'pro': return 'Unlimited';
-      case 'starter': return 5;
-      default: return 1;
+      case 'starter': return isInternational ? 15 : 5;
+      default: return isInternational ? 5 : 1;
     }
   };
 
   const getATSLimit = () => {
+    const isInternational = user.region === 'INTL';
     switch (user.subscription_type) {
       case 'pro': return 'Unlimited';
-      case 'starter': return 3;
-      default: return 1;
+      case 'starter': return isInternational ? 15 : 10;
+      default: return isInternational ? 5 : 2;
     }
   };
 

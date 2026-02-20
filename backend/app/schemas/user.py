@@ -92,6 +92,7 @@ class UserResponse(UserBase):
         subscription_expiry: Subscription expiration date
         resume_count: Number of resumes created
         ats_analysis_count: Number of ATS analyses performed
+        region: User region (IN for India, INTL for International)
         created_at: Account creation timestamp
     """
     id: int
@@ -99,6 +100,7 @@ class UserResponse(UserBase):
     subscription_expiry: Optional[datetime] = None
     resume_count: int
     ats_analysis_count: int
+    region: str = "IN"
     created_at: datetime
 
     class Config:
