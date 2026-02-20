@@ -181,13 +181,16 @@ class DodoService:
             product_name = self.get_product_name(request.plan.value, request.duration_months)
 
             # Create checkout session via Dodo API
+            # Products must be pre-created in Dodo dashboard with matching IDs
+            product_id = f"resume_builder_{request.plan.value}_{request.duration_months}m"
+
             checkout_data = {
                 "billing": {
                     "city": "Unknown",
                     "country": request.country,
                     "state": "Unknown",
                     "street": "Unknown",
-                    "zipcode": "00000"
+                    "zipcode": 0
                 },
                 "customer": {
                     "email": user.email,
@@ -196,7 +199,7 @@ class DodoService:
                 "payment_link": True,
                 "product_cart": [
                     {
-                        "product_id": f"resume_builder_{request.plan.value}_{request.duration_months}m",
+                        "product_id": product_id,
                         "quantity": 1
                     }
                 ],
@@ -207,6 +210,8 @@ class DodoService:
                     "duration_months": str(request.duration_months)
                 }
             }
+
+            logger.info(f"Creating Dodo checkout with product_id: {product_id}")
 
             async with httpx.AsyncClient() as client:
                 response = await client.post(
