@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
@@ -12,6 +12,23 @@ export default function SignupPage() {
   const router = useRouter();
   const { signup, loading } = useAuthStore();
   const [error, setError] = useState('');
+  const [userCountry, setUserCountry] = useState<string>('IN');
+
+  // Detect user's country on mount for region-based limits
+  useEffect(() => {
+    const detectCountry = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        setUserCountry(data.country_code || 'US');
+      } catch (error) {
+        console.log('Country detection failed, defaulting to IN');
+        setUserCountry('IN');
+      }
+    };
+
+    detectCountry();
+  }, []);
 
   const {
     register,
@@ -25,7 +42,8 @@ export default function SignupPage() {
     try {
       setError('');
       const { agreeToTerms, ...signupData } = data;
-      await signup(signupData);
+      // Include country for region-based limits (INTL gets higher limits)
+      await signup({ ...signupData, country: userCountry });
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Signup failed. Please try again.');

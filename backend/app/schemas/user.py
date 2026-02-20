@@ -25,8 +25,10 @@ class UserCreate(UserBase):
         email: Valid email address
         name: Full name (2-100 characters)
         password: Password (minimum 8 characters)
+        country: User's country code for region-based limits (optional)
     """
     password: str = Field(..., min_length=8, max_length=100)
+    country: Optional[str] = Field(default="IN", description="Country code for region-based limits")
 
     @validator('password')
     def validate_password(cls, v: str) -> str:

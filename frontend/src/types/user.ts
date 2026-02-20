@@ -18,6 +18,7 @@ export interface SignupData {
   name: string;
   email: string;
   password: string;
+  country?: string;
 }
 
 export interface AuthResponse {

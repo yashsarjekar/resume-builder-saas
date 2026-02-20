@@ -79,12 +79,17 @@ async def signup(
     # Hash the password
     hashed_password = hash_password(user_data.password)
 
+    # Determine region based on country (IN = India, else = International)
+    country = getattr(user_data, 'country', 'IN') or 'IN'
+    region = "IN" if country.upper() == "IN" else "INTL"
+
     # Create new user
     new_user = User(
         email=user_data.email,
         name=user_data.name,
         password_hash=hashed_password,
         subscription_type=SubscriptionType.FREE,
+        region=region,
         resume_count=0,
         ats_analysis_count=0
     )
