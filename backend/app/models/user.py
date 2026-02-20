@@ -57,6 +57,9 @@ class User(Base):
     # Razorpay customer ID for recurring subscriptions
     razorpay_customer_id = Column(String, nullable=True)
 
+    # User region for subscription limits ("IN" for India, "INTL" for international)
+    region = Column(String(10), default="IN", nullable=False)
+
     # Usage tracking
     resume_count = Column(Integer, default=0, nullable=False)
     ats_analysis_count = Column(Integer, default=0, nullable=False)
@@ -106,7 +109,7 @@ class User(Base):
         Check if user can create another resume based on subscription limits.
 
         Args:
-            limit_config: Dictionary containing subscription limits
+            limit_config: Dictionary containing subscription limits (should be region-specific)
 
         Returns:
             bool: True if user can create resume, False otherwise
@@ -124,7 +127,7 @@ class User(Base):
         Check if user can perform ATS analysis based on subscription limits.
 
         Args:
-            limit_config: Dictionary containing subscription limits
+            limit_config: Dictionary containing subscription limits (should be region-specific)
 
         Returns:
             bool: True if user can analyze ATS, False otherwise
@@ -136,3 +139,12 @@ class User(Base):
         limit = limit_config.get(limit_key, 2)
 
         return self.ats_analysis_count < limit
+
+    def get_region(self) -> str:
+        """
+        Get user's region for limit calculations.
+
+        Returns:
+            str: "IN" for India, "INTL" for international
+        """
+        return self.region if self.region else "IN"

@@ -29,16 +29,26 @@ export default function PricingPage() {
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [countryLoading, setCountryLoading] = useState(true);
 
-  const plans: PricingPlan[] = [
+  // Plans with region-specific limits
+  // India: Lower limits, lower price
+  // International: Higher limits, higher price
+  const getPlans = (isIndia: boolean): PricingPlan[] => [
     {
       name: 'FREE',
       priceINR: 0,
       priceUSD: 0,
-      resume_limit: 1,
-      ats_analysis_limit: 2,
-      features: [
+      resume_limit: isIndia ? 1 : 5,
+      ats_analysis_limit: isIndia ? 2 : 5,
+      features: isIndia ? [
         '1 Resume Creation',
         '2 ATS Analyses',
+        '10 AI Assists per day',
+        'Basic Templates',
+        'PDF Export',
+        'Email Support'
+      ] : [
+        '5 Resume Creations',
+        '5 ATS Analyses',
         '10 AI Assists per day',
         'Basic Templates',
         'PDF Export',
@@ -49,11 +59,20 @@ export default function PricingPage() {
       name: 'STARTER',
       priceINR: 299,
       priceUSD: 12.99,
-      resume_limit: 5,
-      ats_analysis_limit: 10,
-      features: [
+      resume_limit: isIndia ? 5 : 15,
+      ats_analysis_limit: isIndia ? 10 : 15,
+      features: isIndia ? [
         '5 Resume Creations',
         '10 ATS Analyses',
+        '50 AI Assists per day',
+        'AI Resume Optimization',
+        'Cover Letter Generator',
+        'Keyword Extraction',
+        '4 Premium Templates',
+        'Email Support'
+      ] : [
+        '15 Resume Creations',
+        '15 ATS Analyses',
         '50 AI Assists per day',
         'AI Resume Optimization',
         'Cover Letter Generator',
@@ -82,6 +101,8 @@ export default function PricingPage() {
       ]
     }
   ];
+
+  const plans = getPlans(userCountry === 'IN');
 
   // Detect user's country on mount
   useEffect(() => {

@@ -46,14 +46,14 @@ class DodoService:
         }
     }
 
-    # Plan features (same as Razorpay)
+    # Plan features for International users (higher limits than India)
     PLAN_FEATURES = {
         "starter": {
-            "resume_limit": 5,
-            "ats_analysis_limit": 10,
+            "resume_limit": 15,  # Higher for international
+            "ats_analysis_limit": 15,  # Higher for international
             "features": [
-                "5 Resume Creations",
-                "10 ATS Analyses",
+                "15 Resume Creations",
+                "15 ATS Analyses",
                 "50 AI Assists per day",
                 "AI Resume Optimization",
                 "Cover Letter Generator",
@@ -80,6 +80,12 @@ class DodoService:
             ],
             "is_popular": True
         }
+    }
+
+    # Free plan limits for International users
+    FREE_LIMITS_INTL = {
+        "resume_limit": 5,
+        "ats_analysis_limit": 5
     }
 
     def __init__(self):
@@ -367,6 +373,9 @@ class DodoService:
             user.subscription_type = payment.plan
             user.subscription_expiry = expiry_date
 
+            # Set region to international for Dodo payments (higher limits)
+            user.region = "INTL"
+
             # Reset usage counts
             user.resume_count = 0
             user.ats_analysis_count = 0
@@ -405,19 +414,16 @@ class DodoService:
 
     def get_plan_limits(self, plan: str) -> Dict[str, int]:
         """
-        Get limits for a subscription plan.
+        Get limits for a subscription plan (International limits).
 
         Args:
             plan: Plan name (FREE/starter/pro)
 
         Returns:
-            Dict[str, int]: Plan limits
+            Dict[str, int]: Plan limits for international users
         """
         if plan.upper() == "FREE":
-            return {
-                "resume_limit": 1,
-                "ats_analysis_limit": 2
-            }
+            return self.FREE_LIMITS_INTL
 
         if plan in self.PLAN_FEATURES:
             return {

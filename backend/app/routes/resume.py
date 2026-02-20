@@ -237,10 +237,11 @@ async def create_resume(
             "template_name": "modern"
         }
     """
-    # Check subscription limits
-    limit_config = settings.get_limit_config()
+    # Check subscription limits (region-specific)
+    user_region = current_user.get_region() if hasattr(current_user, 'get_region') else "IN"
+    limit_config = settings.get_limit_config(user_region)
     if not current_user.can_create_resume(limit_config):
-        resume_limit = settings.get_resume_limit(current_user.subscription_type.value)
+        resume_limit = settings.get_resume_limit(current_user.subscription_type.value, user_region)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"Resume limit ({resume_limit}) reached. Upgrade your subscription."
@@ -683,8 +684,9 @@ async def upload_resume(
         File: resume.pdf
     """
     try:
-        # Check user's resume limit
-        resume_limit = settings.get_resume_limit(current_user.subscription_type)
+        # Check user's resume limit (region-specific)
+        user_region = current_user.get_region() if hasattr(current_user, 'get_region') else "IN"
+        resume_limit = settings.get_resume_limit(current_user.subscription_type, user_region)
 
         if current_user.resume_count >= resume_limit:
             raise HTTPException(
@@ -876,8 +878,9 @@ async def analyze_resume_ats(
     Example:
         POST /api/resume/123/analyze-ats
     """
-    # Check subscription limits
-    ats_limit = settings.get_ats_limit(current_user.subscription_type)
+    # Check subscription limits (region-specific)
+    user_region = current_user.get_region() if hasattr(current_user, 'get_region') else "IN"
+    ats_limit = settings.get_ats_limit(current_user.subscription_type, user_region)
     if current_user.ats_analysis_count >= ats_limit:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

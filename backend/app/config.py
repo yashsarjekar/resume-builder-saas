@@ -51,13 +51,20 @@ class Settings(BaseSettings):
     REDIS_RETRY_ON_TIMEOUT: bool = True
     REDIS_HEALTH_CHECK_INTERVAL: int = 30
 
-    # Subscription Limits
+    # Subscription Limits (India)
     FREE_RESUME_LIMIT: int = 1
     FREE_ATS_ANALYSIS_LIMIT: int = 2
     STARTER_RESUME_LIMIT: int = 5
     STARTER_ATS_ANALYSIS_LIMIT: int = 10
     PRO_RESUME_LIMIT: int = 999
     PRO_ATS_ANALYSIS_LIMIT: int = 999
+
+    # Subscription Limits (International - more generous for higher pricing)
+    INTL_FREE_RESUME_LIMIT: int = 5
+    INTL_FREE_ATS_ANALYSIS_LIMIT: int = 5
+    INTL_STARTER_RESUME_LIMIT: int = 15
+    INTL_STARTER_ATS_ANALYSIS_LIMIT: int = 15
+    # Pro is same for both regions (unlimited)
 
     # Rate Limiting
     RATE_LIMIT_ENABLED: bool = True
@@ -125,39 +132,61 @@ class Settings(BaseSettings):
         """
         return self.ENVIRONMENT.lower() == "development"
 
-    def get_resume_limit(self, subscription_type: str) -> int:
+    def get_resume_limit(self, subscription_type: str, region: str = "IN") -> int:
         """
-        Get resume creation limit for a subscription type.
+        Get resume creation limit for a subscription type and region.
 
         Args:
             subscription_type: Subscription type (free, starter, pro)
+            region: User region ("IN" for India, "INTL" for international)
 
         Returns:
             int: Resume creation limit
         """
-        limits = {
-            "free": self.FREE_RESUME_LIMIT,
-            "starter": self.STARTER_RESUME_LIMIT,
-            "pro": self.PRO_RESUME_LIMIT,
-        }
-        return limits.get(subscription_type.lower(), self.FREE_RESUME_LIMIT)
+        sub_type = subscription_type.lower()
 
-    def get_ats_limit(self, subscription_type: str) -> int:
+        # International users get higher limits (except Pro which is unlimited)
+        if region == "INTL" and sub_type != "pro":
+            limits = {
+                "free": self.INTL_FREE_RESUME_LIMIT,
+                "starter": self.INTL_STARTER_RESUME_LIMIT,
+                "pro": self.PRO_RESUME_LIMIT,
+            }
+        else:
+            limits = {
+                "free": self.FREE_RESUME_LIMIT,
+                "starter": self.STARTER_RESUME_LIMIT,
+                "pro": self.PRO_RESUME_LIMIT,
+            }
+        return limits.get(sub_type, self.FREE_RESUME_LIMIT)
+
+    def get_ats_limit(self, subscription_type: str, region: str = "IN") -> int:
         """
-        Get ATS analysis limit for a subscription type.
+        Get ATS analysis limit for a subscription type and region.
 
         Args:
             subscription_type: Subscription type (free, starter, pro)
+            region: User region ("IN" for India, "INTL" for international)
 
         Returns:
             int: ATS analysis limit
         """
-        limits = {
-            "free": self.FREE_ATS_ANALYSIS_LIMIT,
-            "starter": self.STARTER_ATS_ANALYSIS_LIMIT,
-            "pro": self.PRO_ATS_ANALYSIS_LIMIT,
-        }
-        return limits.get(subscription_type.lower(), self.FREE_ATS_ANALYSIS_LIMIT)
+        sub_type = subscription_type.lower()
+
+        # International users get higher limits (except Pro which is unlimited)
+        if region == "INTL" and sub_type != "pro":
+            limits = {
+                "free": self.INTL_FREE_ATS_ANALYSIS_LIMIT,
+                "starter": self.INTL_STARTER_ATS_ANALYSIS_LIMIT,
+                "pro": self.PRO_ATS_ANALYSIS_LIMIT,
+            }
+        else:
+            limits = {
+                "free": self.FREE_ATS_ANALYSIS_LIMIT,
+                "starter": self.STARTER_ATS_ANALYSIS_LIMIT,
+                "pro": self.PRO_ATS_ANALYSIS_LIMIT,
+            }
+        return limits.get(sub_type, self.FREE_ATS_ANALYSIS_LIMIT)
 
     def get_ai_assist_limit(self, subscription_type: str) -> int:
         """
@@ -176,13 +205,25 @@ class Settings(BaseSettings):
         }
         return limits.get(subscription_type.lower(), self.FREE_AI_ASSIST_LIMIT)
 
-    def get_limit_config(self) -> dict:
+    def get_limit_config(self, region: str = "IN") -> dict:
         """
-        Get all subscription limits as a dictionary.
+        Get all subscription limits as a dictionary for a specific region.
+
+        Args:
+            region: User region ("IN" for India, "INTL" for international)
 
         Returns:
             dict: Dictionary with all subscription limits
         """
+        if region == "INTL":
+            return {
+                "FREE_RESUME_LIMIT": self.INTL_FREE_RESUME_LIMIT,
+                "FREE_ATS_ANALYSIS_LIMIT": self.INTL_FREE_ATS_ANALYSIS_LIMIT,
+                "STARTER_RESUME_LIMIT": self.INTL_STARTER_RESUME_LIMIT,
+                "STARTER_ATS_ANALYSIS_LIMIT": self.INTL_STARTER_ATS_ANALYSIS_LIMIT,
+                "PRO_RESUME_LIMIT": self.PRO_RESUME_LIMIT,
+                "PRO_ATS_ANALYSIS_LIMIT": self.PRO_ATS_ANALYSIS_LIMIT,
+            }
         return {
             "FREE_RESUME_LIMIT": self.FREE_RESUME_LIMIT,
             "FREE_ATS_ANALYSIS_LIMIT": self.FREE_ATS_ANALYSIS_LIMIT,

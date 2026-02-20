@@ -186,11 +186,13 @@ def check_subscription_limit(
             # Create resume logic
             pass
     """
-    limit_config = settings.get_limit_config()
+    # Get region-specific limits
+    user_region = current_user.get_region() if hasattr(current_user, 'get_region') else "IN"
+    limit_config = settings.get_limit_config(user_region)
 
     if feature == "resume":
         if not current_user.can_create_resume(limit_config):
-            limit = settings.get_resume_limit(current_user.subscription_type.value)
+            limit = settings.get_resume_limit(current_user.subscription_type.value, user_region)
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Resume limit reached ({limit}). Upgrade your subscription."
@@ -198,7 +200,7 @@ def check_subscription_limit(
 
     elif feature == "ats_analysis":
         if not current_user.can_analyze_ats(limit_config):
-            limit = settings.get_ats_limit(current_user.subscription_type.value)
+            limit = settings.get_ats_limit(current_user.subscription_type.value, user_region)
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"ATS analysis limit reached ({limit}). Upgrade your subscription."

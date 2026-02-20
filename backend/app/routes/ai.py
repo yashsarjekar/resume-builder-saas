@@ -57,8 +57,10 @@ async def check_ats_limit(user: User, db: Session) -> None:
     """
     import asyncio
 
-    limit_config = settings.get_limit_config()
-    limit = settings.get_ats_limit(user.subscription_type.value)
+    # Get region-specific limits
+    user_region = user.get_region() if hasattr(user, 'get_region') else "IN"
+    limit_config = settings.get_limit_config(user_region)
+    limit = settings.get_ats_limit(user.subscription_type.value, user_region)
 
     # Calculate usage percentage
     usage_percent = (user.ats_analysis_count / limit * 100) if limit > 0 else 0

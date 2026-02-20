@@ -232,18 +232,22 @@ async def get_subscription_info(
         GET /api/auth/subscription
         Headers: Authorization: Bearer <token>
     """
+    # Get region-specific limits
+    user_region = current_user.get_region() if hasattr(current_user, 'get_region') else "IN"
+
     return {
         "subscription_type": current_user.subscription_type,
         "subscription_expiry": current_user.subscription_expiry,
         "is_active": current_user.is_subscription_active(),
         "resume_count": current_user.resume_count,
         "resume_limit": settings.get_resume_limit(
-            current_user.subscription_type.value
+            current_user.subscription_type.value, user_region
         ),
         "ats_analysis_count": current_user.ats_analysis_count,
         "ats_analysis_limit": settings.get_ats_limit(
-            current_user.subscription_type.value
+            current_user.subscription_type.value, user_region
         ),
+        "region": user_region,
     }
 
 
