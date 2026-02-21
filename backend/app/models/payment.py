@@ -5,7 +5,7 @@ This module defines the Payment database model for tracking Razorpay
 payment transactions and subscription purchases.
 """
 
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from ..database import Base
@@ -59,7 +59,7 @@ class Payment(Base):
     dodo_payment_id = Column(String(255), nullable=True)
 
     # Payment details
-    amount = Column(Integer, nullable=False)  # Amount in paise
+    amount = Column(Float, nullable=False)  # Amount in smallest currency unit (paise/cents)
     currency = Column(String, default="INR", nullable=False)
     status = Column(
         Enum(PaymentStatus),

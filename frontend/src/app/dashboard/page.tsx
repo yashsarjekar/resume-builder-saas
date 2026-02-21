@@ -164,20 +164,36 @@ export default function DashboardPage() {
 
   const getResumeLimit = () => {
     const isInternational = user.region === 'INTL';
+    const billingDuration = user.billing_duration || 1;
+
+    let baseLimit: number;
     switch (user.subscription_type) {
       case 'pro': return 'Unlimited';
-      case 'starter': return isInternational ? 15 : 5;
-      default: return isInternational ? 5 : 1;
+      case 'starter':
+        baseLimit = isInternational ? 15 : 5;
+        break;
+      default:
+        baseLimit = isInternational ? 5 : 1;
     }
+    // Scale limit by billing duration (quarterly = 3x, half-yearly = 6x, yearly = 12x)
+    return baseLimit * billingDuration;
   };
 
   const getATSLimit = () => {
     const isInternational = user.region === 'INTL';
+    const billingDuration = user.billing_duration || 1;
+
+    let baseLimit: number;
     switch (user.subscription_type) {
       case 'pro': return 'Unlimited';
-      case 'starter': return isInternational ? 15 : 10;
-      default: return isInternational ? 5 : 2;
+      case 'starter':
+        baseLimit = isInternational ? 15 : 10;
+        break;
+      default:
+        baseLimit = isInternational ? 5 : 2;
     }
+    // Scale limit by billing duration (quarterly = 3x, half-yearly = 6x, yearly = 12x)
+    return baseLimit * billingDuration;
   };
 
   return (
@@ -364,7 +380,9 @@ export default function DashboardPage() {
             </div>
 
             <div className="p-4 border border-gray-200 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Usage This Month</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Usage This {user.billing_duration === 1 ? 'Month' : user.billing_duration === 3 ? 'Quarter' : user.billing_duration === 6 ? 'Half-Year' : 'Year'}
+              </h3>
               <div className="text-sm text-gray-700">
                 <p>Resumes: {user.resume_count} / {getResumeLimit()}</p>
                 <p>ATS Analyses: {user.ats_analysis_count} / {getATSLimit()}</p>

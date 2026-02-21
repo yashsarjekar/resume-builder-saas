@@ -466,6 +466,7 @@ class RazorpayService:
         # Update user subscription
         user.subscription_type = payment.plan
         user.subscription_expiry = expiry_date
+        user.billing_duration = payment.duration_months
 
         # Reset usage counts if upgrading from FREE or if subscription was expired
         if user.subscription_type.upper() == "FREE" or (

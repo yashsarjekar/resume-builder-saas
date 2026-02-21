@@ -423,6 +423,7 @@ class DodoService:
             old_subscription = user.subscription_type
             user.subscription_type = payment.plan
             user.subscription_expiry = expiry_date
+            user.billing_duration = payment.duration_months
 
             # Set region to international for Dodo payments (higher limits)
             user.region = "INTL"
@@ -431,7 +432,7 @@ class DodoService:
             user.resume_count = 0
             user.ats_analysis_count = 0
 
-            logger.info(f"[DODO WEBHOOK] User {user.id} upgraded from {old_subscription} to {payment.plan}, expiry: {expiry_date}")
+            logger.info(f"[DODO WEBHOOK] User {user.id} upgraded from {old_subscription} to {payment.plan} ({payment.duration_months}mo), expiry: {expiry_date}")
         else:
             logger.error(f"[DODO WEBHOOK] User not found for payment.user_id: {payment.user_id}")
 
@@ -564,6 +565,7 @@ class DodoService:
 
                     user.subscription_type = payment.plan
                     user.subscription_expiry = expiry_date
+                    user.billing_duration = payment.duration_months
                     user.region = "INTL"
 
                     # Reset usage counts
@@ -571,7 +573,7 @@ class DodoService:
                     user.ats_analysis_count = 0
 
                 db.commit()
-                logger.info(f"Payment {payment_id} verified and user {user.id} upgraded to {payment.plan}")
+                logger.info(f"Payment {payment_id} verified and user {user.id} upgraded to {payment.plan} ({payment.duration_months}mo)")
                 return True, "success", user
 
             elif dodo_status in ["pending", "processing", "requires_action"]:

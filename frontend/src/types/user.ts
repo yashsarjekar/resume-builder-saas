@@ -4,6 +4,7 @@ export interface User {
   name: string;
   subscription_type: 'free' | 'starter' | 'pro';
   subscription_expiry: string | null;
+  billing_duration: number; // 1, 3, 6, or 12 months
   resume_count: number;
   ats_analysis_count: number;
   region: 'IN' | 'INTL';

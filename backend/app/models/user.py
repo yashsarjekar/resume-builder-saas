@@ -53,6 +53,7 @@ class User(Base):
         nullable=False
     )
     subscription_expiry = Column(DateTime, nullable=True)
+    billing_duration = Column(Integer, default=1, nullable=False)  # 1, 3, 6, or 12 months
 
     # Razorpay customer ID for recurring subscriptions
     razorpay_customer_id = Column(String, nullable=True)
@@ -104,6 +105,22 @@ class User(Base):
 
         return datetime.utcnow() < self.subscription_expiry
 
+    def get_scaled_limit(self, base_limit: int) -> int:
+        """
+        Scale a limit based on billing duration.
+        Quarterly gets 3x, Half-yearly gets 6x, Yearly gets 12x.
+
+        Args:
+            base_limit: The base monthly limit
+
+        Returns:
+            int: Scaled limit based on billing duration
+        """
+        if base_limit >= 999:  # Pro/unlimited
+            return base_limit
+        duration = self.billing_duration if self.billing_duration else 1
+        return base_limit * duration
+
     def can_create_resume(self, limit_config: dict) -> bool:
         """
         Check if user can create another resume based on subscription limits.
@@ -118,7 +135,8 @@ class User(Base):
             return False
 
         limit_key = f"{self.subscription_type.value.upper()}_RESUME_LIMIT"
-        limit = limit_config.get(limit_key, 1)
+        base_limit = limit_config.get(limit_key, 1)
+        limit = self.get_scaled_limit(base_limit)
 
         return self.resume_count < limit
 
@@ -136,7 +154,8 @@ class User(Base):
             return False
 
         limit_key = f"{self.subscription_type.value.upper()}_ATS_ANALYSIS_LIMIT"
-        limit = limit_config.get(limit_key, 2)
+        base_limit = limit_config.get(limit_key, 2)
+        limit = self.get_scaled_limit(base_limit)
 
         return self.ats_analysis_count < limit
 

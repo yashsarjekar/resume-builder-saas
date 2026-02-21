@@ -90,6 +90,7 @@ class UserResponse(UserBase):
         name: Full name
         subscription_type: Current subscription tier
         subscription_expiry: Subscription expiration date
+        billing_duration: Billing cycle in months (1, 3, 6, 12)
         resume_count: Number of resumes created
         ats_analysis_count: Number of ATS analyses performed
         region: User region (IN for India, INTL for International)
@@ -98,6 +99,7 @@ class UserResponse(UserBase):
     id: int
     subscription_type: SubscriptionType
     subscription_expiry: Optional[datetime] = None
+    billing_duration: int = 1
     resume_count: int
     ats_analysis_count: int
     region: str = "IN"
