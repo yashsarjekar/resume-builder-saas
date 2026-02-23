@@ -255,6 +255,75 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Career Tips & Blog Section */}
+      <section className="bg-white py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Career Tips & Resources
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Expert advice to help you succeed in your job search
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <Link
+              href="/blog/how-to-write-ats-friendly-resume"
+              className="bg-gray-50 p-6 rounded-lg hover:shadow-lg transition border border-gray-200"
+            >
+              <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium mb-3">
+                Resume Tips
+              </span>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                How to Write an ATS-Friendly Resume
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Learn how to create a resume that passes Applicant Tracking Systems and lands you more interviews.
+              </p>
+              <span className="text-blue-600 font-medium text-sm">Read article &rarr;</span>
+            </Link>
+            <Link
+              href="/blog/fresher-resume-mistakes"
+              className="bg-gray-50 p-6 rounded-lg hover:shadow-lg transition border border-gray-200"
+            >
+              <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium mb-3">
+                For Freshers
+              </span>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Top 10 Resume Mistakes Freshers Make
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Avoid these common errors that prevent fresh graduates from getting interview calls.
+              </p>
+              <span className="text-blue-600 font-medium text-sm">Read article &rarr;</span>
+            </Link>
+            <Link
+              href="/blog/coding-interview-tips-for-beginners"
+              className="bg-gray-50 p-6 rounded-lg hover:shadow-lg transition border border-gray-200"
+            >
+              <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium mb-3">
+                Interview Prep
+              </span>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Coding Interview Tips for Beginners
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Essential tips to prepare for technical coding interviews at top companies.
+              </p>
+              <span className="text-blue-600 font-medium text-sm">Read article &rarr;</span>
+            </Link>
+          </div>
+          <div className="text-center mt-8">
+            <Link
+              href="/blog"
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              View all career tips &rarr;
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="bg-blue-600 py-20">
         <div className="container mx-auto px-4 text-center">
