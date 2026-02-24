@@ -46,19 +46,19 @@ class DodoService:
         }
     }
 
-    # Dodo Product IDs (created in Dodo dashboard)
+    # Dodo Product IDs (Live - created in Dodo dashboard)
     DODO_PRODUCT_IDS = {
         "starter": {
-            1: "pdt_0NYv1k4YD8smnpDPKSc0s",   # Starter Monthly
-            3: "pdt_0NYv2I4O5BVcQ46oMWSxl",   # Starter Quarterly
-            6: "pdt_0NYv2aHGgT5oeq1oI0fo0",   # Starter Half-Yearly
-            12: "pdt_0NYv2pXX1kzIcdDOGb351",  # Starter Yearly
+            1: "pdt_0NZDGuhAvrASLdzlcnr6X",   # Starter Monthly
+            3: "pdt_0NZDH2yBnrRTIopDdm2JN",   # Starter Quarterly
+            6: "pdt_0NZDHETbrmJPA439mGogv",   # Starter Half-Yearly
+            12: "pdt_0NZDJ7AgFwSsSiKSKsCfw",  # Starter Yearly
         },
         "pro": {
-            1: "pdt_0NYv2yyI5hTGI7q31pjUR",   # Pro Monthly
-            3: "pdt_0NYv3FYFrkFf6a16jwVGn",   # Pro Quarterly
-            6: "pdt_0NYv3W8cZe2gcnCT3lI7p",   # Pro Half-Yearly
-            12: "pdt_0NYv3jPRGpdjbQDSgsf3M",  # Pro Yearly
+            1: "pdt_0NZDJTQwyoAh3FTR6GvnU",   # Pro Monthly
+            3: "pdt_0NZDK4ZFPuZvPZyLW1jJq",   # Pro Quarterly
+            6: "pdt_0NZDKEumCW9cOhGAXBWGo",   # Pro Half-Yearly
+            12: "pdt_0NZDKdTNXlKy1uIbdNuSL",  # Pro Yearly
         }
     }
 
