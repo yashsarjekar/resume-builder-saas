@@ -10,6 +10,11 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Resume Builder - AI-Powered ATS Optimization',
   description: 'Create professional resumes with AI-powered ATS optimization. Get hired faster with our resume builder.',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+  },
 };
 
 export default function RootLayout({

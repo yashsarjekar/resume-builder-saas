@@ -1,9 +1,10 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
-  title: 'AI Resume Builder | Create ATS-Optimized Resumes Free - Resume Builder',
-  description: 'Build professional, ATS-friendly resumes with AI. Get more interviews with optimized resume templates, keyword extraction, and cover letter generation. Free to start.',
+  title: 'AI Resume Builder | ATS-Optimized Resumes Free',
+  description: 'Build ATS-friendly resumes with AI optimization. Get more interviews with professional templates and keyword extraction.',
   keywords: [
     'AI resume builder',
     'ATS resume',
@@ -15,16 +16,16 @@ export const metadata: Metadata = {
     'professional resume templates',
   ],
   openGraph: {
-    title: 'AI Resume Builder | Create ATS-Optimized Resumes Free',
-    description: 'Build professional, ATS-friendly resumes with AI. Get more interviews with optimized resume templates.',
+    title: 'AI Resume Builder | ATS-Optimized Resumes Free',
+    description: 'Build ATS-friendly resumes with AI optimization. Get more interviews with professional templates.',
     type: 'website',
     locale: 'en_IN',
     siteName: 'Resume Builder',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AI Resume Builder | Create ATS-Optimized Resumes Free',
-    description: 'Build professional, ATS-friendly resumes with AI.',
+    title: 'AI Resume Builder | ATS-Optimized Resumes Free',
+    description: 'Build ATS-friendly resumes with AI. Get more interviews with optimized templates.',
   },
   alternates: {
     canonical: 'https://resumebuilder.pulsestack.in',
@@ -37,9 +38,11 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="bg-white">
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
+    <>
+      <StructuredData />
+      <div className="bg-white">
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
           Build Your Dream Resume with
           <span className="text-blue-600"> AI-Powered</span> Optimization
@@ -64,8 +67,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Problem Section */}
-      <section className="bg-gray-50 py-20">
+        {/* Problem Section */}
+        <section className="bg-gray-50 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
             Why Your Resume Isn&apos;t Getting Responses
@@ -108,8 +111,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20">
+        {/* Features Section */}
+        <section id="features" className="py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
             Features That Get You Hired
@@ -185,8 +188,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Resume Templates Section */}
-      <section className="bg-gray-50 py-20">
+        {/* Resume Templates Section */}
+        <section className="bg-gray-50 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-4">
             Resume Templates by Job Role
@@ -255,8 +258,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Career Tips & Blog Section */}
-      <section className="bg-white py-20">
+        {/* Career Tips & Blog Section */}
+        <section className="bg-white py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -324,8 +327,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-blue-600 py-20">
+        {/* CTA Section */}
+        <section className="bg-blue-600 py-20">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Land Your Dream Job?
@@ -340,7 +343,8 @@ export default function HomePage() {
             Start Building for Free
           </Link>
         </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }
