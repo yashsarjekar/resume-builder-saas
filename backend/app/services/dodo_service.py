@@ -112,7 +112,7 @@ class DodoService:
 
         # Set base URL based on environment
         if self.environment == "live_mode":
-            self.base_url = "https://api.dodopayments.com"
+            self.base_url = "https://live.dodopayments.com"
         else:
             self.base_url = "https://test.dodopayments.com"
 
