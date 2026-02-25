@@ -393,7 +393,7 @@ export default function PricingPage() {
         <div className="mt-16 text-center space-y-4">
           <p className="text-gray-600">
             Need a custom plan?{' '}
-            <a href="mailto:support@resumebuilder.com" className="text-blue-600 hover:text-blue-500">
+            <a href="mailto:resumebuilder.pulsestack@gmail.com" className="text-blue-600 hover:text-blue-500">
               Contact us
             </a>
           </p>

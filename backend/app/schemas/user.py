@@ -197,6 +197,48 @@ class PasswordChange(BaseModel):
         return v
 
 
+class ForgotPasswordRequest(BaseModel):
+    """
+    Schema for forgot password request.
+
+    Attributes:
+        email: Email address to send reset link to
+    """
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    """
+    Schema for reset password request.
+
+    Attributes:
+        token: Password reset token from email
+        new_password: New password to set
+    """
+    token: str
+    new_password: str = Field(..., min_length=8, max_length=100)
+
+    @validator('new_password')
+    def validate_password(cls, v: str) -> str:
+        """
+        Validate new password strength.
+
+        Args:
+            v: Password string
+
+        Returns:
+            str: Validated password
+
+        Raises:
+            ValueError: If password doesn't meet requirements
+        """
+        if not any(char.isdigit() for char in v):
+            raise ValueError('Password must contain at least one digit')
+        if not any(char.isalpha() for char in v):
+            raise ValueError('Password must contain at least one letter')
+        return v
+
+
 class SubscriptionInfo(BaseModel):
     """
     Schema for subscription information.

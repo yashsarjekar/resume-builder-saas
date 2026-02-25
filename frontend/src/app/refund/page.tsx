@@ -74,7 +74,7 @@ export default function RefundPolicyPage() {
                 To request a refund:
               </p>
               <ol className="list-decimal pl-6 text-gray-700 space-y-2 mb-4">
-                <li>Email us at <a href="mailto:refunds@resumebuilder.com" className="text-blue-600 hover:text-blue-500">refunds@resumebuilder.com</a></li>
+                <li>Email us at <a href="mailto:resumebuilder.pulsestack@gmail.com" className="text-blue-600 hover:text-blue-500">resumebuilder.pulsestack@gmail.com</a></li>
                 <li>Include your account email and order/payment ID</li>
                 <li>Provide a brief reason for the refund request</li>
                 <li>We will respond within 2-3 business days</li>
@@ -146,7 +146,7 @@ export default function RefundPolicyPage() {
                 If you experience technical problems preventing service use:
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                <li>Contact support immediately at <a href="mailto:support@resumebuilder.com" className="text-blue-600 hover:text-blue-500">support@resumebuilder.com</a></li>
+                <li>Contact support immediately at <a href="mailto:resumebuilder.pulsestack@gmail.com" className="text-blue-600 hover:text-blue-500">resumebuilder.pulsestack@gmail.com</a></li>
                 <li>We will attempt to resolve the issue within 48 hours</li>
                 <li>If unresolved, a full or partial refund may be offered</li>
                 <li>Downtime credits may be issued for service interruptions</li>
@@ -200,8 +200,8 @@ export default function RefundPolicyPage() {
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-700">
-                  <strong>Refund Requests:</strong> refunds@resumebuilder.com<br />
-                  <strong>General Support:</strong> support@resumebuilder.com<br />
+                  <strong>Refund Requests:</strong> resumebuilder.pulsestack@gmail.com<br />
+                  <strong>General Support:</strong> resumebuilder.pulsestack@gmail.com<br />
                   <strong>Response Time:</strong> 2-3 business days<br />
                   <strong>Processing Time:</strong> 5-7 business days after approval
                 </p>

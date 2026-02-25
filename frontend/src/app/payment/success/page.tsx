@@ -234,7 +234,7 @@ function PaymentSuccessContent() {
               Go to Dashboard
             </Link>
             <a
-              href="mailto:support@resumebuilder.com"
+              href="mailto:resumebuilder.pulsestack@gmail.com"
               className="block w-full py-3 px-4 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition"
             >
               Contact Support

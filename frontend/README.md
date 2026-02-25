@@ -165,4 +165,4 @@ npm start
 
 ## Support
 
-For issues and questions, contact support@resumebuilder.com
+For issues and questions, contact resumebuilder.pulsestack@gmail.com

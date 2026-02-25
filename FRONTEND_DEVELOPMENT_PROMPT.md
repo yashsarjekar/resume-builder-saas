@@ -903,7 +903,7 @@ Create `.env.local`:
 NEXT_PUBLIC_API_URL=https://resume-builder-backend-production-f9db.up.railway.app
 NEXT_PUBLIC_RAZORPAY_KEY=rzp_test_SBnvLkUM2KLOUH
 NEXT_PUBLIC_APP_NAME=Resume Builder
-NEXT_PUBLIC_SUPPORT_EMAIL=support@resumebuilder.com
+NEXT_PUBLIC_SUPPORT_EMAIL=resumebuilder.pulsestack@gmail.com
 ```
 
 ---

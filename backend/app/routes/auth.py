@@ -19,9 +19,11 @@ from app.schemas.user import (
     Token,
     SubscriptionInfo,
     UserUpdate,
-    PasswordChange
+    PasswordChange,
+    ForgotPasswordRequest,
+    ResetPasswordRequest
 )
-from app.utils.auth import hash_password, verify_password, create_access_token
+from app.utils.auth import hash_password, verify_password, create_access_token, create_password_reset_token, verify_password_reset_token
 from app.dependencies import get_current_user, get_current_active_user
 from app.config import get_settings
 from app.services.email_service import email_service
@@ -352,6 +354,123 @@ async def change_password(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to change password"
+        )
+
+
+@router.post("/forgot-password", status_code=status.HTTP_200_OK)
+async def forgot_password(
+    request: ForgotPasswordRequest,
+    db: Session = Depends(get_db)
+) -> Dict[str, str]:
+    """
+    Request a password reset email.
+
+    Sends a password reset link to the user's email if the account exists.
+    Always returns success even if email doesn't exist (security best practice).
+
+    Args:
+        request: Forgot password request with email
+        db: Database session
+
+    Returns:
+        dict: Success message
+
+    Example:
+        POST /api/auth/forgot-password
+        {
+            "email": "user@example.com"
+        }
+    """
+    # Find user by email
+    user = db.query(User).filter(User.email == request.email).first()
+
+    # Always return success (don't reveal if email exists)
+    if not user:
+        logger.info(f"Password reset requested for non-existent email: {request.email}")
+        return {"message": "If the email exists, a password reset link has been sent"}
+
+    try:
+        # Generate reset token
+        reset_token = create_password_reset_token(user.email)
+
+        # Create reset URL
+        reset_url = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
+
+        # Send reset email
+        email_service.send_password_reset_email(
+            user_email=user.email,
+            user_name=user.name,
+            reset_url=reset_url
+        )
+
+        logger.info(f"Password reset email sent to: {user.email}")
+        return {"message": "If the email exists, a password reset link has been sent"}
+
+    except Exception as e:
+        logger.error(f"Error sending password reset email: {str(e)}")
+        # Still return success to not reveal if email exists
+        return {"message": "If the email exists, a password reset link has been sent"}
+
+
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
+async def reset_password(
+    request: ResetPasswordRequest,
+    db: Session = Depends(get_db)
+) -> Dict[str, str]:
+    """
+    Reset password using a reset token.
+
+    Args:
+        request: Reset password request with token and new password
+        db: Database session
+
+    Returns:
+        dict: Success message
+
+    Raises:
+        HTTPException 400: If token is invalid or expired
+        HTTPException 422: If new password doesn't meet requirements
+
+    Example:
+        POST /api/auth/reset-password
+        {
+            "token": "eyJ0eXAiOiJKV1QiLC...",
+            "new_password": "newpassword123"
+        }
+    """
+    # Verify token and get email
+    email = verify_password_reset_token(request.token)
+
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token"
+        )
+
+    # Find user
+    user = db.query(User).filter(User.email == email).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User not found"
+        )
+
+    # Password validation is handled by Pydantic schema
+    try:
+        # Hash and set new password
+        user.password_hash = hash_password(request.new_password)
+        db.commit()
+
+        logger.info(f"Password reset successful for user: {user.email}")
+        return {"message": "Password reset successful"}
+
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error resetting password: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to reset password"
         )
 
 
