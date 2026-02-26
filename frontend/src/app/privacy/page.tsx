@@ -168,7 +168,7 @@ export default function PrivacyPolicyPage() {
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-700">
-                  <strong>Email:</strong> privacy@resumebuilder.com<br />
+                  <strong>Email:</strong> resumebuilder.pulsestack@gmail.com<br />
                   <strong>Support:</strong> resumebuilder.pulsestack@gmail.com
                 </p>
               </div>

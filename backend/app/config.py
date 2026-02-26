@@ -106,7 +106,7 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: Optional[str] = None
     SMTP_PASSWORD: Optional[str] = None
-    SMTP_FROM_EMAIL: str = "noreply@resumebuilder.com"
+    SMTP_FROM_EMAIL: str = "resumebuilder.pulsestack@gmail.com"
     SMTP_FROM_NAME: str = "Resume Builder"
 
     class Config:
