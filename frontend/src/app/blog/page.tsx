@@ -41,6 +41,7 @@ export default function BlogPage() {
   const featuredPosts = getFeaturedPosts();
   const resumeTips = getPostsByCategory('resume-tips');
   const interviewPrep = getPostsByCategory('interview-prep');
+  const careerAdvice = getPostsByCategory('career-advice');
 
   // JSON-LD Schema
   const jsonLd = {
@@ -184,6 +185,40 @@ export default function BlogPage() {
             </div>
           </div>
         </section>
+
+        {/* Career Advice Section */}
+        {careerAdvice.length > 0 && (
+          <section className="py-12">
+            <div className="container mx-auto px-4 max-w-6xl">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-bold text-gray-900">Career Advice</h2>
+                <span className="text-sm text-gray-500">{careerAdvice.length} articles</span>
+              </div>
+              <div className="grid md:grid-cols-3 gap-6">
+                {careerAdvice.map((post) => (
+                  <Link
+                    key={post.slug}
+                    href={`/blog/${post.slug}`}
+                    className="group bg-white rounded-xl p-6 border border-gray-200 hover:border-purple-300 hover:shadow-md transition"
+                  >
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${categoryColors[post.category]}`}>
+                      {categoryLabels[post.category]}
+                    </span>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {post.excerpt}
+                    </p>
+                    <div className="text-sm text-gray-500">
+                      {post.readTime} min read
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* CTA Section */}
         <section className="py-16 bg-gradient-to-r from-blue-600 to-indigo-600">

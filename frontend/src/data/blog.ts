@@ -617,6 +617,566 @@ Skill 1, Skill 2, Skill 3, Skill 4
       <p>Make sure your resume reflects your coding skills. Try our <a href="/resume/software-engineer">Software Engineer resume template</a> with the right technical keywords.</p>
     `,
   },
+  {
+    slug: 'best-resume-formats-guide',
+    title: 'Best Resume Formats for 2026: Chronological, Functional & Hybrid (With Examples)',
+    excerpt: 'Not sure which resume format to use? This guide breaks down the three main resume formats — chronological, functional, and hybrid — with examples and tips to pick the right one for your career stage.',
+    category: 'resume-tips',
+    tags: ['Resume Format', 'Resume Templates', 'ATS Resume', 'Career Tips', 'Job Search'],
+    author: 'Resume Builder Team',
+    publishedAt: '2026-02-20',
+    readTime: 10,
+    content: `
+      <p class="lead">Your resume format is the foundation everything else sits on. Choose the wrong one, and even the best achievements get buried. Choose the right one, and recruiters immediately see your value. Here's how to pick the format that works for your situation in 2026.</p>
+
+      <h2>Why Resume Format Matters More Than You Think</h2>
+      <p>Most job seekers spend hours perfecting bullet points but barely think about the structure holding them together. That's a mistake. Studies show recruiters spend just <strong>6-7 seconds</strong> on an initial resume scan. In those seconds, the format determines what they see first — and whether they keep reading.</p>
+      <p>On top of that, <strong>75% of resumes are rejected by Applicant Tracking Systems (ATS)</strong> before a human sees them. The wrong format is one of the top reasons. If you want to understand how ATS filtering works in detail, check out our <a href="/blog/how-to-write-ats-friendly-resume">guide to writing ATS-friendly resumes</a>.</p>
+
+      <h2>The 3 Main Resume Formats</h2>
+      <p>Every resume you've ever seen falls into one of three categories:</p>
+      <table>
+        <tr><th>Format</th><th>Best For</th><th>ATS Friendly?</th></tr>
+        <tr><td><strong>Reverse-Chronological</strong></td><td>Steady career growth, same industry</td><td>Yes — most compatible</td></tr>
+        <tr><td><strong>Functional (Skills-Based)</strong></td><td>Career changers, employment gaps</td><td>Risky — some ATS struggle</td></tr>
+        <tr><td><strong>Combination/Hybrid</strong></td><td>Mid-career, tech roles, diverse experience</td><td>Yes — if structured well</td></tr>
+      </table>
+      <p>Let's break each one down.</p>
+
+      <h2>1. Reverse-Chronological Resume</h2>
+      <p>This is the most common and most recommended format. It lists your work experience starting with your most recent job and working backward.</p>
+
+      <h3>Structure</h3>
+      <ul>
+        <li>Contact Information</li>
+        <li>Professional Summary</li>
+        <li><strong>Work Experience</strong> (most recent first)</li>
+        <li>Education</li>
+        <li>Skills</li>
+        <li>Certifications</li>
+      </ul>
+
+      <h3>When to Use It</h3>
+      <ul>
+        <li>You have a clear, progressive career path</li>
+        <li>You're staying in the same industry</li>
+        <li>You have no major employment gaps</li>
+        <li>You're applying to traditional companies or through ATS</li>
+      </ul>
+
+      <h3>Pros</h3>
+      <ul>
+        <li>Recruiters are most familiar with this format</li>
+        <li>ATS parses it with highest accuracy</li>
+        <li>Shows career progression clearly</li>
+      </ul>
+
+      <h3>Cons</h3>
+      <ul>
+        <li>Highlights employment gaps</li>
+        <li>Not ideal for career changers</li>
+        <li>Recent job dominates — older relevant experience gets buried</li>
+      </ul>
+
+      <h3>Example Layout</h3>
+      <pre>
+PRIYA SHARMA
+priya.sharma@email.com | +91 98765 43210 | Mumbai
+
+PROFESSIONAL SUMMARY
+Marketing Manager with 6+ years of experience driving
+digital campaigns for B2B SaaS products. Increased lead
+generation by 150% through data-driven content strategy.
+
+WORK EXPERIENCE
+Senior Marketing Manager | TechCorp India | 2023 – Present
+• Led team of 8 to execute campaigns generating Rs. 2Cr in pipeline
+• Increased organic traffic by 200% through SEO strategy
+
+Marketing Executive | StartupXYZ | 2020 – 2023
+• Managed Google Ads budget of Rs. 50L with 3.5x ROAS
+• Built email automation driving 45% open rates
+
+EDUCATION
+MBA Marketing | IIM Indore | 2020
+
+SKILLS
+SEO, Google Ads, HubSpot, Content Strategy, Analytics
+      </pre>
+
+      <h2>2. Functional (Skills-Based) Resume</h2>
+      <p>The functional format organizes your resume around skills and abilities rather than job history. Work experience is listed briefly at the bottom without detailed descriptions.</p>
+
+      <h3>Structure</h3>
+      <ul>
+        <li>Contact Information</li>
+        <li>Professional Summary</li>
+        <li><strong>Skills Sections</strong> (grouped by skill category with achievements)</li>
+        <li>Work History (brief — company, title, dates only)</li>
+        <li>Education</li>
+      </ul>
+
+      <h3>When to Use It</h3>
+      <ul>
+        <li>You're changing careers and your job titles don't match the target role</li>
+        <li>You have significant employment gaps</li>
+        <li>You're a fresher with strong skills but limited work experience</li>
+        <li>Your relevant experience is spread across many short-term roles</li>
+      </ul>
+
+      <h3>Pros</h3>
+      <ul>
+        <li>Puts transferable skills front and center</li>
+        <li>Downplays gaps or unrelated job history</li>
+        <li>Works well for career changers</li>
+      </ul>
+
+      <h3>Cons</h3>
+      <ul>
+        <li>Some ATS cannot parse it correctly</li>
+        <li>Recruiters may be suspicious — "what are they hiding?"</li>
+        <li>Harder to show career progression</li>
+      </ul>
+
+      <p><strong>Important:</strong> If you're applying through an online portal (most Indian companies), the chronological or hybrid format is safer. Use functional only when submitting directly to a person.</p>
+
+      <h2>3. Combination/Hybrid Resume</h2>
+      <p>The hybrid format combines the best of both worlds: a prominent skills section followed by a detailed work history in reverse-chronological order.</p>
+
+      <h3>Structure</h3>
+      <ul>
+        <li>Contact Information</li>
+        <li>Professional Summary</li>
+        <li><strong>Key Skills & Achievements</strong> (grouped by theme)</li>
+        <li><strong>Work Experience</strong> (reverse-chronological with details)</li>
+        <li>Education</li>
+        <li>Certifications</li>
+      </ul>
+
+      <h3>When to Use It</h3>
+      <ul>
+        <li>You're a mid-career professional with diverse experience</li>
+        <li>You're in tech, consulting, or project-based roles</li>
+        <li>You want to highlight specific skills while showing job history</li>
+        <li>You have 5+ years of experience across multiple domains</li>
+      </ul>
+
+      <h3>Pros</h3>
+      <ul>
+        <li>Shows both skills and career progression</li>
+        <li>Flexible — you control what gets emphasized</li>
+        <li>ATS-friendly when structured with standard headings</li>
+      </ul>
+
+      <h3>Cons</h3>
+      <ul>
+        <li>Can get lengthy — strict editing required</li>
+        <li>Requires more effort to organize well</li>
+      </ul>
+
+      <h2>Which Format Should You Choose?</h2>
+      <p>Use this quick decision guide:</p>
+      <ul>
+        <li><strong>Fresher with no work experience?</strong> → Reverse-chronological (put Education and Projects first). See our <a href="/blog/top-10-resume-mistakes-freshers">guide to avoiding fresher resume mistakes</a>.</li>
+        <li><strong>1-5 years, same industry?</strong> → Reverse-chronological</li>
+        <li><strong>5+ years, diverse skills?</strong> → Combination/Hybrid</li>
+        <li><strong>Changing careers?</strong> → Combination or Functional (read our <a href="/blog/career-change-resume-guide">career change resume guide</a>)</li>
+        <li><strong>Employment gaps?</strong> → Functional or Combination</li>
+        <li><strong>Applying through ATS?</strong> → Reverse-chronological or well-structured Combination</li>
+      </ul>
+
+      <h2>2026 Trend: Skills-First Resumes</h2>
+      <p>Here's something worth noting: <strong>85% of employers now use skills-based hiring</strong> according to recent industry reports. Companies like Google, TCS, and Infosys are increasingly looking at what you can do rather than where you worked.</p>
+      <p>This means the Skills section of your resume is more important than ever. Regardless of which format you choose:</p>
+      <ul>
+        <li>Include a dedicated Skills section with specific, relevant terms</li>
+        <li>Match skills to the job description (critical for ATS)</li>
+        <li>Quantify your skills with achievements where possible</li>
+      </ul>
+
+      <h2>Format Mistakes to Avoid</h2>
+      <ul>
+        <li><strong>Using fancy templates with columns and graphics</strong> — ATS can't read them</li>
+        <li><strong>Mixing formats inconsistently</strong> — pick one and stick with it</li>
+        <li><strong>Making it longer than needed</strong> — freshers: 1 page; experienced: 2 pages max</li>
+        <li><strong>Using creative section headers</strong> — "My Journey" instead of "Work Experience" confuses ATS</li>
+        <li><strong>Forgetting to include a professional summary</strong> — learn how to write one in our <a href="/blog/how-to-write-professional-summary-resume">professional summary guide</a></li>
+      </ul>
+
+      <h2>Build Your Resume in the Right Format</h2>
+      <p>Choosing the right format is step one. Filling it with the right content and optimizing it for ATS is step two. Our <a href="/builder">AI Resume Builder</a> handles both — it selects the optimal format based on your experience level and generates ATS-friendly content tailored to your target role.</p>
+      <p>Whether you're a fresher building your first resume or a professional switching careers, <a href="/builder">start building your resume for free</a>.</p>
+    `,
+  },
+  {
+    slug: 'career-change-resume-guide',
+    title: 'How to Write a Career Change Resume in 2026: Step-by-Step Guide With Examples',
+    excerpt: 'Switching careers? Your resume needs a different strategy. Learn how to highlight transferable skills, reframe your experience, and build a resume that opens doors in your new industry.',
+    category: 'career-advice',
+    tags: ['Career Change', 'Transferable Skills', 'Resume Writing', 'Career Advice', 'Mid-Career'],
+    author: 'Resume Builder Team',
+    publishedAt: '2026-02-22',
+    readTime: 12,
+    featured: true,
+    content: `
+      <p class="lead">Switching careers is one of the most exciting — and terrifying — decisions you can make. The biggest hurdle isn't learning new skills or finding opportunities. It's convincing someone to give you a chance when your resume screams "different industry." Here's how to build a resume that bridges that gap.</p>
+
+      <h2>Career Changes Are the New Normal</h2>
+      <p>Let's start with some reassurance: you're not alone. According to recent studies, <strong>over 60% of professionals consider a career change</strong> at some point in their working life. The average person changes careers 3-7 times. In India, this trend is accelerating — especially in tech, where professionals are moving between IT services, product companies, startups, and entirely new domains like data science, UX design, and digital marketing.</p>
+      <p>The challenge isn't wanting to switch. It's proving on paper that you can succeed in a field where you don't have direct experience.</p>
+
+      <h2>Why Traditional Resumes Fail Career Changers</h2>
+      <p>A standard reverse-chronological resume is designed to show progression within an industry. When you're changing careers, this format works against you:</p>
+      <ul>
+        <li>Your job titles don't match what the recruiter is searching for</li>
+        <li>Your company names signal the wrong industry</li>
+        <li>ATS filters you out because your keywords don't align</li>
+        <li>Recruiters spend 6 seconds scanning and see "wrong background"</li>
+      </ul>
+      <p>You need a different approach. Not dishonesty — strategic presentation. For a detailed comparison of resume formats, see our <a href="/blog/best-resume-formats-guide">guide to resume formats</a>.</p>
+
+      <h2>The Best Resume Format for Career Changers</h2>
+      <p>Use a <strong>combination/hybrid format</strong>. This puts your transferable skills and relevant achievements at the top, followed by your work history. The recruiter sees your value before they see your job titles.</p>
+      <p>Structure:</p>
+      <ol>
+        <li>Contact Information</li>
+        <li><strong>Professional Summary</strong> (bridging statement)</li>
+        <li><strong>Key Skills & Relevant Achievements</strong></li>
+        <li>Work Experience (reverse-chronological)</li>
+        <li>Education & Certifications</li>
+        <li>Additional: Courses, Projects, Volunteer Work</li>
+      </ol>
+
+      <h2>Step 1: Identify Your Transferable Skills</h2>
+      <p>Transferable skills are abilities that apply across industries. You have more of them than you think. Here's a framework to find yours:</p>
+
+      <h3>Hard Skills That Transfer</h3>
+      <ul>
+        <li><strong>Data analysis</strong> — Excel, SQL, analytics tools (works in any industry)</li>
+        <li><strong>Project management</strong> — Agile, Scrum, stakeholder management</li>
+        <li><strong>Technical writing</strong> — documentation, SOPs, content creation</li>
+        <li><strong>Financial literacy</strong> — budgeting, forecasting, P&L understanding</li>
+        <li><strong>Programming</strong> — Python, JavaScript (increasingly valued everywhere)</li>
+      </ul>
+
+      <h3>Soft Skills That Transfer</h3>
+      <ul>
+        <li><strong>Communication</strong> — presentations, client management, cross-team collaboration</li>
+        <li><strong>Leadership</strong> — team management, mentoring, decision-making</li>
+        <li><strong>Problem-solving</strong> — root cause analysis, process improvement</li>
+        <li><strong>Adaptability</strong> — learning new tools, working in ambiguity</li>
+      </ul>
+
+      <p><strong>Exercise:</strong> List every skill from your current role. Then check the job descriptions for your target role. Circle the overlaps. Those are your transferable skills — and they should be front and center on your resume.</p>
+
+      <h2>Step 2: Write a Bridging Professional Summary</h2>
+      <p>Your professional summary is the most critical section for a career change resume. It needs to:</p>
+      <ol>
+        <li>Acknowledge your experience (credibility)</li>
+        <li>Highlight transferable skills (relevance)</li>
+        <li>State your target direction (clarity)</li>
+      </ol>
+      <p>For more on crafting summaries, see our <a href="/blog/how-to-write-professional-summary-resume">professional summary writing guide</a>.</p>
+
+      <h3>Examples</h3>
+      <p><strong>Teacher → UX Designer:</strong></p>
+      <p><em>"Educator with 5+ years of experience designing learning experiences for 200+ students. Skilled in user research, curriculum design, and creating intuitive learning pathways. Completed Google UX Design Certificate and built 3 case study projects. Transitioning to UX design to apply human-centered design thinking in the tech industry."</em></p>
+
+      <p><strong>Sales Executive → Product Manager:</strong></p>
+      <p><em>"Sales professional with 4 years of experience in B2B SaaS, managing a Rs. 5Cr annual book of business. Deep understanding of customer pain points, market positioning, and revenue metrics. Completed product management certification from ISB. Seeking to leverage customer insights and business acumen in a product management role."</em></p>
+
+      <p><strong>Mechanical Engineer → Data Analyst:</strong></p>
+      <p><em>"Mechanical Engineer with 3 years of experience in process optimization and quality analysis using statistical methods. Proficient in Python, SQL, and Tableau with a portfolio of 5 data analysis projects. Transitioning to data analytics to apply analytical problem-solving at scale."</em></p>
+
+      <h2>Step 3: Reframe Your Work Experience</h2>
+      <p>You can't change where you worked, but you can change how you describe it. The key: focus on <strong>outcomes and transferable accomplishments</strong>, not industry-specific duties.</p>
+
+      <h3>Before (Teacher applying for UX role):</h3>
+      <ul>
+        <li>Taught mathematics to classes of 40 students</li>
+        <li>Created lesson plans and conducted assessments</li>
+        <li>Participated in parent-teacher meetings</li>
+      </ul>
+
+      <h3>After (Same experience, reframed):</h3>
+      <ul>
+        <li>Designed and tested learning experiences for 200+ users (students), iterating based on performance data and feedback</li>
+        <li>Conducted user research through surveys and interviews to identify learning gaps, improving comprehension rates by 25%</li>
+        <li>Managed stakeholder communication with parents, administration, and cross-functional teaching teams</li>
+      </ul>
+
+      <p>See the difference? Same work. Completely different framing. The reframed version uses UX-adjacent language (user research, iteration, stakeholder communication) while staying 100% honest.</p>
+
+      <h2>Step 4: Show Your New-Industry Commitment</h2>
+      <p>Recruiters need to see that your career change isn't a whim. Demonstrate commitment through:</p>
+      <ul>
+        <li><strong>Certifications:</strong> Google Certificates, Coursera specializations, ISB/IIM executive programs</li>
+        <li><strong>Online courses:</strong> Relevant Udemy, LinkedIn Learning, or platform-specific courses</li>
+        <li><strong>Side projects:</strong> Portfolio projects, freelance work, open-source contributions</li>
+        <li><strong>Volunteer work:</strong> Pro-bono consulting, NGO projects in your target field</li>
+        <li><strong>Community involvement:</strong> Meetups, conferences, writing about the new domain</li>
+      </ul>
+      <p>Create a dedicated section for these — "Relevant Projects & Certifications" — placed prominently after your skills section.</p>
+
+      <h2>Step 5: Optimize for ATS in Your New Industry</h2>
+      <p>This is where many career changers fail. Your old resume is full of keywords from your old industry. ATS in the new industry is looking for completely different terms.</p>
+      <ul>
+        <li>Study 5-10 job descriptions for your target role</li>
+        <li>List the recurring keywords, tools, and phrases</li>
+        <li>Incorporate them naturally into your summary, skills, and experience sections</li>
+        <li>Don't keyword-stuff — use terms where they genuinely apply</li>
+      </ul>
+      <p>For a deep dive on beating ATS, read our <a href="/blog/how-to-write-ats-friendly-resume">complete ATS optimization guide</a>.</p>
+
+      <h2>Career Change Resume Examples</h2>
+
+      <h3>Example 1: IT Services → Product Management</h3>
+      <pre>
+RAHUL MENON
+rahul.menon@email.com | +91 87654 32109 | Bengaluru | LinkedIn
+
+PROFESSIONAL SUMMARY
+Technology professional with 5 years at TCS managing
+client-facing software projects worth Rs. 3Cr+. Deep
+understanding of software development lifecycle,
+stakeholder management, and agile methodologies.
+Completed Product Management certification from upGrad.
+Seeking PM role to bridge technical expertise with
+product strategy.
+
+KEY SKILLS
+Product: Roadmap Planning, User Stories, A/B Testing,
+Market Research, Competitive Analysis
+Technical: Agile/Scrum, JIRA, SQL, API Integration,
+System Design
+Leadership: Cross-functional Teams, Client Management,
+Stakeholder Communication
+
+RELEVANT PROJECTS
+Product Case Study: Food Delivery App Redesign
+• Conducted user research with 50 participants
+• Created wireframes and product roadmap
+• Proposed feature prioritization using RICE framework
+
+WORK EXPERIENCE
+Senior Software Engineer | TCS | 2021 – Present
+• Led 8-member team delivering projects for 3 enterprise
+  clients, managing scope and timelines
+• Translated business requirements into technical specs,
+  reducing development rework by 30%
+• Drove adoption of agile practices, improving sprint
+  velocity by 25%
+      </pre>
+
+      <h3>Example 2: Teaching → Digital Marketing</h3>
+      <pre>
+ANANYA IYER
+ananya.iyer@email.com | +91 98765 12345 | Chennai
+
+PROFESSIONAL SUMMARY
+Education professional with 4 years of experience
+creating engaging content for diverse audiences. Managed
+social media presence for school events reaching 5,000+
+parents. Google Digital Marketing certified. Seeking
+content marketing role to apply storytelling and audience
+engagement skills at scale.
+
+KEY SKILLS
+Marketing: Content Strategy, Social Media Management,
+SEO Basics, Email Campaigns, Analytics
+Content: Copywriting, Storytelling, Presentation Design,
+Video Scripts
+Tools: Canva, Google Analytics, Mailchimp, WordPress,
+Meta Business Suite
+
+CERTIFICATIONS
+• Google Digital Marketing & E-Commerce Certificate (2025)
+• HubSpot Content Marketing Certification (2025)
+• SEMrush SEO Toolkit Course (2026)
+
+WORK EXPERIENCE
+English Teacher | DPS Chennai | 2021 – Present
+• Created content reaching 200+ students across 5
+  sections, improving engagement scores by 30%
+• Managed school Instagram and newsletter, growing
+  follower base from 800 to 3,500
+• Organized 10+ events with promotion strategies
+  driving 95% attendance rates
+      </pre>
+
+      <h2>Common Career Change Resume Mistakes</h2>
+      <ul>
+        <li><strong>Hiding the career change:</strong> Don't pretend it isn't happening. Address it confidently in your summary.</li>
+        <li><strong>Using old industry jargon:</strong> Translate your experience into language the new industry understands.</li>
+        <li><strong>Skipping the skills section:</strong> For career changers, this section is arguably the most important.</li>
+        <li><strong>Not including learning/certifications:</strong> You need proof that you've invested in the transition.</li>
+        <li><strong>Applying with a generic resume:</strong> Each application needs customization for the specific role.</li>
+      </ul>
+
+      <h2>Build Your Career Change Resume</h2>
+      <p>Crafting a career change resume from scratch is challenging. You need to restructure your entire work history, identify transferable skills, and optimize for a new set of keywords — all while keeping it ATS-friendly.</p>
+      <p>Our <a href="/builder">AI Resume Builder</a> simplifies this process. It helps you highlight transferable skills, generates bridging professional summaries, and formats everything for ATS compatibility in your new target industry.</p>
+      <p>Ready to make the switch? <a href="/builder">Start building your career change resume for free</a>.</p>
+    `,
+  },
+  {
+    slug: 'linkedin-profile-optimization-job-seekers',
+    title: 'LinkedIn Profile Tips for Job Seekers 2026: How to Get Noticed by Recruiters',
+    excerpt: 'Recruiters spend hours on LinkedIn searching for candidates. Is your profile optimized to show up? Learn how to craft a headline, summary, and experience section that gets you found and hired.',
+    category: 'career-advice',
+    tags: ['LinkedIn', 'Job Search', 'Career Advice', 'Professional Branding', 'Recruiter Tips'],
+    author: 'Resume Builder Team',
+    publishedAt: '2026-02-24',
+    readTime: 8,
+    content: `
+      <p class="lead">Here's a number that should get your attention: <strong>95% of recruiters use LinkedIn</strong> as their primary sourcing tool. An optimized LinkedIn profile gets up to 40x more visibility than an incomplete one. If you're job hunting and your LinkedIn isn't working as hard as you are, you're leaving opportunities on the table.</p>
+
+      <h2>LinkedIn Profile vs Resume: They're Not the Same</h2>
+      <p>Before we dive in, let's clear up a common misconception. Your LinkedIn profile is NOT just an online copy of your resume. Here's how they differ:</p>
+      <table>
+        <tr><th>Resume</th><th>LinkedIn Profile</th></tr>
+        <tr><td>Tailored for specific roles</td><td>Broader professional brand</td></tr>
+        <tr><td>Formal, concise</td><td>Can be conversational and detailed</td></tr>
+        <tr><td>1-2 pages max</td><td>No length restrictions</td></tr>
+        <tr><td>No personal voice</td><td>First person is fine</td></tr>
+        <tr><td>Static document</td><td>Living profile — updates, posts, engagement</td></tr>
+      </table>
+      <p>They should tell the same career story but in different ways. Your resume is a targeted pitch; your LinkedIn is your professional storefront.</p>
+
+      <h2>1. Craft a Keyword-Rich Headline</h2>
+      <p>Your headline is the single most important field on LinkedIn. It appears in search results, connection requests, comments, and messages. The default — your current job title — is almost never optimal.</p>
+
+      <h3>The Formula</h3>
+      <p><strong>[Target Role] | [Key Skills/Expertise] | [Unique Value Proposition]</strong></p>
+
+      <h3>Examples by Career Stage</h3>
+      <ul>
+        <li><strong>Fresher:</strong> "Aspiring Software Engineer | Java, Python, React | B.Tech CSE '26 | Open to Opportunities"</li>
+        <li><strong>Mid-Level:</strong> "Full Stack Developer | React + Node.js | Building Scalable Web Apps | 4+ Years Experience"</li>
+        <li><strong>Senior:</strong> "Engineering Manager | Leading 20+ Developer Teams | Cloud Architecture & Digital Transformation"</li>
+        <li><strong>Career Changer:</strong> "Former Teacher → Aspiring UX Designer | Google UX Certified | Passionate About Human-Centered Design"</li>
+      </ul>
+
+      <p><strong>Pro tip:</strong> LinkedIn search works like a mini ATS. Recruiters search for keywords like "React developer" or "data analyst." If those words aren't in your headline, you won't appear in results.</p>
+
+      <h2>2. Write a Compelling About Section</h2>
+      <p>The About section (formerly Summary) is your elevator pitch. Most people leave it blank or copy-paste their resume summary. Don't be most people.</p>
+
+      <h3>Structure (Keep Under 300 Words)</h3>
+      <ol>
+        <li><strong>Hook:</strong> Open with something interesting — a mission statement, a passion, or a surprising fact</li>
+        <li><strong>Experience overview:</strong> What you do and your area of expertise</li>
+        <li><strong>Key achievements:</strong> 2-3 accomplishments with metrics</li>
+        <li><strong>What you're looking for:</strong> Clear statement of your career goals</li>
+        <li><strong>Call to action:</strong> Invite connection or contact</li>
+      </ol>
+
+      <h3>Example</h3>
+      <p><em>"I help companies turn data into decisions. With 5 years of experience in data analytics at Flipkart and Swiggy, I've built dashboards and models that directly influenced product strategy — including a recommendation engine that increased user engagement by 35%.</em></p>
+      <p><em>My toolkit: Python, SQL, Tableau, and a healthy obsession with finding patterns in messy data.</em></p>
+      <p><em>Currently exploring senior data analyst roles where I can lead a team and tackle complex business problems. Open to connecting — let's talk data.</em></p>
+      <p><em>📧 name@email.com"</em></p>
+
+      <h2>3. Optimize Your Experience Section</h2>
+      <p>This is where your LinkedIn can actually surpass your resume. You have more space, can add media, and can include more detail.</p>
+
+      <h3>Best Practices</h3>
+      <ul>
+        <li><strong>Use achievement-focused bullet points</strong> — same principle as your resume. Metrics matter.</li>
+        <li><strong>Add media:</strong> Presentations, project links, articles, videos. Visual proof is powerful.</li>
+        <li><strong>Include keywords naturally:</strong> Tools, technologies, methodologies relevant to your target role.</li>
+        <li><strong>Don't skip older roles:</strong> Unlike a resume, LinkedIn benefits from a complete history.</li>
+      </ul>
+
+      <h2>4. Master the Skills Section</h2>
+      <p>LinkedIn allows up to 50 skills, but your <strong>top 5 matter most</strong> — they appear on your profile and influence search rankings.</p>
+      <ul>
+        <li><strong>Pin your most relevant skills</strong> to the top 5 positions</li>
+        <li><strong>Align skills with job descriptions</strong> for your target role</li>
+        <li><strong>Get endorsements strategically:</strong> Ask colleagues who've seen your work firsthand. 5 genuine endorsements > 50 random ones</li>
+        <li><strong>Remove irrelevant skills:</strong> "Microsoft Word" in 2026 isn't helping you</li>
+      </ul>
+
+      <h2>5. Get Recommendations That Actually Help</h2>
+      <p>Recommendations are social proof. Two or three strong, specific recommendations outweigh twenty generic "great to work with" ones.</p>
+
+      <h3>Who to Ask</h3>
+      <ul>
+        <li>Direct managers who can speak to your impact</li>
+        <li>Colleagues from cross-functional projects</li>
+        <li>Clients or stakeholders you delivered results for</li>
+      </ul>
+
+      <h3>How to Ask</h3>
+      <p>Don't just hit the "Request" button. Send a personal message:</p>
+      <p><em>"Hi [Name], I really enjoyed working with you on [Project]. I'm updating my LinkedIn and would appreciate a brief recommendation highlighting [specific skill/achievement]. Happy to write one for you too!"</em></p>
+
+      <h2>6. Profile Photo and Banner</h2>
+      <p>Profiles with photos get <strong>21x more views</strong> and <strong>36x more messages</strong>. Yet many Indian professionals either skip the photo or use one from a wedding.</p>
+
+      <h3>Photo Tips</h3>
+      <ul>
+        <li>Professional headshot (doesn't need a studio — phone camera with good lighting works)</li>
+        <li>Face takes up 60-70% of the frame</li>
+        <li>Neutral or simple background</li>
+        <li>Smile naturally — approachable wins</li>
+      </ul>
+
+      <h3>Banner Image</h3>
+      <p>The banner is free real estate most people ignore. Use it for:</p>
+      <ul>
+        <li>A tagline or personal brand statement</li>
+        <li>Your key skills or specializations</li>
+        <li>Your company's branding (if employed)</li>
+        <li>A simple, clean design made in Canva (free)</li>
+      </ul>
+
+      <h2>7. Leverage LinkedIn Features</h2>
+
+      <h3>Open to Work</h3>
+      <p>Turn on the "Open to Work" feature. You can make it visible to recruiters only (not your current employer). This increases your chance of appearing in recruiter searches by up to 40%.</p>
+
+      <h3>Featured Section</h3>
+      <p>Pin your best work: portfolio links, articles, presentations, or your personal website. This is prime visual space that most profiles waste.</p>
+
+      <h3>LinkedIn Posts</h3>
+      <p>Posting regularly (even once a week) dramatically increases your visibility. Share:</p>
+      <ul>
+        <li>Lessons from your work</li>
+        <li>Industry insights or opinions</li>
+        <li>Career updates and milestones</li>
+        <li>Valuable resources for your network</li>
+      </ul>
+      <p>You don't need to go viral. Consistent, genuine content builds visibility over time.</p>
+
+      <h2>LinkedIn Optimization Checklist</h2>
+      <ul>
+        <li>Professional headshot uploaded</li>
+        <li>Custom banner image</li>
+        <li>Keyword-rich headline (not just job title)</li>
+        <li>Compelling About section (under 300 words)</li>
+        <li>All experience entries have achievement-focused descriptions</li>
+        <li>Top 5 skills aligned with target role</li>
+        <li>At least 2-3 specific recommendations</li>
+        <li>"Open to Work" turned on (recruiter-visible)</li>
+        <li>Featured section with best work</li>
+        <li>Custom LinkedIn URL (linkedin.com/in/yourname)</li>
+        <li>500+ connections (the minimum for credibility)</li>
+      </ul>
+
+      <h2>Your LinkedIn and Resume Should Tell the Same Story</h2>
+      <p>Recruiters will check both. If your LinkedIn says one thing and your resume says another, it raises red flags. Keep them consistent in:</p>
+      <ul>
+        <li>Job titles and dates</li>
+        <li>Key achievements and metrics</li>
+        <li>Skills and technologies</li>
+        <li>Career narrative and direction</li>
+      </ul>
+      <p>The easiest way to ensure consistency? Build your resume first, then align your LinkedIn. Our <a href="/builder">AI Resume Builder</a> creates a professional, ATS-optimized resume that you can use as the foundation for your LinkedIn profile.</p>
+      <p>If you're changing careers, check out our <a href="/blog/career-change-resume-guide">career change resume guide</a> — the same principles of transferable skills and strategic presentation apply to LinkedIn too.</p>
+      <p><a href="/builder">Build your resume for free</a> and make sure your LinkedIn and resume are telling the same winning story.</p>
+    `,
+  },
 ];
 
 // Helper functions
