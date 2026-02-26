@@ -393,14 +393,11 @@ async def forgot_password(
         # Generate reset token
         reset_token = create_password_reset_token(user.email)
 
-        # Create reset URL
-        reset_url = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
-
         # Send reset email
         email_service.send_password_reset_email(
             user_email=user.email,
             user_name=user.name,
-            reset_url=reset_url
+            reset_token=reset_token
         )
 
         logger.info(f"Password reset email sent to: {user.email}")
