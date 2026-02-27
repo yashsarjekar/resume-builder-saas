@@ -483,6 +483,7 @@ function BuilderContent() {
                     <option value="modern">Modern</option>
                     <option value="classic">Classic</option>
                     <option value="professional">Professional</option>
+                    <option value="classic-professional">Classic Professional (ATS-Optimized)</option>
                   </select>
                 </div>
               </div>
