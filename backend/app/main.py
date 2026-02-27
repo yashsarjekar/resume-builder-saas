@@ -125,12 +125,20 @@ async def health_check():
     except RuntimeError:
         redis_status = "not_initialized"
 
+    # Add template debugging
+    try:
+        from app.services.pdf_service import PDFService
+        available_templates = list(PDFService.TEMPLATES.keys())
+    except Exception as e:
+        available_templates = [f"Error loading templates: {str(e)}"]
+
     return {
         "status": "healthy",
         "environment": settings.ENVIRONMENT,
         "redis": redis_status,
         "cache_enabled": settings.CACHE_ENABLED,
         "rate_limit_enabled": settings.RATE_LIMIT_ENABLED,
+        "available_templates": available_templates,
     }
 
 
