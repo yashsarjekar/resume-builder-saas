@@ -602,11 +602,12 @@ async def download_resume_pdf(
     # Determine template to use
     template_name = template_override if template_override else resume.template_name
 
-    # Validate template
-    if template_name not in ['modern', 'classic', 'minimal', 'professional']:
+    # Validate template using PDFService templates
+    from app.services.pdf_service import PDFService
+    if template_name not in PDFService.TEMPLATES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid template: {template_name}"
+            detail=f"Invalid template: {template_name}. Available: {', '.join(PDFService.TEMPLATES.keys())}"
         )
 
     try:
