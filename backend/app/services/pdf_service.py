@@ -453,104 +453,16 @@ class ProfessionalTemplate(PDFTemplate):
 
 
 class ClassicProfessionalTemplate(PDFTemplate):
-    """
-    Classic Professional template - ATS-optimized design.
-
-    Based on successful resume patterns with clean single-column layout,
-    clear hierarchy, and professional styling. Ideal for technical roles
-    and corporate positions.
-    """
+    """Classic Professional template - ATS-optimized, clean design."""
 
     def _setup_custom_styles(self):
-        """Setup classic professional template styles."""
+        """Setup classic professional styles - simplified version."""
         super()._setup_custom_styles()
 
-        # Professional charcoal and subtle blue accent
-        charcoal = colors.HexColor('#2C3E50')
-        dark_gray = colors.HexColor('#34495E')
-        medium_gray = colors.HexColor('#7F8C8D')
-        accent_blue = colors.HexColor('#2E86C1')
-
-        # Name - prominent but professional
-        self.styles['Name'].textColor = charcoal
-        self.styles['Name'].fontSize = 22
-        self.styles['Name'].fontName = 'Helvetica-Bold'
-        self.styles['Name'].spaceAfter = 4
-
-        # Contact info - clean and readable
-        self.styles['Contact'].textColor = dark_gray
-        self.styles['Contact'].fontSize = 9
-        self.styles['Contact'].spaceAfter = 16
-
-        # Section headings - clear with subtle accent
-        self.styles['SectionHeading'].textColor = charcoal
-        self.styles['SectionHeading'].fontSize = 13
-        self.styles['SectionHeading'].fontName = 'Helvetica-Bold'
-        self.styles['SectionHeading'].spaceAfter = 8
-        self.styles['SectionHeading'].spaceBefore = 14
-        self.styles['SectionHeading'].borderWidth = 1
-        self.styles['SectionHeading'].borderPadding = 4
-        self.styles['SectionHeading'].leftIndent = 0
-        self.styles['SectionHeading'].borderColor = accent_blue
-
-        # Job titles - clear hierarchy
-        self.styles['JobTitle'].textColor = dark_gray
-        self.styles['JobTitle'].fontSize = 11
-        self.styles['JobTitle'].fontName = 'Helvetica-Bold'
-        self.styles['JobTitle'].spaceAfter = 2
-
-        # Company names - professional
-        self.styles['Company'].textColor = dark_gray
-        self.styles['Company'].fontSize = 10
-        self.styles['Company'].fontName = 'Helvetica'
-        self.styles['Company'].spaceAfter = 2
-
-        # Duration - subtle but readable
-        self.styles['Duration'].textColor = medium_gray
-        self.styles['Duration'].fontSize = 9
-        self.styles['Duration'].fontName = 'Helvetica'
-        self.styles['Duration'].spaceAfter = 6
-
-        # Body text - optimized for readability
-        self.styles['ResumeBody'].textColor = charcoal
-        self.styles['ResumeBody'].fontSize = 10
-        self.styles['ResumeBody'].fontName = 'Helvetica'
-        self.styles['ResumeBody'].spaceAfter = 4
-        self.styles['ResumeBody'].alignment = TA_LEFT
-        self.styles['ResumeBody'].leading = 13
-
-    def _build_header(self, personal_info: Dict[str, Any]) -> List:
-        """Build header with clean, professional styling."""
-        elements = []
-
-        # Name - centered and prominent
-        name = personal_info.get('name', 'No Name')
-        elements.append(Paragraph(name, self.styles['Name']))
-
-        # Contact info - single line, centered
-        contact_parts = []
-        if personal_info.get('email'):
-            contact_parts.append(personal_info['email'])
-        if personal_info.get('phone'):
-            contact_parts.append(personal_info['phone'])
-        if personal_info.get('location'):
-            contact_parts.append(personal_info['location'])
-
-        # Links on separate line if present
-        link_parts = []
-        if personal_info.get('linkedin'):
-            link_parts.append(f"LinkedIn: {personal_info['linkedin']}")
-        if personal_info.get('github'):
-            link_parts.append(f"GitHub: {personal_info['github']}")
-
-        contact_text = ' | '.join(contact_parts)
-        elements.append(Paragraph(contact_text, self.styles['Contact']))
-
-        if link_parts:
-            links_text = ' | '.join(link_parts)
-            elements.append(Paragraph(links_text, self.styles['Contact']))
-
-        return elements
+        # Use simple, safe color values
+        self.styles['Name'].textColor = colors.HexColor('#2C3E50')
+        self.styles['SectionHeading'].textColor = colors.HexColor('#2C3E50')
+        self.styles['SectionHeading'].borderColor = colors.HexColor('#2E86C1')
 
 
 class PDFService:
