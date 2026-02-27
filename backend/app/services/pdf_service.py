@@ -488,12 +488,9 @@ class ClassicProfessionalTemplate(PDFTemplate):
         self.styles['SectionHeading'].fontName = 'Helvetica-Bold'
         self.styles['SectionHeading'].spaceAfter = 8
         self.styles['SectionHeading'].spaceBefore = 14
-        self.styles['SectionHeading'].borderWidth = 0
-        self.styles['SectionHeading'].borderPadding = 0
+        self.styles['SectionHeading'].borderWidth = 1
+        self.styles['SectionHeading'].borderPadding = 4
         self.styles['SectionHeading'].leftIndent = 0
-        # Add subtle underline
-        self.styles['SectionHeading'].borderWidth = 0
-        self.styles['SectionHeading'].borderPadding = (0, 0, 4, 0)
         self.styles['SectionHeading'].borderColor = accent_blue
 
         # Job titles - clear hierarchy
