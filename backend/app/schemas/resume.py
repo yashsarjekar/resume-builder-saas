@@ -14,7 +14,7 @@ class ResumeBase(BaseModel):
     """Base resume schema with common fields."""
     title: str = Field(..., min_length=3, max_length=200)
     job_description: Optional[str] = Field(None, max_length=7000)
-    template_name: str = Field(default="modern", pattern="^(modern|classic|minimal|professional)$")
+    template_name: str = Field(default="modern", pattern="^(modern|classic|minimal|professional|classic-professional)$")
 
     @field_validator('title')
     @classmethod
@@ -70,7 +70,7 @@ class ResumeUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=3, max_length=200)
     job_description: Optional[str] = Field(None, max_length=7000)
     content: Optional[Dict[str, Any]] = None
-    template_name: Optional[str] = Field(None, pattern="^(modern|classic|minimal|professional)$")
+    template_name: Optional[str] = Field(None, pattern="^(modern|classic|minimal|professional|classic-professional)$")
 
     @field_validator('title')
     @classmethod
@@ -232,7 +232,7 @@ class PDFDownloadRequest(BaseModel):
         template_name: Optional template override
     """
     use_optimized: bool = Field(default=False)
-    template_name: Optional[str] = Field(None, pattern="^(modern|classic|minimal|professional)$")
+    template_name: Optional[str] = Field(None, pattern="^(modern|classic|minimal|professional|classic-professional)$")
 
 
 class ResumeStats(BaseModel):
