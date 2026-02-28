@@ -9,9 +9,6 @@ export default function StructuredData() {
     sameAs: [
       'https://www.instagram.com/resumebuilder.pulsestack.in/',
       'https://www.youtube.com/@resumebuilder.pulsestack',
-      'https://x.com/resumebuilder_ps',
-      'https://www.linkedin.com/company/resumebuilder-pulsestack',
-      'https://www.facebook.com/resumebuilder.pulsestack',
     ],
   };
 
