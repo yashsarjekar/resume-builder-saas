@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/layout/Header';
@@ -7,14 +7,15 @@ import { GoogleTag } from '@/components/GoogleTag';
 
 const inter = Inter({ subsets: ['latin'] });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
   title: 'Resume Builder - AI-Powered ATS Optimization',
   description: 'Create professional resumes with AI-powered ATS optimization. Get hired faster with our resume builder.',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-  },
 };
 
 export default function RootLayout({

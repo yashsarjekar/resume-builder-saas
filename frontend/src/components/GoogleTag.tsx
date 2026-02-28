@@ -8,7 +8,6 @@
 'use client';
 
 import Script from 'next/script';
-import { useEffect } from 'react';
 
 const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
 
@@ -18,26 +17,19 @@ export function GoogleTag() {
     return null;
   }
 
-  useEffect(() => {
-    // Log when tracking is loaded
-    if (window.gtag) {
-      console.log('[Google Ads] Tracking initialized:', GOOGLE_ADS_ID);
-    }
-  }, []);
-
   return (
     <>
-      {/* Google Ads Global Site Tag (gtag.js) */}
+      {/* Google Ads Global Site Tag (gtag.js) - lazyOnload to improve INP */}
       <Script
         id="google-ads-script"
         src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
 
       {/* Initialize gtag */}
       <Script
         id="google-ads-init"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];
