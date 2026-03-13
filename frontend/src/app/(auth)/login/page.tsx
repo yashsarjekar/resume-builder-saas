@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
@@ -13,6 +13,21 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, loading } = useAuthStore();
   const [error, setError] = useState('');
+  const [userCountry, setUserCountry] = useState<string>('IN');
+
+  // Detect user's country for new Google sign-ups via login page
+  useEffect(() => {
+    const detectCountry = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        setUserCountry(data.country_code || 'US');
+      } catch {
+        setUserCountry('IN');
+      }
+    };
+    detectCountry();
+  }, []);
 
   const {
     register,
@@ -52,6 +67,7 @@ export default function LoginPage() {
           {/* Google Sign In */}
           <GoogleSignInButton
             mode="login"
+            country={userCountry}
             onError={(msg) => setError(msg)}
           />
 
