@@ -44,7 +44,11 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
-    password_hash = Column(String, nullable=False)
+    password_hash = Column(String, nullable=True)  # Nullable for Google OAuth users
+
+    # OAuth provider tracking
+    auth_provider = Column(String(20), default="local", nullable=False)  # "local", "google", "both"
+    google_id = Column(String(255), nullable=True, unique=True, index=True)
 
     # Subscription management
     subscription_type = Column(

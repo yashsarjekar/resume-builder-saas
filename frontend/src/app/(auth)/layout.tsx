@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import GoogleOAuthWrapper from '@/components/auth/GoogleOAuthWrapper';
 
 export const metadata: Metadata = {
   robots: {
@@ -12,5 +13,5 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <GoogleOAuthWrapper>{children}</GoogleOAuthWrapper>;
 }

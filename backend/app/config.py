@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     DODO_WEBHOOK_SECRET: Optional[str] = None
     DODO_ENVIRONMENT: str = "test_mode"  # "test_mode" or "live_mode"
 
+    # Google OAuth Configuration
+    GOOGLE_CLIENT_ID: Optional[str] = None
+
     # Application Settings
     ENVIRONMENT: str = "development"
     FRONTEND_URL: str = "http://localhost:3000"

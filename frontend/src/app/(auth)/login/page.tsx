@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/store/authStore';
 import { loginSchema, type LoginFormData } from '@/lib/validators';
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,6 +48,22 @@ export default function LoginPage() {
               <p className="text-sm text-red-600">{error}</p>
             </div>
           )}
+
+          {/* Google Sign In */}
+          <GoogleSignInButton
+            mode="login"
+            onError={(msg) => setError(msg)}
+          />
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>

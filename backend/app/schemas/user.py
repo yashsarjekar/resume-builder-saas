@@ -103,11 +103,24 @@ class UserResponse(UserBase):
     resume_count: int
     ats_analysis_count: int
     region: str = "IN"
+    auth_provider: str = "local"
     created_at: datetime
 
     class Config:
         """Pydantic configuration."""
         from_attributes = True  # Enables ORM mode for SQLAlchemy models
+
+
+class GoogleAuthRequest(BaseModel):
+    """
+    Schema for Google OAuth authentication.
+
+    Attributes:
+        credential: Google ID token (JWT) from @react-oauth/google
+        country: Optional country code for region detection (new users)
+    """
+    credential: str = Field(..., description="Google ID token JWT")
+    country: Optional[str] = Field(default=None, description="Country code for region-based limits")
 
 
 class Token(BaseModel):

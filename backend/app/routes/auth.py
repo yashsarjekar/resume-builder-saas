@@ -21,7 +21,8 @@ from app.schemas.user import (
     UserUpdate,
     PasswordChange,
     ForgotPasswordRequest,
-    ResetPasswordRequest
+    ResetPasswordRequest,
+    GoogleAuthRequest,
 )
 from app.utils.auth import hash_password, verify_password, create_access_token, create_password_reset_token, verify_password_reset_token
 from app.dependencies import get_current_user, get_current_active_user
@@ -161,6 +162,15 @@ async def login(
     # Find user by email
     user = db.query(User).filter(User.email == credentials.email).first()
 
+    # Handle Google-only users who try password login
+    if user and user.password_hash is None:
+        logger.warning(f"Google-only user tried password login: {credentials.email}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="This account uses Google Sign-In. Please log in with Google or set a password first.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     # Verify user exists and password is correct
     if not user or not verify_password(credentials.password, user.password_hash):
         logger.warning(f"Failed login attempt for email: {credentials.email}")
@@ -176,6 +186,137 @@ async def login(
     )
 
     logger.info(f"Successful login: {user.email} (ID: {user.id})")
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
+
+@router.post("/google", response_model=Token)
+async def google_auth(
+    google_data: GoogleAuthRequest,
+    db: Session = Depends(get_db)
+) -> Dict[str, str]:
+    """
+    Authenticate or register a user via Google OAuth.
+
+    Handles three scenarios:
+    1. New user: Creates account with Google, returns JWT
+    2. Existing Google user: Logs them in, returns JWT
+    3. Existing email/password user: Links Google account, returns JWT
+
+    Args:
+        google_data: Google credential and optional country
+        db: Database session
+
+    Returns:
+        Token: JWT access token
+
+    Raises:
+        HTTPException 401: If Google credentials are invalid
+    """
+    if not settings.GOOGLE_CLIENT_ID:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google Sign-In is not configured"
+        )
+
+    # Verify the Google ID token
+    try:
+        from google.oauth2 import id_token
+        from google.auth.transport import requests as google_requests
+
+        idinfo = id_token.verify_oauth2_token(
+            google_data.credential,
+            google_requests.Request(),
+            settings.GOOGLE_CLIENT_ID
+        )
+    except ValueError as e:
+        logger.warning(f"Invalid Google ID token: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Google credentials"
+        )
+    except Exception as e:
+        logger.error(f"Google token verification error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to verify Google credentials. Please try again later."
+        )
+
+    # Extract user info from verified token
+    google_email = idinfo.get("email")
+    google_name = idinfo.get("name", "")
+    google_id = idinfo.get("sub")
+    email_verified = idinfo.get("email_verified", False)
+
+    if not google_email or not email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google account email not verified"
+        )
+
+    # Look up user - first by google_id, then by email
+    user = db.query(User).filter(User.google_id == google_id).first()
+
+    if not user:
+        # No user with this google_id - check by email
+        user = db.query(User).filter(User.email == google_email).first()
+
+        if user:
+            # Existing email/password user - link Google account
+            user.google_id = google_id
+            user.auth_provider = "both"
+            db.commit()
+            db.refresh(user)
+            logger.info(f"Google account linked to existing user: {user.email} (ID: {user.id})")
+        else:
+            # Brand new user - create account
+            country = google_data.country or "US"
+            region = "IN" if country.upper() == "IN" else "INTL"
+
+            user = User(
+                email=google_email,
+                name=google_name,
+                password_hash=None,
+                google_id=google_id,
+                auth_provider="google",
+                subscription_type=SubscriptionType.FREE,
+                region=region,
+                resume_count=0,
+                ats_analysis_count=0
+            )
+
+            try:
+                db.add(user)
+                db.commit()
+                db.refresh(user)
+                logger.info(f"New Google user registered: {user.email} (ID: {user.id})")
+
+                # Send welcome email
+                try:
+                    email_service.send_welcome_email(
+                        user_email=user.email,
+                        user_name=user.name
+                    )
+                except Exception as email_error:
+                    logger.error(f"Failed to send welcome email to {user.email}: {str(email_error)}")
+
+            except Exception as e:
+                db.rollback()
+                logger.error(f"Error creating Google user: {str(e)}")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Failed to create user account"
+                )
+
+    # Create and return JWT
+    access_token = create_access_token(
+        data={"sub": user.email, "user_id": user.id}
+    )
+
+    logger.info(f"Google auth successful: {user.email} (ID: {user.id})")
 
     return {
         "access_token": access_token,
@@ -332,6 +473,23 @@ async def change_password(
     Raises:
         HTTPException 401: If current password is incorrect
     """
+    # Google-only user setting password for the first time
+    if current_user.password_hash is None:
+        current_user.password_hash = hash_password(password_data.new_password)
+        if current_user.auth_provider == "google":
+            current_user.auth_provider = "both"
+        try:
+            db.commit()
+            logger.info(f"Password set for Google user ID: {current_user.id}")
+            return {"message": "Password set successfully"}
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error setting password: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to set password"
+            )
+
     # Verify current password
     if not verify_password(password_data.current_password, current_user.password_hash):
         logger.warning(f"Failed password change for user ID: {current_user.id}")
@@ -457,6 +615,11 @@ async def reset_password(
     try:
         # Hash and set new password
         user.password_hash = hash_password(request.new_password)
+
+        # Update auth_provider for Google-only users
+        if user.auth_provider == "google":
+            user.auth_provider = "both"
+
         db.commit()
 
         logger.info(f"Password reset successful for user: {user.email}")

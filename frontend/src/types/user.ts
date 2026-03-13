@@ -8,6 +8,7 @@ export interface User {
   resume_count: number;
   ats_analysis_count: number;
   region: 'IN' | 'INTL';
+  auth_provider: 'local' | 'google' | 'both';
   created_at: string;
 }
 

@@ -10,6 +10,7 @@ interface AuthState {
   loading: boolean;
   login: (data: LoginData) => Promise<void>;
   signup: (data: SignupData) => Promise<void>;
+  googleAuth: (credential: string, country?: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -99,6 +100,43 @@ export const useAuthStore = create<AuthState>((set) => ({
       console.log('✅ Signup conversion tracked');
     } catch (error) {
       console.error('❌ Signup error:', error);
+      set({ loading: false });
+      throw error;
+    }
+  },
+
+  googleAuth: async (credential: string, country?: string) => {
+    set({ loading: true });
+    try {
+      const response = await api.post('/api/auth/google', {
+        credential,
+        country: country || undefined,
+      });
+
+      const { access_token } = response.data;
+
+      if (!access_token) {
+        throw new Error('No access token received from server');
+      }
+
+      localStorage.setItem('token', access_token);
+
+      // Fetch user data with the new token
+      const userResponse = await api.get('/api/auth/me');
+
+      set({
+        user: userResponse.data,
+        token: access_token,
+        isAuthenticated: true,
+        loading: false,
+      });
+
+      // Track signup if new user
+      if (userResponse.data.auth_provider === 'google') {
+        trackSignup(userResponse.data.email);
+      }
+    } catch (error) {
+      console.error('Google auth error:', error);
       set({ loading: false });
       throw error;
     }
