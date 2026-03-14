@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 import api from '@/lib/api';
 import { Resume } from '@/types/resume';
 import { formatDate, getSubscriptionColor, getATSScoreColor } from '@/lib/utils';
+import UpgradeModal from '@/components/UpgradeModal';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function DashboardPage() {
   const [showPaymentHistory, setShowPaymentHistory] = useState(false);
   const [resumeStats, setResumeStats] = useState<any>(null);
   const [showStats, setShowStats] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(true);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -198,6 +200,15 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Upgrade popup for free users */}
+      {user.subscription_type === 'free' && (
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          region={user.region}
+        />
+      )}
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
