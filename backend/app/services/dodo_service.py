@@ -130,6 +130,56 @@ class DodoService:
             "Content-Type": "application/json",
         }
 
+    async def create_dodo_discount(self, code: str, discount_percent: int, product_ids: list = None) -> Optional[str]:
+        """
+        Create a discount in Dodo Payments so checkout applies real discount.
+
+        Args:
+            code: Coupon code to use as Dodo discount code
+            discount_percent: Percentage discount (e.g. 20 for 20%)
+            product_ids: Optional list of product IDs to restrict to
+
+        Returns:
+            Dodo discount code if created, None on failure
+        """
+        if not self.is_configured:
+            return None
+
+        try:
+            # Dodo uses basis points for percentage: 20% = 2000
+            amount_basis_points = discount_percent * 100
+
+            discount_data = {
+                "amount": amount_basis_points,
+                "type": "percentage",
+                "code": code.upper(),
+                "usage_limit": 1,
+            }
+
+            if product_ids:
+                discount_data["restricted_to"] = product_ids
+
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{self.base_url}/discounts",
+                    headers=self._get_headers(),
+                    json=discount_data,
+                    timeout=15.0,
+                )
+
+                if response.status_code in [200, 201]:
+                    result = response.json()
+                    dodo_code = result.get("code", code.upper())
+                    logger.info(f"Dodo discount created: {dodo_code} ({discount_percent}%)")
+                    return dodo_code
+                else:
+                    logger.error(f"Failed to create Dodo discount: {response.status_code} - {response.text}")
+                    return None
+
+        except Exception as e:
+            logger.error(f"Error creating Dodo discount: {e}")
+            return None
+
     def calculate_amount(self, plan: str, duration_months: int) -> int:
         """
         Calculate payment amount for a plan and duration.
@@ -201,12 +251,19 @@ class DodoService:
             product_name = self.get_product_name(request.plan.value, request.duration_months)
 
             # Apply coupon discount
+            dodo_discount_code = None
             if coupon_data and coupon_data.get("valid"):
                 from app.services.coupon_service import coupon_service
                 discount_percent = coupon_data["discount_percent"]
                 coupon_code = coupon_data["code"]
                 amount = coupon_service.calculate_discounted_amount(amount, discount_percent)
                 logger.info(f"Coupon {coupon_code} applied to Dodo: {original_amount} -> {amount} ({discount_percent}% off)")
+
+                # Create discount in Dodo so checkout applies the real discount
+                dodo_discount_code = await self.create_dodo_discount(
+                    code=coupon_code,
+                    discount_percent=discount_percent,
+                )
 
             # Create checkout session via Dodo API
             # Get product ID from our mapping
@@ -240,6 +297,10 @@ class DodoService:
                     "duration_months": str(request.duration_months)
                 }
             }
+
+            # Apply Dodo discount code to checkout if created
+            if dodo_discount_code:
+                checkout_data["discount_code"] = dodo_discount_code
 
             logger.info(f"Creating Dodo checkout with product_id: {product_id}")
 
