@@ -144,7 +144,8 @@ class RazorpayService:
         self,
         user_id: int,
         request: CreateOrderRequest,
-        db: Session
+        db: Session,
+        coupon_data: dict = None,
     ) -> CreateOrderResponse:
         """
         Create a Razorpay order or subscription.
@@ -153,6 +154,7 @@ class RazorpayService:
             user_id: User ID creating the order
             request: Order creation request
             db: Database session
+            coupon_data: Validated coupon info (from coupon_service.validate_coupon)
 
         Returns:
             CreateOrderResponse: Order/Subscription details
@@ -163,13 +165,29 @@ class RazorpayService:
         try:
             # Calculate amount for one payment cycle
             amount = self.calculate_amount(request.plan, request.duration_months)
+            original_amount = amount
+            discount_percent = 0
+            coupon_code = None
+
+            # Apply coupon discount
+            if coupon_data and coupon_data.get("valid"):
+                from app.services.coupon_service import coupon_service
+                discount_percent = coupon_data["discount_percent"]
+                coupon_code = coupon_data["code"]
+                amount = coupon_service.calculate_discounted_amount(amount, discount_percent)
+                logger.info(f"Coupon {coupon_code} applied: {original_amount} -> {amount} ({discount_percent}% off)")
 
             if request.recurring:
                 # Create recurring subscription
                 return self._create_subscription(user_id, request, amount, db)
             else:
                 # Create one-time order
-                return self._create_one_time_order(user_id, request, amount, db)
+                return self._create_one_time_order(
+                    user_id, request, amount, db,
+                    coupon_code=coupon_code,
+                    discount_percent=discount_percent,
+                    original_amount=original_amount if coupon_code else None,
+                )
 
         except Exception as e:
             logger.error(f"Failed to create order: {str(e)}")
@@ -180,7 +198,10 @@ class RazorpayService:
         user_id: int,
         request: CreateOrderRequest,
         amount: int,
-        db: Session
+        db: Session,
+        coupon_code: str = None,
+        discount_percent: int = 0,
+        original_amount: int = None,
     ) -> CreateOrderResponse:
         """Create a one-time payment order."""
         order_data = {
@@ -205,7 +226,10 @@ class RazorpayService:
             currency="INR",
             status=PaymentStatus.PENDING,
             plan=request.plan,
-            duration_months=request.duration_months
+            duration_months=request.duration_months,
+            coupon_code=coupon_code,
+            discount_percent=discount_percent,
+            original_amount=original_amount,
         )
         db.add(payment)
         db.commit()

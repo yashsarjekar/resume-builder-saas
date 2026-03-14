@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20% Off - Exclusive Offer</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content h2 {
+            color: #667eea;
+            font-size: 22px;
+            margin-top: 0;
+        }
+        .content p {
+            margin: 15px 0;
+            color: #555;
+        }
+        .button {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        .discount-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 2px dashed #22c55e;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            margin: 24px 0;
+        }
+        .discount-box .percent {
+            font-size: 48px;
+            font-weight: 800;
+            color: #16a34a;
+            line-height: 1;
+        }
+        .discount-box .label {
+            font-size: 16px;
+            color: #15803d;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .coupon-code {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #334155;
+            margin: 8px 0;
+        }
+        .urgency {
+            color: #dc2626;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        .footer p { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Resume Builder</h1>
+        </div>
+        <div class="content">
+            <h2>{{user_name}}, here's an exclusive offer just for you</h2>
+            <p>We noticed you're still on the free plan. We'd love to help you unlock the full power of Resume Builder, so here's a special deal:</p>
+
+            <div class="discount-box">
+                <div class="percent">{{discount_percent}}% OFF</div>
+                <div class="label">Any Plan - Starter or Pro</div>
+                <div style="margin-top: 12px;">
+                    <span>Use code:</span><br>
+                    <span class="coupon-code">{{coupon_code}}</span>
+                </div>
+            </div>
+
+            <p class="urgency">This offer expires in {{expiry_days}} days. Don't miss out!</p>
+
+            <p>With a paid plan you get AI resume optimization, unlimited ATS analyses, cover letter generation, and premium templates that help you stand out.</p>
+
+            <center>
+                <a href="{{pricing_url}}" class="button">Claim Your 20% Discount</a>
+            </center>
+
+            <p style="font-size: 13px; color: #94a3b8;">The discount will be auto-applied when you click the link above.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Resume Builder. All rights reserved.</p>
+            <p>Building better careers, one resume at a time.</p>
+        </div>
+    </div>
+</body>
+</html>

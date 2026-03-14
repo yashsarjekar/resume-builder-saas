@@ -167,7 +167,8 @@ class DodoService:
         self,
         user_id: int,
         request: CreateOrderRequest,
-        db: Session
+        db: Session,
+        coupon_data: dict = None,
     ) -> CreateOrderResponse:
         """
         Create a Dodo Payments checkout session.
@@ -194,7 +195,18 @@ class DodoService:
 
             # Calculate amount
             amount = self.calculate_amount(request.plan.value, request.duration_months)
+            original_amount = amount
+            discount_percent = 0
+            coupon_code = None
             product_name = self.get_product_name(request.plan.value, request.duration_months)
+
+            # Apply coupon discount
+            if coupon_data and coupon_data.get("valid"):
+                from app.services.coupon_service import coupon_service
+                discount_percent = coupon_data["discount_percent"]
+                coupon_code = coupon_data["code"]
+                amount = coupon_service.calculate_discounted_amount(amount, discount_percent)
+                logger.info(f"Coupon {coupon_code} applied to Dodo: {original_amount} -> {amount} ({discount_percent}% off)")
 
             # Create checkout session via Dodo API
             # Get product ID from our mapping
@@ -263,7 +275,10 @@ class DodoService:
                 currency="USD",
                 status=PaymentStatus.PENDING,
                 plan=request.plan.value,
-                duration_months=request.duration_months
+                duration_months=request.duration_months,
+                coupon_code=coupon_code,
+                discount_percent=discount_percent,
+                original_amount=original_amount if coupon_code else None,
             )
             db.add(payment)
             db.commit()
@@ -411,6 +426,11 @@ class DodoService:
         payment.status = PaymentStatus.SUCCESS
         payment.dodo_payment_id = event_data.get("transaction_id", payment_id)
 
+        # Apply coupon usage if payment had a coupon
+        if payment.coupon_code:
+            from app.services.coupon_service import coupon_service
+            coupon_service.apply_coupon(payment.coupon_code, db)
+
         # Upgrade user subscription
         user = db.query(User).filter(User.id == payment.user_id).first()
         if user:
@@ -553,6 +573,11 @@ class DodoService:
                 # Payment successful - update our records
                 payment.status = PaymentStatus.SUCCESS
                 payment.dodo_payment_id = payment_data.get("transaction_id") or payment_data.get("id") or payment_id
+
+                # Apply coupon usage if payment had a coupon
+                if payment.coupon_code:
+                    from app.services.coupon_service import coupon_service
+                    coupon_service.apply_coupon(payment.coupon_code, db)
 
                 # Upgrade user subscription
                 user = db.query(User).filter(User.id == payment.user_id).first()

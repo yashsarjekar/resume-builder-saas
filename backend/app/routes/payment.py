@@ -18,6 +18,7 @@ from app.routes.auth import get_current_user
 from app.services.razorpay_service import razorpay_service
 from app.services.dodo_service import dodo_service
 from app.services.email_service import email_service
+from app.services.coupon_service import coupon_service
 from app.schemas.payment import (
     CreateOrderRequest,
     CreateOrderResponse,
@@ -87,13 +88,27 @@ async def create_payment_order(
         }
     """
     try:
+        # Validate coupon if provided
+        coupon_data = None
+        if request.coupon_code:
+            region = "IN" if request.country.upper() == "IN" else "INTL"
+            coupon_data = coupon_service.validate_coupon(
+                code=request.coupon_code,
+                plan=request.plan.value,
+                region=region,
+                db=db,
+            )
+            if not coupon_data["valid"]:
+                raise ValueError(coupon_data["error"])
+
         # Route to appropriate payment gateway based on country
         if request.country.upper() == "IN":
             # India - use Razorpay
             order = razorpay_service.create_order(
                 user_id=current_user.id,
                 request=request,
-                db=db
+                db=db,
+                coupon_data=coupon_data,
             )
             logger.info(f"Razorpay order created for user {current_user.id}: {order.order_id}")
         else:
@@ -103,13 +118,15 @@ async def create_payment_order(
                 order = razorpay_service.create_order(
                     user_id=current_user.id,
                     request=request,
-                    db=db
+                    db=db,
+                    coupon_data=coupon_data,
                 )
             else:
                 order = await dodo_service.create_checkout_session(
                     user_id=current_user.id,
                     request=request,
-                    db=db
+                    db=db,
+                    coupon_data=coupon_data,
                 )
                 logger.info(f"Dodo checkout created for user {current_user.id}: {order.order_id}")
 
@@ -163,6 +180,11 @@ async def verify_payment(
             request=request,
             db=db
         )
+
+        # Apply coupon usage if payment had a coupon
+        if payment.coupon_code:
+            coupon_service.apply_coupon(payment.coupon_code, db)
+            db.commit()
 
         logger.info(
             f"Payment verified for user {current_user.id}: "
@@ -451,6 +473,10 @@ async def handle_webhook(
 
                 payment.razorpay_payment_id = payment_id
                 payment.status = "success"
+
+                # Apply coupon usage if payment had a coupon
+                if payment.coupon_code:
+                    coupon_service.apply_coupon(payment.coupon_code, db)
 
                 # Upgrade user subscription
                 user = db.query(User).filter(User.id == payment.user_id).first()

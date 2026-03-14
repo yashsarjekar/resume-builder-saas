@@ -7,6 +7,8 @@ This module exports all database models for easy importing.
 from .user import User, SubscriptionType
 from .resume import Resume
 from .payment import Payment, PaymentStatus
+from .coupon import Coupon
+from .drip_email_log import DripEmailLog
 
 __all__ = [
     "User",
@@ -14,4 +16,6 @@ __all__ = [
     "Resume",
     "Payment",
     "PaymentStatus",
+    "Coupon",
+    "DripEmailLog",
 ]

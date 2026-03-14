@@ -104,6 +104,9 @@ class Settings(BaseSettings):
     RESEND_FROM_NAME: str = "Resume Builder"
     EMAIL_ENABLED: bool = True
 
+    # Cron Job Secret
+    CRON_SECRET: Optional[str] = None
+
     # Legacy SMTP Configuration (Backward compatibility)
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30% Off - Limited Time</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content h2 {
+            color: #ea580c;
+            font-size: 22px;
+            margin-top: 0;
+        }
+        .content p {
+            margin: 15px 0;
+            color: #555;
+        }
+        .button {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: white !important;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        .discount-box {
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            border: 2px dashed #f97316;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            margin: 24px 0;
+        }
+        .discount-box .percent {
+            font-size: 48px;
+            font-weight: 800;
+            color: #ea580c;
+            line-height: 1;
+        }
+        .discount-box .label {
+            font-size: 16px;
+            color: #c2410c;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .coupon-code {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #334155;
+            margin: 8px 0;
+        }
+        .urgency {
+            color: #dc2626;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .testimonial {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            font-style: italic;
+            color: #555;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        .footer p { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Resume Builder</h1>
+            <div class="subtitle">Limited Time Offer</div>
+        </div>
+        <div class="content">
+            <h2>{{user_name}}, this deal is going fast!</h2>
+            <p>We increased your discount because we really want to help you succeed in your job search. This is a bigger saving than our last offer:</p>
+
+            <div class="discount-box">
+                <div class="percent">{{discount_percent}}% OFF</div>
+                <div class="label">Starter & Pro Plans</div>
+                <div style="margin-top: 12px;">
+                    <span>Use code:</span><br>
+                    <span class="coupon-code">{{coupon_code}}</span>
+                </div>
+            </div>
+
+            <p class="urgency">Expires in {{expiry_days}} days -- upgrade before it's gone!</p>
+
+            <div class="testimonial">
+                "Resume Builder's AI optimization helped me tailor my resume to each job application. I got 3x more interview calls within the first week!" -- A happy user
+            </div>
+
+            <p>Don't let your resume hold you back. Upgrade now and let AI help you land more interviews.</p>
+
+            <center>
+                <a href="{{pricing_url}}" class="button">Get 30% Off Now</a>
+            </center>
+
+            <p style="font-size: 13px; color: #94a3b8;">Click the button above -- your discount is auto-applied.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Resume Builder. All rights reserved.</p>
+            <p>Building better careers, one resume at a time.</p>
+        </div>
+    </div>
+</body>
+</html>

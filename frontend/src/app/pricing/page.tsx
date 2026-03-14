@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import api from '@/lib/api';
 import { trackStarterPurchase, trackProPurchase } from '@/lib/tracking';
@@ -30,14 +30,23 @@ const billingOptions: { value: BillingCycle; label: string; discount?: string }[
   { value: 12, label: 'Yearly', discount: '25% off' },
 ];
 
-export default function PricingPage() {
+function PricingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('');
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [countryLoading, setCountryLoading] = useState(true);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>(1);
+
+  // Coupon state
+  const [couponCode, setCouponCode] = useState('');
+  const [couponInput, setCouponInput] = useState('');
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponError, setCouponError] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponApplied, setCouponApplied] = useState(false);
 
   // Plans with region-specific limits and multi-duration pricing
   const getPlans = (isIndia: boolean): PricingPlan[] => [
@@ -121,7 +130,7 @@ export default function PricingPage() {
         setUserCountry(data.country_code || 'US');
       } catch (error) {
         console.log('Country detection failed, defaulting to US');
-        setUserCountry('US'); // Default to international (Dodo)
+        setUserCountry('US');
       } finally {
         setCountryLoading(false);
       }
@@ -129,6 +138,15 @@ export default function PricingPage() {
 
     detectCountry();
   }, []);
+
+  // Auto-apply coupon from URL param
+  useEffect(() => {
+    const urlCoupon = searchParams.get('coupon');
+    if (urlCoupon && userCountry) {
+      setCouponInput(urlCoupon);
+      validateCoupon(urlCoupon);
+    }
+  }, [searchParams, userCountry]);
 
   // Load Razorpay script for Indian users
   useEffect(() => {
@@ -148,10 +166,61 @@ export default function PricingPage() {
 
   const isIndian = userCountry === 'IN';
 
+  const validateCoupon = async (code: string) => {
+    if (!code.trim()) return;
+    setCouponLoading(true);
+    setCouponError('');
+
+    try {
+      const region = isIndian ? 'IN' : 'INTL';
+      const response = await api.post('/api/coupon/validate', {
+        code: code.trim(),
+        plan: 'both',
+        region,
+      });
+
+      if (response.data.valid) {
+        setCouponCode(response.data.code);
+        setCouponDiscount(response.data.discount_percent);
+        setCouponApplied(true);
+        setCouponError('');
+      } else {
+        setCouponError(response.data.error || 'Invalid coupon code');
+        setCouponApplied(false);
+        setCouponDiscount(0);
+        setCouponCode('');
+      }
+    } catch (error: any) {
+      setCouponError(error.response?.data?.detail || 'Failed to validate coupon');
+      setCouponApplied(false);
+      setCouponDiscount(0);
+      setCouponCode('');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setCouponCode('');
+    setCouponDiscount(0);
+    setCouponApplied(false);
+    setCouponError('');
+    setCouponInput('');
+  };
+
   const getPrice = (plan: PricingPlan) => {
     const price = isIndian ? plan.priceINR[billingCycle] : plan.priceUSD[billingCycle];
     if (price === 0) return isIndian ? '₹0' : '$0';
     return isIndian ? `₹${price}` : `$${price}`;
+  };
+
+  const getDiscountedPrice = (plan: PricingPlan) => {
+    if (!couponApplied || couponDiscount === 0 || plan.name === 'FREE') return null;
+    const price = isIndian ? plan.priceINR[billingCycle] : plan.priceUSD[billingCycle];
+    if (price === 0) return null;
+    const discounted = price - (price * couponDiscount / 100);
+    const rounded = Math.round(discounted * 100) / 100;
+    return isIndian ? `₹${Math.round(rounded)}` : `$${rounded.toFixed(2)}`;
   };
 
   const getBillingLabel = () => {
@@ -173,12 +242,18 @@ export default function PricingPage() {
     setSelectedPlan(planName);
 
     try {
-      // Create order with country and duration for gateway routing
-      const orderResponse = await api.post('/api/payment/create-order', {
+      // Create order with country, duration, and coupon for gateway routing
+      const orderPayload: any = {
         plan: planName.toLowerCase(),
         duration_months: billingCycle,
-        country: userCountry || 'US'
-      });
+        country: userCountry || 'US',
+      };
+
+      if (couponCode) {
+        orderPayload.coupon_code = couponCode;
+      }
+
+      const orderResponse = await api.post('/api/payment/create-order', orderPayload);
 
       const { order_id, amount, currency, payment_gateway, checkout_url, key_id } = orderResponse.data;
 
@@ -281,11 +356,58 @@ export default function PricingPage() {
             )}
             <span className="block text-sm text-gray-500 mt-2">
               {countryLoading ? 'Detecting your location...' : (
-                isIndian ? '🇮🇳 Indian Rupee pricing' : '🌍 International pricing (USD)'
+                isIndian ? 'Indian Rupee pricing' : 'International pricing (USD)'
               )}
             </span>
           </p>
         </div>
+
+        {/* Coupon Applied Banner */}
+        {couponApplied && (
+          <div className="max-w-2xl mx-auto mb-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-green-800 font-medium">
+                  Coupon <span className="font-mono font-bold">{couponCode}</span> applied &mdash; {couponDiscount}% off!
+                </span>
+              </div>
+              <button
+                onClick={removeCoupon}
+                className="text-green-600 hover:text-green-800 text-sm font-medium"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Coupon Input (when no coupon is applied) */}
+        {!couponApplied && (
+          <div className="max-w-md mx-auto mb-8">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={couponInput}
+                onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                placeholder="Have a coupon code?"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <button
+                onClick={() => validateCoupon(couponInput)}
+                disabled={couponLoading || !couponInput.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {couponLoading ? 'Checking...' : 'Apply'}
+              </button>
+            </div>
+            {couponError && (
+              <p className="mt-2 text-sm text-red-600">{couponError}</p>
+            )}
+          </div>
+        )}
 
         {/* Billing Cycle Toggle */}
         <div className="flex justify-center mb-10">
@@ -322,71 +444,86 @@ export default function PricingPage() {
 
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`bg-white rounded-lg shadow-md overflow-hidden ${
-                plan.name === 'PRO' ? 'ring-2 ring-blue-600 transform scale-105' : ''
-              }`}
-            >
-              {plan.name === 'PRO' && (
-                <div className="bg-blue-600 text-white text-center py-2 text-sm font-semibold">
-                  BEST VALUE
+          {plans.map((plan) => {
+            const discountedPrice = getDiscountedPrice(plan);
+            return (
+              <div
+                key={plan.name}
+                className={`bg-white rounded-lg shadow-md overflow-hidden ${
+                  plan.name === 'PRO' ? 'ring-2 ring-blue-600 transform scale-105' : ''
+                }`}
+              >
+                {plan.name === 'PRO' && (
+                  <div className="bg-blue-600 text-white text-center py-2 text-sm font-semibold">
+                    BEST VALUE
+                  </div>
+                )}
+
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                  <div className="mb-6">
+                    {discountedPrice ? (
+                      <>
+                        <span className="text-2xl text-gray-400 line-through mr-2">{getPrice(plan)}</span>
+                        <span className="text-4xl font-bold text-green-600">{discountedPrice}</span>
+                      </>
+                    ) : (
+                      <span className="text-4xl font-bold text-gray-900">{getPrice(plan)}</span>
+                    )}
+                    {plan.priceINR[1] > 0 && (
+                      <span className="text-gray-600">/{getBillingLabel()}</span>
+                    )}
+                    {discountedPrice && (
+                      <span className="block text-sm text-green-600 font-medium mt-1">
+                        {couponDiscount}% off with coupon
+                      </span>
+                    )}
+                  </div>
+
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-start">
+                        <svg
+                          className="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-gray-600">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => handleUpgrade(plan.name)}
+                    disabled={
+                      loading ||
+                      countryLoading ||
+                      (user?.subscription_type === plan.name.toLowerCase()) ||
+                      (plan.name === 'FREE')
+                    }
+                    className={`w-full py-3 px-4 rounded-lg font-medium transition ${
+                      plan.name === 'PRO'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg'
+                        : plan.name === 'STARTER'
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-gray-100 text-gray-600'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {loading && selectedPlan === plan.name
+                      ? 'Processing...'
+                      : user?.subscription_type === plan.name.toLowerCase()
+                      ? 'Current Plan'
+                      : plan.name === 'FREE'
+                      ? 'Free Forever'
+                      : 'Upgrade Now'}
+                  </button>
                 </div>
-              )}
-
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-gray-900">{getPrice(plan)}</span>
-                  {plan.priceINR[1] > 0 && (
-                    <span className="text-gray-600">/{getBillingLabel()}</span>
-                  )}
-                </div>
-
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start">
-                      <svg
-                        className="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span className="text-gray-600">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  onClick={() => handleUpgrade(plan.name)}
-                  disabled={
-                    loading ||
-                    countryLoading ||
-                    (user?.subscription_type === plan.name.toLowerCase()) ||
-                    (plan.name === 'FREE')
-                  }
-                  className={`w-full py-3 px-4 rounded-lg font-medium transition ${
-                    plan.name === 'PRO'
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg'
-                      : plan.name === 'STARTER'
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'bg-gray-100 text-gray-600'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {loading && selectedPlan === plan.name
-                    ? 'Processing...'
-                    : user?.subscription_type === plan.name.toLowerCase()
-                    ? 'Current Plan'
-                    : plan.name === 'FREE'
-                    ? 'Free Forever'
-                    : 'Upgrade Now'}
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Additional Info */}
@@ -414,5 +551,17 @@ export default function PricingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">Loading pricing...</div>
+      </div>
+    }>
+      <PricingContent />
+    </Suspense>
   );
 }

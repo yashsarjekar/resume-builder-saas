@@ -69,6 +69,11 @@ class Payment(Base):
     plan = Column(String, nullable=False)  # starter/pro
     duration_months = Column(Integer, nullable=False)  # 1, 3, 6, 12
 
+    # Coupon tracking
+    coupon_code = Column(String(50), nullable=True)
+    discount_percent = Column(Integer, default=0)
+    original_amount = Column(Float, nullable=True)  # Pre-discount amount
+
     # Timestamp
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
@@ -154,6 +159,9 @@ class Payment(Base):
             "status": self.status.value,
             "plan": self.plan,
             "duration_months": self.duration_months,
+            "coupon_code": self.coupon_code,
+            "discount_percent": self.discount_percent,
+            "original_amount": self.original_amount,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

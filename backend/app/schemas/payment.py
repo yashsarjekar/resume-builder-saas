@@ -45,6 +45,7 @@ class CreateOrderRequest(BaseModel):
     duration_months: int = Field(..., ge=1, le=12, description="Duration in months")
     recurring: bool = Field(default=False, description="Enable auto-renewal")
     country: str = Field(default="IN", description="User's country code")
+    coupon_code: Optional[str] = Field(default=None, description="Coupon code to apply")
 
     @field_validator('duration_months')
     @classmethod

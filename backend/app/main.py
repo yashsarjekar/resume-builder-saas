@@ -12,6 +12,8 @@ from contextlib import asynccontextmanager
 
 from app.config import get_settings
 from app.routes import auth_router, resume_router, ai_router, payment_router
+from app.routes.coupon import router as coupon_router
+from app.routes.cron import router as cron_router
 from app.services.redis_service import RedisService
 from app.middleware.rate_limit import RateLimitMiddleware
 import app.services.redis_service as redis_service_module
@@ -92,6 +94,8 @@ app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(resume_router, prefix="/api/resume", tags=["Resume"])
 app.include_router(ai_router, prefix="/api/ai", tags=["AI Features"])
 app.include_router(payment_router, prefix="/api/payment", tags=["Payment"])
+app.include_router(coupon_router, prefix="/api/coupon", tags=["Coupon"])
+app.include_router(cron_router, prefix="/api/cron", tags=["Cron"])
 
 
 @app.get("/", tags=["Root"])
