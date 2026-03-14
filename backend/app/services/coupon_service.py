@@ -9,6 +9,14 @@ from app.models.coupon import Coupon
 class CouponService:
     """Service for coupon validation, application, and generation."""
 
+    def _naive_utc(self, dt):
+        """Strip timezone info to get naive UTC datetime for comparison."""
+        if dt is None:
+            return None
+        if dt.tzinfo is not None:
+            return dt.replace(tzinfo=None)
+        return dt
+
     def validate_coupon(self, code: str, plan: str, region: str, db: Session) -> dict:
         """Validate a coupon code. Returns dict with valid/error/discount_percent."""
         coupon = db.query(Coupon).filter(Coupon.code == code.upper()).first()
@@ -17,9 +25,10 @@ class CouponService:
             return {"valid": False, "error": "Invalid coupon code"}
         if not coupon.is_active:
             return {"valid": False, "error": "Coupon is no longer active"}
-        if coupon.valid_until and coupon.valid_until < datetime.utcnow():
+        now = datetime.utcnow()
+        if coupon.valid_until and self._naive_utc(coupon.valid_until) < now:
             return {"valid": False, "error": "Coupon has expired"}
-        if coupon.valid_from > datetime.utcnow():
+        if self._naive_utc(coupon.valid_from) > now:
             return {"valid": False, "error": "Coupon is not yet active"}
         if coupon.max_uses is not None and coupon.current_uses >= coupon.max_uses:
             return {"valid": False, "error": "Coupon usage limit reached"}
