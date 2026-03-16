@@ -28,7 +28,7 @@ export default function RootLayout({
       <head>
         <GoogleTag />
         <meta name="google-site-verification" content="wZapaecBNA7JnRyWDaovLzqvuIgNiWQqOdf6clNRBd8" />
-        <meta name="msvalidate.01" content="3947C0FB910303OA90932B37C057BED3" />
+        <meta name="msvalidate.01" content="3947C0FB9103030A90932B37C057BED3" />
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <Header />
