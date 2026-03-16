@@ -56,7 +56,7 @@ export default function GoogleSignInButton({ mode, onError, country }: GoogleSig
         onError={handleError}
         text={mode === 'signup' ? 'signup_with' : 'signin_with'}
         shape="rectangular"
-        width="400"
+        width="300"
         theme="outline"
         size="large"
       />
