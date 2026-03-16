@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description: 'Build ATS-friendly resumes with AI. Get more interviews with optimized templates.',
   },
   alternates: {
-    canonical: 'https://resumebuilder.pulsestack.in',
+    canonical: 'https://resumebuilder.pulsestack.in/',
   },
   robots: {
     index: true,

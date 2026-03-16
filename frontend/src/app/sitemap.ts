@@ -5,59 +5,59 @@ import { getAllBlogSlugs, getBlogPost } from '@/data/blog';
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://resumebuilder.pulsestack.in';
 
-  // Static pages with realistic last-modified dates
+  // Static pages with trailing slashes to match actual URLs
   const staticPages: MetadataRoute.Sitemap = [
     {
-      url: baseUrl,
-      lastModified: new Date('2026-02-25'),
+      url: `${baseUrl}/`,
+      lastModified: new Date('2026-03-17'),
       changeFrequency: 'weekly',
       priority: 1,
     },
     {
-      url: `${baseUrl}/pricing`,
+      url: `${baseUrl}/pricing/`,
       lastModified: new Date('2026-02-10'),
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/login`,
+      url: `${baseUrl}/login/`,
       lastModified: new Date('2025-12-01'),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
-      url: `${baseUrl}/signup`,
+      url: `${baseUrl}/signup/`,
       lastModified: new Date('2025-12-01'),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
-      url: `${baseUrl}/privacy`,
+      url: `${baseUrl}/privacy/`,
       lastModified: new Date('2025-10-01'),
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/terms`,
+      url: `${baseUrl}/terms/`,
       lastModified: new Date('2025-10-01'),
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/refund`,
+      url: `${baseUrl}/refund/`,
       lastModified: new Date('2025-10-01'),
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/resume`,
+      url: `${baseUrl}/resume/`,
       lastModified: new Date('2026-02-20'),
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date('2026-02-25'),
+      url: `${baseUrl}/blog/`,
+      lastModified: new Date('2026-03-17'),
       changeFrequency: 'daily',
       priority: 0.8,
     },
@@ -66,7 +66,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Job resume pages
   const jobSlugs = getAllJobSlugs();
   const jobPages: MetadataRoute.Sitemap = jobSlugs.map((slug) => ({
-    url: `${baseUrl}/resume/${slug}`,
+    url: `${baseUrl}/resume/${slug}/`,
     lastModified: new Date('2026-02-15'),
     changeFrequency: 'weekly' as const,
     priority: 0.9,
@@ -75,7 +75,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Company resume pages
   const companySlugs = getAllCompanySlugs();
   const companyPages: MetadataRoute.Sitemap = companySlugs.map((slug) => ({
-    url: `${baseUrl}/resume/company/${slug}`,
+    url: `${baseUrl}/resume/company/${slug}/`,
     lastModified: new Date('2026-02-15'),
     changeFrequency: 'weekly' as const,
     priority: 0.9,
@@ -86,7 +86,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const blogPages: MetadataRoute.Sitemap = blogSlugs.map((slug) => {
     const post = getBlogPost(slug);
     return {
-      url: `${baseUrl}/blog/${slug}`,
+      url: `${baseUrl}/blog/${slug}/`,
       lastModified: post ? new Date(post.publishedAt) : new Date('2026-02-20'),
       changeFrequency: 'weekly' as const,
       priority: 0.8,
