@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.config import get_settings
-from app.services.drip_service import process_drip_emails, DRIP_EMAIL_SUBJECTS, DRIP_TEMPLATE_NAMES
+from app.services.drip_service import process_drip_emails, DRIP_EMAIL_SUBJECTS, DRIP_TEMPLATE_NAMES, _build_drip_text
 from app.services.email_service import email_service
 
 logger = logging.getLogger(__name__)
@@ -86,10 +86,12 @@ async def test_drip_email(
 
     try:
         html_content = email_service._load_template(template_name, template_vars)
+        text_content = _build_drip_text(request.drip_step, template_vars)
         email_service.send_email(
             to_email=request.email,
             subject=f"[TEST] {subject}",
             html_content=html_content,
+            text_content=text_content,
         )
         return {
             "status": "sent",
