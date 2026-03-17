@@ -118,7 +118,8 @@ def process_drip_emails(db: Session) -> dict:
 
     for user in free_users:
         stats["checked"] += 1
-        days_since_signup = (now - user.created_at).days
+        drip_start = user.drip_restarted_at if user.drip_restarted_at else user.created_at
+        days_since_signup = (now - drip_start).days
 
         for day_offset, drip_step, discount_pct in DRIP_SCHEDULE:
             if days_since_signup < day_offset:

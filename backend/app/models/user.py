@@ -71,6 +71,7 @@ class User(Base):
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    drip_restarted_at = Column(DateTime, nullable=True)  # Set when drip campaign is manually reset
     updated_at = Column(
         DateTime,
         default=datetime.utcnow,
