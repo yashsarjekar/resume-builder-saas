@@ -21,11 +21,11 @@ DRIP_SCHEDULE = [
 ]
 
 DRIP_EMAIL_SUBJECTS = {
-    1: "Your free plan is powerful -- but you're leaving features on the table",
-    2: "Exclusive: 20% off any Resume Builder plan (48 hrs only)",
-    3: "Going fast: 30% off Pro & Starter -- upgrade today",
-    4: "Your biggest deal yet: 50% off Resume Builder Pro",
-    5: "Final offer: 80% off -- we won't offer this again",
+    1: "Are you still working on your resume?",
+    2: "Something I wanted to share with you",
+    3: "Still in the job hunt?",
+    4: "One thing most job seekers overlook",
+    5: "A last note from me",
 }
 
 DRIP_TEMPLATE_NAMES = {
@@ -35,6 +35,67 @@ DRIP_TEMPLATE_NAMES = {
     4: "drip_step4_50off.html",
     5: "drip_step5_80off.html",
 }
+
+DRIP_TEXT_TEMPLATES = {
+    1: (
+        "Hi {{user_name}},\n\n"
+        "I noticed you signed up for Resume Builder a couple of days ago. How's it going so far?\n\n"
+        "One thing I see people miss is the AI optimization feature -- it rewrites your resume bullets "
+        "to match each job description's exact keywords, which makes a real difference when your resume "
+        "goes through ATS screening. There's also unlimited ATS scoring, a cover letter generator, and "
+        "LinkedIn profile tools.\n\n"
+        "If any of that sounds useful, you can see what's included in each plan here:\n{{pricing_url}}\n\n"
+        "Happy to help if you have any questions -- just reply to this email.\n\n"
+        "Yash\nResume Builder"
+    ),
+    2: (
+        "Hi {{user_name}},\n\n"
+        "Have you tried the ATS analysis tool yet? It shows exactly which keywords your resume is "
+        "missing for a specific job posting -- most people find it pretty eye-opening the first time "
+        "they run it.\n\n"
+        "I also have a code for you: {{coupon_code}} takes {{discount_percent}}% off any plan, "
+        "valid for {{expiry_days}} days.\n{{pricing_url}}\n\n"
+        "Let me know if you have any questions.\n\n"
+        "Yash\nResume Builder"
+    ),
+    3: (
+        "Hi {{user_name}},\n\n"
+        "Quick check-in -- are you still working on job applications?\n\n"
+        "I wanted to bump up the discount I offered. Use code {{coupon_code}} for {{discount_percent}}% "
+        "off any plan (valid {{expiry_days}} days):\n{{pricing_url}}\n\n"
+        "The AI optimization rewrites your resume bullets to match each job description's keywords -- "
+        "most users start seeing more callbacks within the first week.\n\n"
+        "Reply if you have any questions. Happy to help.\n\n"
+        "Yash\nResume Builder"
+    ),
+    4: (
+        "Hi {{user_name}},\n\n"
+        "Something worth knowing: most resumes don't get rejected because they're bad -- they get "
+        "filtered out because the ATS doesn't find the right keywords. The AI optimization in Resume "
+        "Builder handles that automatically, rewriting your bullets to match the job description.\n\n"
+        "If you want to try it, use code {{coupon_code}} for {{discount_percent}}% off "
+        "(valid {{expiry_days}} days):\n{{pricing_url}}\n\n"
+        "Happy to help if you have any questions.\n\n"
+        "Yash\nResume Builder"
+    ),
+    5: (
+        "Hi {{user_name}},\n\n"
+        "This will be my last email -- I don't want to keep showing up in your inbox if the timing "
+        "isn't right.\n\n"
+        "I do have one last code: {{coupon_code}} takes {{discount_percent}}% off and is good for "
+        "{{expiry_days}} days if you ever want to give it a shot:\n{{pricing_url}}\n\n"
+        "Hope the job search is going well. Feel free to reach out anytime.\n\n"
+        "Yash\nResume Builder"
+    ),
+}
+
+
+def _build_drip_text(step: int, template_vars: dict) -> str:
+    """Build plain text version of a drip email."""
+    text = DRIP_TEXT_TEMPLATES.get(step, "")
+    for key, value in template_vars.items():
+        text = text.replace(f"{{{{{key}}}}}", str(value))
+    return text
 
 
 def process_drip_emails(db: Session) -> dict:
@@ -109,10 +170,12 @@ def process_drip_emails(db: Session) -> dict:
                 }
 
                 html_content = email_service._load_template(template_name, template_vars)
+                text_content = _build_drip_text(drip_step, template_vars)
                 email_service.send_email(
                     to_email=user.email,
                     subject=subject,
                     html_content=html_content,
+                    text_content=text_content,
                 )
 
                 log_entry = DripEmailLog(
