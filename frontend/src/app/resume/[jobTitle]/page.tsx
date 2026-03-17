@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!job) return {};
 
   const title = `${job.title} Resume Template India 2025 | Free ATS-Friendly Format`;
-  const description = `Create a professional ${job.title} resume with our AI-powered builder. ATS-optimized templates, real examples, and expert tips for Indian job market. Average salary: ${job.overview.averageSalaryIndia.fresher} to ${job.overview.averageSalaryIndia.senior}.`;
+  const description = `Create a professional ${job.title} resume with our AI-powered builder. ATS-optimized templates, real examples, and expert tips.`;
 
   return {
     title,
