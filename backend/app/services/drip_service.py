@@ -22,10 +22,10 @@ DRIP_SCHEDULE = [
 
 DRIP_EMAIL_SUBJECTS = {
     1: "Are you still working on your resume?",
-    2: "Something I wanted to share with you",
+    2: "Your resume and ATS screening",
     3: "Still in the job hunt?",
     4: "One thing most job seekers overlook",
-    5: "A last note from me",
+    5: "Checking in one more time",
 }
 
 DRIP_TEMPLATE_NAMES = {
@@ -50,12 +50,12 @@ DRIP_TEXT_TEMPLATES = {
     ),
     2: (
         "Hi {{user_name}},\n\n"
-        "Have you tried the ATS analysis tool yet? It shows exactly which keywords your resume is "
-        "missing for a specific job posting -- most people find it pretty eye-opening the first time "
-        "they run it.\n\n"
-        "I've set up a code for you at checkout: {{coupon_code}} (valid {{expiry_days}} days)\n"
-        "{{pricing_url}}\n\n"
-        "Let me know if you have any questions.\n\n"
+        "The ATS analysis tool in Resume Builder compares your resume against a job description and "
+        "shows you exactly which keywords are missing. Most people who try it are surprised by how "
+        "specific the feedback is.\n\n"
+        "If you want to give it a try, I've set a code for you: {{coupon_code}}, "
+        "valid for {{expiry_days}} days.\n{{pricing_url}}\n\n"
+        "Happy to help if you have any questions.\n\n"
         "Yash\nResume Builder"
     ),
     3: (
@@ -80,11 +80,10 @@ DRIP_TEXT_TEMPLATES = {
     ),
     5: (
         "Hi {{user_name}},\n\n"
-        "This will be my last email -- I don't want to keep showing up in your inbox if the timing "
-        "isn't right.\n\n"
-        "I do have one last code if you ever want to give it a shot: {{coupon_code}}, "
-        "good for {{expiry_days}} days\n{{pricing_url}}\n\n"
-        "Hope the job search is going well. Feel free to reach out anytime.\n\n"
+        "Just wanted to check in -- how is the job search going?\n\n"
+        "I have a code set aside for you: {{coupon_code}}, good for {{expiry_days}} days if you "
+        "want to give the full version a try:\n{{pricing_url}}\n\n"
+        "Feel free to reply if you have any questions.\n\n"
         "Yash\nResume Builder"
     ),
 }
@@ -153,9 +152,10 @@ def process_drip_emails(db: Session) -> dict:
                     db=db,
                 )
 
-            pricing_url = f"{frontend_url}/pricing"
             if coupon_code:
-                pricing_url += f"?coupon={coupon_code}"
+                pricing_url = f"{frontend_url}/r/{coupon_code}"
+            else:
+                pricing_url = f"{frontend_url}/pricing"
 
             try:
                 subject = DRIP_EMAIL_SUBJECTS[drip_step]
