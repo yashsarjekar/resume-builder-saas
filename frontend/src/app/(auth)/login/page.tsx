@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,9 +9,11 @@ import { useAuthStore } from '@/store/authStore';
 import { loginSchema, type LoginFormData } from '@/lib/validators';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, loading } = useAuthStore();
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
   const [error, setError] = useState('');
   const [userCountry, setUserCountry] = useState<string>('IN');
 
@@ -41,7 +43,7 @@ export default function LoginPage() {
     try {
       setError('');
       await login(data);
-      router.push('/dashboard');
+      router.push(redirectTo);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Login failed. Please try again.');
     }
@@ -139,5 +141,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <LoginForm />
+    </Suspense>
   );
 }

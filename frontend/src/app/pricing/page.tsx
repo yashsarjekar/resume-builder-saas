@@ -230,7 +230,10 @@ function PricingContent() {
 
   const handleUpgrade = async (planName: string) => {
     if (!isAuthenticated) {
-      router.push('/login');
+      const currentUrl = couponCode
+        ? `/pricing?coupon=${couponCode}`
+        : '/pricing';
+      router.push(`/login?redirect=${encodeURIComponent(currentUrl)}`);
       return;
     }
 
