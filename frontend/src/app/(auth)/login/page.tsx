@@ -71,6 +71,7 @@ function LoginForm() {
             mode="login"
             country={userCountry}
             onError={(msg) => setError(msg)}
+            redirectTo={redirectTo}
           />
 
           {/* Divider */}

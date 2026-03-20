@@ -9,9 +9,10 @@ interface GoogleSignInButtonProps {
   mode: 'login' | 'signup';
   onError?: (error: string) => void;
   country?: string;
+  redirectTo?: string;
 }
 
-export default function GoogleSignInButton({ mode, onError, country }: GoogleSignInButtonProps) {
+export default function GoogleSignInButton({ mode, onError, country, redirectTo = '/dashboard' }: GoogleSignInButtonProps) {
   const router = useRouter();
   const { googleAuth } = useAuthStore();
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,7 @@ export default function GoogleSignInButton({ mode, onError, country }: GoogleSig
     setLoading(true);
     try {
       await googleAuth(credentialResponse.credential, country);
-      router.push('/dashboard');
+      router.push(redirectTo);
     } catch (err: any) {
       const errorMessage = err.response?.data?.detail || 'Google sign-in failed. Please try again.';
       onError?.(errorMessage);
