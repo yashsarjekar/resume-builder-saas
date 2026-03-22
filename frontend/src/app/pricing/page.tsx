@@ -74,7 +74,7 @@ function PricingContent() {
     },
     {
       name: 'STARTER',
-      priceINR: { 1: 299, 3: 799, 6: 1499, 12: 2699 },
+      priceINR: { 1: 50, 3: 799, 6: 1499, 12: 2699 },
       priceUSD: { 1: 12.99, 3: 34.99, 6: 64.99, 12: 119.99 },
       resume_limit: isIndia ? 5 : 15,
       ats_analysis_limit: isIndia ? 10 : 15,
@@ -100,7 +100,7 @@ function PricingContent() {
     },
     {
       name: 'PRO',
-      priceINR: { 1: 999, 3: 2699, 6: 4999, 12: 8999 },
+      priceINR: { 1: 100, 3: 2699, 6: 4999, 12: 8999 },
       priceUSD: { 1: 39.99, 3: 109.99, 6: 199.99, 12: 359.99 },
       resume_limit: 'Unlimited',
       ats_analysis_limit: 'Unlimited',

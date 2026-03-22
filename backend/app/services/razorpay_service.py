@@ -37,16 +37,16 @@ class RazorpayService:
     # Pricing in INR (Indian Rupees) - Affordable for Indian market
     PRICING = {
         "starter": {
-            1: 299,      # Monthly - Perfect for job seekers
+            1: 50,       # Monthly
             3: 799,      # Quarterly (11% discount)
             6: 1499,     # Half-yearly (16% discount)
-            12: 2799,    # Yearly (22% discount) - ₹233/month
+            12: 2799,    # Yearly (22% discount)
         },
         "pro": {
-            1: 999,      # Monthly - Best value for professionals
+            1: 100,      # Monthly
             3: 2699,     # Quarterly (10% discount)
             6: 4999,     # Half-yearly (17% discount)
-            12: 8999,    # Yearly (25% discount) - ₹749/month
+            12: 8999,    # Yearly (25% discount)
         }
     }
 
