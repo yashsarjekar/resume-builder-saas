@@ -33,13 +33,13 @@ class DodoService:
     # Pricing in USD cents (100 cents = $1)
     PRICING_USD = {
         "starter": {
-            1: 1299,    # $12.99/month
+            1: 100,     # $1.00/month
             3: 3499,    # $34.99/quarter (10% discount)
             6: 6499,    # $64.99/half-year (17% discount)
             12: 11999,  # $119.99/year (23% discount)
         },
         "pro": {
-            1: 3999,    # $39.99/month
+            1: 200,     # $2.00/month
             3: 10999,   # $109.99/quarter (8% discount)
             6: 19999,   # $199.99/half-year (17% discount)
             12: 35999,  # $359.99/year (25% discount)
