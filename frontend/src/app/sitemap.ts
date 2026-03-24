@@ -51,6 +51,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.3,
     },
     {
+      url: `${baseUrl}/tools/cover-letter`,
+      lastModified: new Date('2026-03-25'),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/tools/keywords`,
+      lastModified: new Date('2026-03-25'),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/tools/linkedin`,
+      lastModified: new Date('2026-03-25'),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/resume`,
       lastModified: new Date('2026-02-20'),
       changeFrequency: 'weekly',
