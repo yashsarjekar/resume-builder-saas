@@ -353,7 +353,7 @@ function PricingContent() {
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Affordable pricing for everyone. Start free, upgrade anytime.
             {isIndian ? (
-              <span className="block text-green-600 font-semibold mt-2">Starting at just ₹299/month</span>
+              <span className="block text-green-600 font-semibold mt-2">Starting at just ₹50/month</span>
             ) : (
               <span className="block text-green-600 font-semibold mt-2">Starting at just $12.99/month</span>
             )}
