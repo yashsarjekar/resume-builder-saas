@@ -188,18 +188,22 @@ export default function JobCard({ job, index, isLocked, onLockedClick, onViewDet
             </div>
           )}
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 mb-4 flex-1 content-start">
+          {/* Tags — items-start prevents stretch-to-circle bug in flex-col cards */}
+          <div className="flex flex-wrap gap-1.5 mb-4 min-h-[40px] items-start content-start">
             {job.tags.slice(0, 4).map((tag, i) => (
               <span
                 key={i}
-                className={`text-xs px-2.5 py-0.5 rounded-full font-medium leading-5 ${TAG_COLORS[i % TAG_COLORS.length]}`}
+                style={{ height: '22px', lineHeight: '22px' }}
+                className={`inline-flex items-center text-xs px-2.5 rounded-full font-medium ${TAG_COLORS[i % TAG_COLORS.length]}`}
               >
                 {tag}
               </span>
             ))}
             {job.tags.length > 4 && (
-              <span className="text-xs px-2 py-0.5 rounded-full font-medium leading-5 bg-gray-100 text-gray-500">
+              <span
+                style={{ height: '22px', lineHeight: '22px' }}
+                className="inline-flex items-center text-xs px-2 rounded-full font-medium bg-gray-100 text-gray-500"
+              >
                 +{job.tags.length - 4}
               </span>
             )}
