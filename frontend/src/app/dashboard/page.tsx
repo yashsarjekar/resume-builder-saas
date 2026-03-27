@@ -217,7 +217,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-gray-600">Subscription</h3>
@@ -267,7 +267,7 @@ export default function DashboardPage() {
         {/* AI Tools Section */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">AI Tools</h2>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Link
               href="/tools/keywords"
               className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition"
@@ -501,25 +501,25 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {resumes.map((resume) => (
-                <div key={resume.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 truncate">{resume.title}</h3>
+                <div key={resume.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition overflow-hidden min-w-0">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3 className="text-base font-semibold text-gray-900 truncate min-w-0">{resume.title}</h3>
                     {resume.ats_score && (
-                      <span className={`text-sm font-medium ${getATSScoreColor(resume.ats_score)}`}>
+                      <span className={`flex-shrink-0 text-sm font-medium ${getATSScoreColor(resume.ats_score)}`}>
                         {resume.ats_score}%
                       </span>
                     )}
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                  <p className="text-sm text-gray-600 mb-2 line-clamp-2 break-words">
                     {resume.job_description?.substring(0, 100) || 'No description'}...
                   </p>
 
-                  <div className="flex items-center text-xs text-gray-500 mb-4">
+                  <div className="flex items-center text-xs text-gray-500 mb-4 flex-wrap gap-1">
                     <span>{resume.updated_at ? formatDate(resume.updated_at) : 'Recently'}</span>
-                    <span className="mx-2">•</span>
+                    <span>•</span>
                     <span>{resume.template_name || 'modern'}</span>
                   </div>
 
