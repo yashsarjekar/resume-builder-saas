@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import JobCard, { Job } from '@/components/jobs/JobCard';
 import JobModal from '@/components/jobs/JobModal';
+import Pagination from '@/components/jobs/Pagination';
 import UpgradeModal from '@/components/UpgradeModal';
 import Link from 'next/link';
 
@@ -60,9 +61,9 @@ export default function JobsPage() {
   const { user, isAuthenticated } = useAuthStore();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [offset, setOffset] = useState(0);
   const [category, setCategory] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -76,52 +77,47 @@ export default function JobsPage() {
   const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
 
   const fetchJobs = useCallback(
-    async (reset: boolean, currentOffset: number) => {
-      if (reset) setLoading(true);
-      else setLoadingMore(true);
-
+    async (currentPage: number) => {
+      setLoading(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       try {
         const params = new URLSearchParams();
-        params.set('limit', String(JOBS_PER_PAGE));
-        params.set('offset', String(currentOffset));
+        params.set('page', String(currentPage));
+        params.set('per_page', String(JOBS_PER_PAGE));
         if (search) params.set('search', search);
         if (category) params.set('category', category);
 
         const res = await fetch(`${apiBase}/api/jobs?${params.toString()}`);
         const data = await res.json();
-
-        if (reset) {
-          setJobs(data.jobs || []);
-          setOffset(JOBS_PER_PAGE);
-        } else {
-          setJobs((prev) => [...prev, ...(data.jobs || [])]);
-          setOffset(currentOffset + JOBS_PER_PAGE);
-        }
+        setJobs(data.jobs || []);
         setTotal(data.total || 0);
+        setTotalPages(data.total_pages || 0);
       } catch (e) {
         console.error('Jobs fetch error:', e);
       } finally {
         setLoading(false);
-        setLoadingMore(false);
       }
     },
     [search, category, apiBase]
   );
 
   useEffect(() => {
-    fetchJobs(true, 0);
+    setPage(1);
+    fetchJobs(1);
   }, [search, category]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    fetchJobs(page);
+  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSearch = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearch(searchInput);
   };
 
-  const handleLoadMore = () => {
-    fetchJobs(false, offset);
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
-
-  const hasMore = jobs.length < total;
 
   return (
     <>
@@ -288,10 +284,12 @@ export default function JobsPage() {
           {!loading && (
             <div className="flex items-center justify-between mb-6">
               <p className="text-sm text-gray-500">
-                Showing <span className="font-semibold text-gray-900">{jobs.length}</span> of{' '}
-                <span className="font-semibold text-gray-900">{total.toLocaleString()}</span> jobs
+                <span className="font-semibold text-gray-900">{total.toLocaleString()}</span> jobs found
                 {search && (
                   <span> for &quot;<span className="text-indigo-600">{search}</span>&quot;</span>
+                )}
+                {totalPages > 0 && (
+                  <span className="text-gray-400"> · Page {page} of {totalPages.toLocaleString()}</span>
                 )}
               </p>
               {search && (
@@ -343,46 +341,29 @@ export default function JobsPage() {
             </div>
           )}
 
-          {/* Load more */}
-          {!loading && hasMore && (
-            <div className="text-center mt-12">
-              {plan === 'free' && jobs.length >= unlockLimit ? (
-                <div className="space-y-3">
-                  <p className="text-gray-500 text-sm">
-                    {total - unlockLimit} more jobs available with an upgrade
-                  </p>
-                  <button
-                    onClick={() => setShowUpgrade(true)}
-                    className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-indigo-200"
-                  >
-                    Unlock All {total.toLocaleString()} Jobs
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </button>
-                </div>
-              ) : (
+          {/* Pagination */}
+          {!loading && totalPages > 1 && (
+            plan === 'free' && page * JOBS_PER_PAGE >= unlockLimit ? (
+              <div className="text-center mt-12 space-y-3">
+                <p className="text-gray-500 text-sm">
+                  {(total - unlockLimit).toLocaleString()} more jobs available with an upgrade
+                </p>
                 <button
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="inline-flex items-center gap-2 px-8 py-3 border-2 border-indigo-200 text-indigo-600 font-semibold rounded-xl hover:bg-indigo-50 hover:border-indigo-400 transition-all duration-200 disabled:opacity-50"
+                  onClick={() => setShowUpgrade(true)}
+                  className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-indigo-200"
                 >
-                  {loadingMore ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
-                      Loading...
-                    </>
-                  ) : (
-                    <>
-                      Load More Jobs
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </>
-                  )}
+                  Unlock All {total.toLocaleString()} Jobs →
                 </button>
-              )}
-            </div>
+              </div>
+            ) : (
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                total={total}
+                perPage={JOBS_PER_PAGE}
+                onChange={handlePageChange}
+              />
+            )
           )}
 
           {/* Bottom CTA — build resume */}

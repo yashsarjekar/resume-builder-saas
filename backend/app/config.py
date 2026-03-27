@@ -107,6 +107,10 @@ class Settings(BaseSettings):
     # Cron Job Secret
     CRON_SECRET: Optional[str] = None
 
+    # Adzuna Jobs API (https://developer.adzuna.com — free tier: 250 calls/day)
+    ADZUNA_APP_ID: Optional[str] = None
+    ADZUNA_APP_KEY: Optional[str] = None
+
     # Legacy SMTP Configuration (Backward compatibility)
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
