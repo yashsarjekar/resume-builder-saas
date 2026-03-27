@@ -2,6 +2,7 @@
 Remote Jobs Route - Proxies Remotive API with Redis caching.
 """
 
+import re
 import httpx
 import logging
 from fastapi import APIRouter, Query
@@ -13,6 +14,13 @@ logger = logging.getLogger(__name__)
 
 REMOTIVE_API = "https://remotive.com/api/remote-jobs"
 CACHE_TTL = 1800  # 30 minutes
+
+
+def _strip_html(html: str) -> str:
+    """Strip HTML tags and return clean plain text."""
+    text = re.sub(r'<[^>]+>', ' ', html or '')
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
 
 @router.get("")
@@ -76,6 +84,7 @@ async def get_jobs(
             "salary": job.get("salary") or "",
             "url": job.get("url"),
             "posted_at": job.get("publication_date"),
+            "description": _strip_html(job.get("description", "")),
         })
 
     result = {

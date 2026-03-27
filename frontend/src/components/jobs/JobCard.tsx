@@ -14,6 +14,7 @@ export interface Job {
   salary: string;
   url: string;
   posted_at: string;
+  description?: string;
 }
 
 interface JobCardProps {
@@ -21,15 +22,16 @@ interface JobCardProps {
   index: number;
   isLocked: boolean;
   onLockedClick: () => void;
+  onViewDetails: (job: Job) => void;
 }
 
 const TAG_COLORS = [
-  'bg-blue-100 text-blue-700 border border-blue-200',
-  'bg-violet-100 text-violet-700 border border-violet-200',
-  'bg-emerald-100 text-emerald-700 border border-emerald-200',
-  'bg-orange-100 text-orange-700 border border-orange-200',
-  'bg-pink-100 text-pink-700 border border-pink-200',
-  'bg-cyan-100 text-cyan-700 border border-cyan-200',
+  'bg-blue-100 text-blue-700',
+  'bg-violet-100 text-violet-700',
+  'bg-emerald-100 text-emerald-700',
+  'bg-orange-100 text-orange-700',
+  'bg-pink-100 text-pink-700',
+  'bg-cyan-100 text-cyan-700',
 ];
 
 const GRADIENT_TOPS = [
@@ -41,10 +43,14 @@ const GRADIENT_TOPS = [
   'from-pink-500 via-rose-500 to-red-500',
 ];
 
+const LOGO_BG_COLORS = [
+  'bg-blue-500', 'bg-violet-500', 'bg-emerald-500', 'bg-orange-500',
+  'bg-pink-500', 'bg-cyan-500', 'bg-indigo-500', 'bg-rose-500',
+];
+
 function timeAgo(dateStr: string): string {
   const date = new Date(dateStr);
-  const now = new Date();
-  const hrs = Math.floor((now.getTime() - date.getTime()) / 3600000);
+  const hrs = Math.floor((Date.now() - date.getTime()) / 3600000);
   if (hrs < 1) return 'Just now';
   if (hrs < 24) return `${hrs}h ago`;
   const days = Math.floor(hrs / 24);
@@ -52,11 +58,12 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(days / 7)}w ago`;
 }
 
-export default function JobCard({ job, index, isLocked, onLockedClick }: JobCardProps) {
+export default function JobCard({ job, index, isLocked, onLockedClick, onViewDetails }: JobCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [shine, setShine] = useState({ x: 50, y: 50, opacity: 0 });
   const [hovered, setHovered] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -65,15 +72,8 @@ export default function JobCard({ job, index, isLocked, onLockedClick }: JobCard
     const y = e.clientY - rect.top;
     const cx = rect.width / 2;
     const cy = rect.height / 2;
-    setTilt({
-      x: ((y - cy) / cy) * 8,
-      y: ((cx - x) / cx) * 8,
-    });
-    setShine({
-      x: (x / rect.width) * 100,
-      y: (y / rect.height) * 100,
-      opacity: 0.12,
-    });
+    setTilt({ x: ((y - cy) / cy) * 7, y: ((cx - x) / cx) * 7 });
+    setShine({ x: (x / rect.width) * 100, y: (y / rect.height) * 100, opacity: 0.1 });
   };
 
   const handleMouseLeave = () => {
@@ -84,6 +84,8 @@ export default function JobCard({ job, index, isLocked, onLockedClick }: JobCard
 
   const isNew = new Date(job.posted_at) > new Date(Date.now() - 48 * 3600000);
   const gradientClass = GRADIENT_TOPS[index % GRADIENT_TOPS.length];
+  const colorIdx = (job.company?.charCodeAt(0) || 0) % LOGO_BG_COLORS.length;
+  const logoBg = LOGO_BG_COLORS[colorIdx];
 
   return (
     <div
@@ -96,25 +98,24 @@ export default function JobCard({ job, index, isLocked, onLockedClick }: JobCard
         transition: hovered ? 'transform 0.1s ease-out' : 'transform 0.4s ease-out',
         transformStyle: 'preserve-3d',
       }}
-      className="relative h-full"
+      className="relative h-full cursor-pointer"
+      onClick={() => isLocked ? onLockedClick() : onViewDetails(job)}
     >
-      {/* Glow shadow on hover */}
+      {/* Hover glow */}
       <div
-        className="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"
+        className="absolute -inset-0.5 rounded-2xl blur-sm transition-opacity duration-300"
         style={{
           background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)',
-          opacity: hovered ? 0.3 : 0,
-          transition: 'opacity 0.3s ease',
+          opacity: hovered ? 0.25 : 0,
         }}
       />
 
       <div className="relative bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden h-full flex flex-col">
-        {/* Shine overlay */}
+        {/* Shine */}
         <div
           className="absolute inset-0 pointer-events-none rounded-2xl z-10"
           style={{
             background: `radial-gradient(circle at ${shine.x}% ${shine.y}%, rgba(255,255,255,${shine.opacity * 4}), transparent 55%)`,
-            transition: 'opacity 0.2s',
           }}
         />
 
@@ -122,23 +123,22 @@ export default function JobCard({ job, index, isLocked, onLockedClick }: JobCard
         <div className={`h-1 w-full bg-gradient-to-r ${gradientClass} flex-shrink-0`} />
 
         <div className="p-5 flex flex-col flex-1">
-          {/* Company + title */}
+          {/* Header: logo + title */}
           <div className="flex items-start justify-between gap-2 mb-4">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
-                {job.logo ? (
+              {/* Company logo with colored fallback */}
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm ${!job.logo || logoError ? logoBg : 'bg-gray-50 border border-gray-100'}`}>
+                {job.logo && !logoError ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={job.logo}
                     alt={job.company}
                     className="w-10 h-10 object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
+                    onError={() => setLogoError(true)}
                   />
                 ) : (
-                  <span className="text-lg font-bold text-gray-400">
-                    {job.company?.[0] || '?'}
+                  <span className="text-lg font-black text-white">
+                    {job.company?.[0]?.toUpperCase() || '?'}
                   </span>
                 )}
               </div>
@@ -154,7 +154,7 @@ export default function JobCard({ job, index, isLocked, onLockedClick }: JobCard
             )}
           </div>
 
-          {/* Meta row */}
+          {/* Meta */}
           <div className="flex flex-wrap gap-2 mb-3">
             <span className="flex items-center gap-1 text-xs text-gray-500">
               <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,26 +189,26 @@ export default function JobCard({ job, index, isLocked, onLockedClick }: JobCard
           )}
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 mb-4 flex-1">
+          <div className="flex flex-wrap gap-1.5 mb-4 flex-1 content-start">
             {job.tags.slice(0, 4).map((tag, i) => (
               <span
                 key={i}
-                className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${TAG_COLORS[i % TAG_COLORS.length]}`}
+                className={`text-xs px-2.5 py-0.5 rounded-full font-medium leading-5 ${TAG_COLORS[i % TAG_COLORS.length]}`}
               >
                 {tag}
               </span>
             ))}
             {job.tags.length > 4 && (
-              <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-500">
+              <span className="text-xs px-2 py-0.5 rounded-full font-medium leading-5 bg-gray-100 text-gray-500">
                 +{job.tags.length - 4}
               </span>
             )}
           </div>
 
-          {/* CTA button */}
+          {/* CTA */}
           {isLocked ? (
             <button
-              onClick={onLockedClick}
+              onClick={(e) => { e.stopPropagation(); onLockedClick(); }}
               className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border-2 border-dashed border-gray-200 text-gray-400 text-sm font-medium hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50 transition-all duration-200"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,18 +217,16 @@ export default function JobCard({ job, index, isLocked, onLockedClick }: JobCard
               Upgrade to Unlock
             </button>
           ) : (
-            <a
-              href={job.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r ${gradientClass} text-white text-sm font-semibold hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg`}
-              style={{ boxShadow: hovered ? '0 8px 25px -5px rgba(99,102,241,0.4)' : '' }}
+            <button
+              onClick={(e) => { e.stopPropagation(); onViewDetails(job); }}
+              className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r ${gradientClass} text-white text-sm font-semibold hover:opacity-90 transition-all duration-200 shadow-md`}
+              style={{ boxShadow: hovered ? '0 8px 25px -5px rgba(99,102,241,0.35)' : '' }}
             >
-              Apply Now
+              View & Apply
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-            </a>
+            </button>
           )}
         </div>
       </div>

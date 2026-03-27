@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import JobCard, { Job } from '@/components/jobs/JobCard';
+import JobModal from '@/components/jobs/JobModal';
 import UpgradeModal from '@/components/UpgradeModal';
 import Link from 'next/link';
 
@@ -66,6 +67,8 @@ export default function JobsPage() {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJobLocked, setSelectedJobLocked] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const plan = (user?.subscription_type?.toLowerCase() || 'free') as string;
@@ -109,7 +112,7 @@ export default function JobsPage() {
     fetchJobs(true, 0);
   }, [search, category]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearch(searchInput);
   };
@@ -333,6 +336,7 @@ export default function JobsPage() {
                     index={index}
                     isLocked={isLocked}
                     onLockedClick={() => setShowUpgrade(true)}
+                    onViewDetails={(j) => { setSelectedJob(j); setSelectedJobLocked(isLocked); }}
                   />
                 );
               })}
@@ -415,6 +419,14 @@ export default function JobsPage() {
           </div>
         </div>
       </div>
+
+      {/* Job detail modal */}
+      <JobModal
+        job={selectedJob}
+        isLocked={selectedJobLocked}
+        onClose={() => setSelectedJob(null)}
+        onUpgrade={() => { setSelectedJob(null); setShowUpgrade(true); }}
+      />
 
       {/* Upgrade modal */}
       <UpgradeModal
