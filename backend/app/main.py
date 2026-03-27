@@ -14,6 +14,7 @@ from app.config import get_settings
 from app.routes import auth_router, resume_router, ai_router, payment_router
 from app.routes.coupon import router as coupon_router
 from app.routes.cron import router as cron_router
+from app.routes.jobs import router as jobs_router
 from app.services.redis_service import RedisService
 from app.middleware.rate_limit import RateLimitMiddleware
 import app.services.redis_service as redis_service_module
@@ -96,6 +97,7 @@ app.include_router(ai_router, prefix="/api/ai", tags=["AI Features"])
 app.include_router(payment_router, prefix="/api/payment", tags=["Payment"])
 app.include_router(coupon_router, prefix="/api/coupon", tags=["Coupon"])
 app.include_router(cron_router, prefix="/api/cron", tags=["Cron"])
+app.include_router(jobs_router, prefix="/api/jobs", tags=["Jobs"])
 
 
 @app.get("/", tags=["Root"])

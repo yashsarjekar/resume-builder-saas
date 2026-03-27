@@ -38,6 +38,9 @@ export default function Header() {
             <Link href="/#features" className="text-gray-600 hover:text-gray-900">
               Features
             </Link>
+            <Link href="/jobs" className="text-gray-600 hover:text-gray-900">
+              Jobs
+            </Link>
             <Link href="/blog" className="text-gray-600 hover:text-gray-900">
               Blog
             </Link>
@@ -147,6 +150,9 @@ export default function Header() {
           <div className="md:hidden pt-4 pb-2 border-t border-gray-100 mt-4 space-y-1">
             <Link href="/#features" onClick={closeMobileMenu} className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">
               Features
+            </Link>
+            <Link href="/jobs" onClick={closeMobileMenu} className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">
+              Jobs
             </Link>
             <Link href="/blog" onClick={closeMobileMenu} className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">
               Blog
