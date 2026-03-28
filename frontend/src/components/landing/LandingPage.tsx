@@ -337,7 +337,7 @@ export default function LandingPage() {
             <div className="hidden md:block absolute top-8 left-[28%] right-[28%] h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
             {[
               { step: '01', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', title: 'Build Your Resume', desc: 'Fill in your details or import from LinkedIn. Our AI structures everything for maximum impact.' },
-              { step: '02', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: 'AI Optimizes It', desc: 'Claude AI analyzes your target job and rewrites your resume to score 85%+ on ATS systems.' },
+              { step: '02', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: 'AI Optimizes It', desc: 'AI analyzes your target job and rewrites your resume to score 85%+ on ATS systems.' },
               { step: '03', icon: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4', title: 'Apply & Get Hired', desc: 'Download your ATS-optimized PDF and start applying. Track your match score for every job.' },
             ].map((step, i) => (
               <div key={step.step} className="text-center scroll-reveal" style={{ transitionDelay: `${i * 150}ms` }}>
@@ -370,7 +370,7 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', color: '#818cf8', bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.2)', title: 'ATS Optimization', desc: 'Claude AI scans your resume against job descriptions and rewrites it to score 85%+ on any ATS. No more silent rejections.' },
+              { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', color: '#818cf8', bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.2)', title: 'ATS Optimization', desc: 'AI scans your resume against job descriptions and rewrites it to score 85%+ on any ATS. No more silent rejections.' },
               { icon: 'M13 10V3L4 14h7v7l9-11h-7z', color: '#34d399', bg: 'rgba(52,211,153,0.1)', border: 'rgba(52,211,153,0.2)', title: 'Keyword Extraction', desc: 'Automatically pull the exact keywords, skills, and phrases recruiters are searching for in any job posting.' },
               { icon: 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01', color: '#a78bfa', bg: 'rgba(167,139,250,0.1)', border: 'rgba(167,139,250,0.2)', title: 'Pro Templates', desc: '10+ ATS-friendly templates designed by hiring experts at top companies. Beautiful, clean, and machine-readable.' },
               { icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', color: '#fbbf24', bg: 'rgba(251,191,36,0.1)', border: 'rgba(251,191,36,0.2)', title: 'Cover Letter AI', desc: 'Generate a personalized, compelling cover letter for any job in 30 seconds. Tailored to the company and role.' },
