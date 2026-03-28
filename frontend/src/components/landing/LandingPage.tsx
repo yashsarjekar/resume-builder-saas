@@ -38,7 +38,7 @@ function ResumeMockup({ cardRef }: { cardRef: React.RefObject<HTMLDivElement> })
       }} />
 
       {/* Perspective wrapper — keeps perspective stable while card animates */}
-      <div style={{ perspective: '1200px', perspectiveOrigin: 'center center' }}>
+      <div style={{ perspective: '800px', perspectiveOrigin: 'center center' }}>
       {/* Card wrapper — 3D float + mousemove target */}
       <div
         ref={cardRef}
