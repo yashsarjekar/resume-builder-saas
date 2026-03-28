@@ -206,13 +206,17 @@ export default function JobsPage() {
   }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch user's resumes for ATS match picker
+  // /api/resume returns { resumes: [...], total, page, ... } (paginated)
   useEffect(() => {
     if (!isAuthenticated) return;
-    fetch(`${apiBase}/api/resume`, {
+    fetch(`${apiBase}/api/resume?page_size=50`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     })
       .then((r) => r.json())
-      .then((data) => setResumes(Array.isArray(data) ? data.map((r: { id: number; title: string; updated_at: string }) => ({ id: r.id, title: r.title, updated_at: r.updated_at })) : []))
+      .then((data) => {
+        const list = Array.isArray(data) ? data : (data?.resumes ?? []);
+        setResumes(list.map((r: { id: number; title: string; updated_at: string }) => ({ id: r.id, title: r.title, updated_at: r.updated_at })));
+      })
       .catch(() => {});
   }, [isAuthenticated, apiBase]);
 
