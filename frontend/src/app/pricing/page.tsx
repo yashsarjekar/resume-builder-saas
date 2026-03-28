@@ -48,7 +48,6 @@ function PricingContent() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponApplied, setCouponApplied] = useState(false);
 
-  // Plans with region-specific limits and multi-duration pricing
   const getPlans = (isIndia: boolean): PricingPlan[] => [
     {
       name: 'FREE',
@@ -121,7 +120,6 @@ function PricingContent() {
 
   const plans = getPlans(userCountry === 'IN');
 
-  // Detect user's country on mount
   useEffect(() => {
     const detectCountry = async () => {
       try {
@@ -135,11 +133,9 @@ function PricingContent() {
         setCountryLoading(false);
       }
     };
-
     detectCountry();
   }, []);
 
-  // Auto-apply coupon from URL param
   useEffect(() => {
     const urlCoupon = searchParams.get('coupon');
     if (urlCoupon && userCountry) {
@@ -148,14 +144,12 @@ function PricingContent() {
     }
   }, [searchParams, userCountry]);
 
-  // Load Razorpay script for Indian users
   useEffect(() => {
     if (userCountry === 'IN') {
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
       script.async = true;
       document.body.appendChild(script);
-
       return () => {
         if (document.body.contains(script)) {
           document.body.removeChild(script);
@@ -170,7 +164,6 @@ function PricingContent() {
     if (!code.trim()) return;
     setCouponLoading(true);
     setCouponError('');
-
     try {
       const region = isIndian ? 'IN' : 'INTL';
       const response = await api.post('/api/coupon/validate', {
@@ -178,7 +171,6 @@ function PricingContent() {
         plan: 'both',
         region,
       });
-
       if (response.data.valid) {
         setCouponCode(response.data.code);
         setCouponDiscount(response.data.discount_percent);
@@ -230,112 +222,70 @@ function PricingContent() {
 
   const handleUpgrade = async (planName: string) => {
     if (!isAuthenticated) {
-      const currentUrl = couponCode
-        ? `/pricing?coupon=${couponCode}`
-        : '/pricing';
+      const currentUrl = couponCode ? `/pricing?coupon=${couponCode}` : '/pricing';
       router.push(`/login?redirect=${encodeURIComponent(currentUrl)}`);
       return;
     }
-
-    if (planName === 'FREE') {
-      return;
-    }
+    if (planName === 'FREE') return;
 
     setLoading(true);
     setSelectedPlan(planName);
 
     try {
-      // Create order with country, duration, and coupon for gateway routing
       const orderPayload: any = {
         plan: planName.toLowerCase(),
         duration_months: billingCycle,
         country: userCountry || 'US',
       };
-
-      if (couponCode) {
-        orderPayload.coupon_code = couponCode;
-      }
+      if (couponCode) orderPayload.coupon_code = couponCode;
 
       const orderResponse = await api.post('/api/payment/create-order', orderPayload);
-
       const { order_id, amount, currency, payment_gateway, checkout_url, key_id } = orderResponse.data;
 
       if (payment_gateway === 'dodo' && checkout_url) {
-        // Dodo Payments - redirect to hosted checkout
         window.location.href = checkout_url;
         return;
       }
 
-      // Razorpay - use in-page modal
       const options = {
         key: key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-        amount: amount,
-        currency: currency,
+        amount,
+        currency,
         name: 'Resume Builder',
         description: `${planName} Plan - ${getBillingLabel()}`,
-        order_id: order_id,
+        order_id,
         handler: async function (response: any) {
           try {
-            // Verify payment
             await api.post('/api/payment/verify', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               plan: planName.toLowerCase()
             });
-
-            // Track conversion based on plan
             const userEmail = user?.email;
-            if (planName.toLowerCase() === 'starter') {
-              trackStarterPurchase(response.razorpay_payment_id, userEmail);
-            } else if (planName.toLowerCase() === 'pro') {
-              trackProPurchase(response.razorpay_payment_id, userEmail);
-            }
-
+            if (planName.toLowerCase() === 'starter') trackStarterPurchase(response.razorpay_payment_id, userEmail);
+            else if (planName.toLowerCase() === 'pro') trackProPurchase(response.razorpay_payment_id, userEmail);
             alert('Payment successful! Your account has been upgraded.');
             router.push('/dashboard');
           } catch (error: any) {
-            console.error('Payment verification failed:', error);
-
             let errorMessage = 'Payment verification failed. Please contact support.';
-            if (error.response?.data?.detail) {
-              errorMessage = `Payment verification failed: ${error.response.data.detail}`;
-            } else if (error.message) {
-              errorMessage = `Payment verification failed: ${error.message}`;
-            }
-
+            if (error.response?.data?.detail) errorMessage = `Payment verification failed: ${error.response.data.detail}`;
+            else if (error.message) errorMessage = `Payment verification failed: ${error.message}`;
             alert(errorMessage);
           }
         },
-        prefill: {
-          name: user?.name,
-          email: user?.email,
-        },
-        theme: {
-          color: '#2563eb'
-        },
-        modal: {
-          ondismiss: function() {
-            setLoading(false);
-            setSelectedPlan('');
-          }
-        }
+        prefill: { name: user?.name, email: user?.email },
+        theme: { color: '#6366f1' },
+        modal: { ondismiss: function() { setLoading(false); setSelectedPlan(''); } }
       };
 
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error: any) {
-      console.error('Failed to create order:', error);
-
       let errorMessage = 'Failed to create order. Please try again.';
-      if (error.response?.data?.detail) {
-        errorMessage = error.response.data.detail;
-      } else if (error.message) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-
+      if (error.response?.data?.detail) errorMessage = error.response.data.detail;
+      else if (error.message) errorMessage = error.message;
+      else if (typeof error === 'string') errorMessage = error;
       alert(errorMessage);
       setLoading(false);
       setSelectedPlan('');
@@ -343,91 +293,98 @@ function PricingContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen py-16 px-4 relative overflow-hidden">
+      {/* Aurora orbs */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-indigo-600/8 blur-3xl animate-[blob_14s_ease-in-out_infinite]" />
+        <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-purple-600/8 blur-3xl animate-[blob_18s_ease-in-out_infinite_3s]" />
+        <div className="absolute top-[40%] left-[40%] w-[400px] h-[400px] rounded-full bg-cyan-600/5 blur-3xl animate-[blob_20s_ease-in-out_infinite_6s]" />
+      </div>
+
+      <div className="container mx-auto max-w-6xl relative z-10">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Affordable AI-Powered Resume Building
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-4">
+            <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
+            Simple, transparent pricing
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Affordable <span className="gradient-text">AI-Powered</span> Resume Building
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Affordable pricing for everyone. Start free, upgrade anytime.
-            {isIndian ? (
-              <span className="block text-green-600 font-semibold mt-2">Starting at just ₹50/month</span>
+          <p className="text-gray-400 max-w-xl mx-auto">
+            Start free, upgrade when you need more. No hidden fees.
+          </p>
+          <p className="mt-2 text-sm">
+            {countryLoading ? (
+              <span className="text-gray-600">Detecting your location...</span>
+            ) : isIndian ? (
+              <span className="text-emerald-400 font-semibold">Starting at just ₹50/month · Indian Rupee pricing</span>
             ) : (
-              <span className="block text-green-600 font-semibold mt-2">Starting at just $12.99/month</span>
+              <span className="text-emerald-400 font-semibold">Starting at just $1/month · International pricing (USD)</span>
             )}
-            <span className="block text-sm text-gray-500 mt-2">
-              {countryLoading ? 'Detecting your location...' : (
-                isIndian ? 'Indian Rupee pricing' : 'International pricing (USD)'
-              )}
-            </span>
           </p>
         </div>
 
         {/* Coupon Applied Banner */}
         {couponApplied && (
           <div className="max-w-2xl mx-auto mb-6">
-            <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 flex items-center justify-between">
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-green-800 font-medium">
+                <span className="text-emerald-300 text-sm font-medium">
                   Coupon <span className="font-mono font-bold">{couponCode}</span> applied &mdash; {couponDiscount}% off!
                 </span>
               </div>
-              <button
-                onClick={removeCoupon}
-                className="text-green-600 hover:text-green-800 text-sm font-medium"
-              >
+              <button onClick={removeCoupon} className="text-emerald-500 hover:text-emerald-300 text-xs font-medium transition-colors">
                 Remove
               </button>
             </div>
           </div>
         )}
 
-        {/* Coupon Input (when no coupon is applied) */}
+        {/* Coupon Input */}
         {!couponApplied && (
-          <div className="max-w-md mx-auto mb-8">
+          <div className="max-w-md mx-auto mb-10">
             <div className="flex gap-2">
               <input
                 type="text"
                 value={couponInput}
                 onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
                 placeholder="Have a coupon code?"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-colors text-sm"
               />
               <button
                 onClick={() => validateCoupon(couponInput)}
                 disabled={couponLoading || !couponInput.trim()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {couponLoading ? 'Checking...' : 'Apply'}
               </button>
             </div>
             {couponError && (
-              <p className="mt-2 text-sm text-red-600">{couponError}</p>
+              <p className="mt-2 text-xs text-red-400">{couponError}</p>
             )}
           </div>
         )}
 
         {/* Billing Cycle Toggle */}
         <div className="flex justify-center mb-10">
-          <div className="inline-flex bg-white rounded-lg shadow-sm p-1 border border-gray-200">
+          <div className="inline-flex glass rounded-xl p-1 gap-1">
             {billingOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => setBillingCycle(option.value)}
-                className={`relative px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   billingCycle === option.value
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30'
+                    : 'text-gray-400 hover:text-gray-200'
                 }`}
               >
                 {option.label}
-                {option.discount && billingCycle === option.value && (
-                  <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                {option.discount && (
+                  <span className="absolute -top-2.5 -right-2 bg-emerald-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium">
                     {option.discount}
                   </span>
                 )}
@@ -439,85 +396,80 @@ function PricingContent() {
         {/* Savings Banner */}
         {billingCycle > 1 && (
           <div className="text-center mb-8">
-            <span className="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
+            <span className="inline-block bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-2 rounded-full text-sm font-medium">
               Save up to {billingCycle === 12 ? '25%' : billingCycle === 6 ? '17%' : '10%'} with {getBillingLabel()} billing
             </span>
           </div>
         )}
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6">
           {plans.map((plan) => {
             const discountedPrice = getDiscountedPrice(plan);
+            const isPro = plan.name === 'PRO';
+            const isCurrentPlan = user?.subscription_type === plan.name.toLowerCase();
+
             return (
               <div
                 key={plan.name}
-                className={`bg-white rounded-lg shadow-md overflow-hidden ${
-                  plan.name === 'PRO' ? 'ring-2 ring-blue-600 transform scale-105' : ''
+                className={`relative rounded-2xl overflow-hidden transition-all duration-300 ${
+                  isPro
+                    ? 'ring-2 ring-indigo-500/50 shadow-2xl shadow-indigo-500/10 scale-[1.02]'
+                    : 'glass hover:border-white/15'
                 }`}
               >
-                {plan.name === 'PRO' && (
-                  <div className="bg-blue-600 text-white text-center py-2 text-sm font-semibold">
-                    BEST VALUE
+                {isPro && (
+                  <div className="absolute inset-0 bg-gradient-to-b from-indigo-600/5 to-purple-600/5 pointer-events-none" />
+                )}
+                {isPro && (
+                  <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-2 text-xs font-bold tracking-widest uppercase">
+                    Most Popular
                   </div>
                 )}
 
-                <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                  <div className="mb-6">
+                <div className="p-7">
+                  <h3 className="text-lg font-bold text-white mb-1">{plan.name}</h3>
+                  <div className="mb-6 mt-3">
                     {discountedPrice ? (
-                      <>
-                        <span className="text-2xl text-gray-400 line-through mr-2">{getPrice(plan)}</span>
-                        <span className="text-4xl font-bold text-green-600">{discountedPrice}</span>
-                      </>
+                      <div>
+                        <span className="text-xl text-gray-600 line-through mr-2">{getPrice(plan)}</span>
+                        <span className="text-4xl font-black text-emerald-400">{discountedPrice}</span>
+                        {plan.priceINR[1] > 0 && <span className="text-gray-500 text-sm ml-1">/{getBillingLabel()}</span>}
+                        <p className="text-xs text-emerald-500 mt-1">{couponDiscount}% off with coupon</p>
+                      </div>
                     ) : (
-                      <span className="text-4xl font-bold text-gray-900">{getPrice(plan)}</span>
-                    )}
-                    {plan.priceINR[1] > 0 && (
-                      <span className="text-gray-600">/{getBillingLabel()}</span>
-                    )}
-                    {discountedPrice && (
-                      <span className="block text-sm text-green-600 font-medium mt-1">
-                        {couponDiscount}% off with coupon
-                      </span>
+                      <div>
+                        <span className="text-4xl font-black text-white">{getPrice(plan)}</span>
+                        {plan.priceINR[1] > 0 && <span className="text-gray-500 text-sm ml-1">/{getBillingLabel()}</span>}
+                      </div>
                     )}
                   </div>
 
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-2.5 mb-7">
                     {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-start">
-                        <svg
-                          className="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
+                      <li key={index} className="flex items-start gap-2.5">
+                        <svg className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                        <span className="text-gray-600">{feature}</span>
+                        <span className="text-gray-400 text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
                   <button
                     onClick={() => handleUpgrade(plan.name)}
-                    disabled={
-                      loading ||
-                      countryLoading ||
-                      (user?.subscription_type === plan.name.toLowerCase()) ||
-                      (plan.name === 'FREE')
-                    }
-                    className={`w-full py-3 px-4 rounded-lg font-medium transition ${
-                      plan.name === 'PRO'
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg'
+                    disabled={loading || countryLoading || isCurrentPlan || plan.name === 'FREE'}
+                    className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                      isPro
+                        ? 'btn-primary'
                         : plan.name === 'STARTER'
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-100 text-gray-600'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        ? 'bg-white/10 border border-white/15 text-white hover:bg-white/15'
+                        : 'bg-white/5 border border-white/10 text-gray-500 cursor-default'
+                    }`}
                   >
                     {loading && selectedPlan === plan.name
                       ? 'Processing...'
-                      : user?.subscription_type === plan.name.toLowerCase()
+                      : isCurrentPlan
                       ? 'Current Plan'
                       : plan.name === 'FREE'
                       ? 'Free Forever'
@@ -531,25 +483,18 @@ function PricingContent() {
 
         {/* Additional Info */}
         <div className="mt-16 text-center space-y-4">
-          <p className="text-gray-600">
+          <p className="text-gray-500 text-sm">
             Need a custom plan?{' '}
-            <a href="mailto:resumebuilder.pulsestack@gmail.com" className="text-blue-600 hover:text-blue-500">
+            <a href="mailto:resumebuilder.pulsestack@gmail.com" className="text-indigo-400 hover:text-indigo-300 transition-colors">
               Contact us
             </a>
           </p>
-
-          <div className="flex items-center justify-center gap-6 text-sm text-gray-500">
-            <a href="/privacy" className="hover:text-blue-600 transition">
-              Privacy Policy
-            </a>
-            <span>•</span>
-            <a href="/terms" className="hover:text-blue-600 transition">
-              Terms of Service
-            </a>
-            <span>•</span>
-            <a href="/refund" className="hover:text-blue-600 transition">
-              Refund Policy
-            </a>
+          <div className="flex items-center justify-center gap-6 text-xs text-gray-600">
+            <a href="/privacy" className="hover:text-gray-400 transition-colors">Privacy Policy</a>
+            <span>·</span>
+            <a href="/terms" className="hover:text-gray-400 transition-colors">Terms of Service</a>
+            <span>·</span>
+            <a href="/refund" className="hover:text-gray-400 transition-colors">Refund Policy</a>
           </div>
         </div>
       </div>
@@ -560,8 +505,8 @@ function PricingContent() {
 export default function PricingPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-500">Loading pricing...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-500 text-sm">Loading pricing...</div>
       </div>
     }>
       <PricingContent />
