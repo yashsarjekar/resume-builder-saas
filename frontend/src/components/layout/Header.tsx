@@ -62,7 +62,7 @@ export default function Header() {
                   <span className="text-white font-black text-sm">R</span>
                 </div>
               </div>
-              <span className="text-lg font-bold text-white tracking-tight">Resume<span className="text-indigo-400">AI</span></span>
+              <span className="text-lg font-bold text-white tracking-tight">Resume Builder <span className="text-indigo-400">AI</span></span>
             </Link>
 
             {/* Desktop nav */}

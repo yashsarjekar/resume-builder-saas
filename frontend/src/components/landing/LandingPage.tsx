@@ -46,7 +46,7 @@ function ResumeMockup({ cardRef }: { cardRef: React.RefObject<HTMLDivElement> })
         {/* AI badge bottom-left */}
         <div className="badge-float absolute -bottom-4 -left-4 z-20 flex items-center gap-2 bg-[#0d1224] border border-indigo-500/40 text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-lg" style={{ animationDelay: '0.8s' }}>
           <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-          Claude AI Optimized
+          AI Optimized
         </div>
 
         {/* Main resume card */}
@@ -165,7 +165,7 @@ export default function LandingPage() {
                 <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                Powered by Claude AI · ATS Match is live
+                Powered by AI · ATS Match is live
               </div>
 
               {/* Headline */}
@@ -175,7 +175,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="text-gray-400 text-lg sm:text-xl leading-relaxed mb-8 max-w-lg">
-                AI-powered resume builder that optimizes for ATS systems, matches you to jobs, and writes tailored cover letters — all in minutes.
+                AI-powered resume builder that optimizes for ATS systems, matches you to jobs, and writes tailored cover letters all in minutes.
               </p>
 
               {/* Social proof row */}
@@ -282,7 +282,7 @@ export default function LandingPage() {
                 iconColor: '#fbbf24',
                 stat: '90%',
                 title: 'Generic Content',
-                desc: 'One-size-fits-all resumes score low on keyword matching. Each job needs its own tailored version — manually impossible.',
+                desc: 'One-size-fits-all resumes score low on keyword matching. Each job needs its own tailored version, impossible to do manually.',
               },
               {
                 icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',

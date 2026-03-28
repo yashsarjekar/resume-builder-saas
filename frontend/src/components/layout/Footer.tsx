@@ -14,7 +14,7 @@ export default function Footer() {
               <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
                 <span className="text-white font-black text-sm">R</span>
               </div>
-              <span className="text-lg font-bold text-white">Resume<span className="text-indigo-400">AI</span></span>
+              <span className="text-lg font-bold text-white">Resume Builder <span className="text-indigo-400">AI</span></span>
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed max-w-xs mb-5">
               AI-powered resume builder that beats ATS systems and gets you more interviews. Trusted by 12,000+ professionals.
@@ -108,7 +108,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-gray-600 text-xs">
-            © {new Date().getFullYear()} ResumeAI by PulseStack. All rights reserved.
+            © {new Date().getFullYear()} Resume Builder AI by PulseStack. All rights reserved.
           </p>
           <div className="flex items-center gap-2 text-xs text-gray-600">
             <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
