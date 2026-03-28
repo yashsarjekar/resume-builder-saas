@@ -25,10 +25,16 @@ function Counter({ target, suffix = '', started }: { target: number; suffix?: st
 function ResumeMockup({ cardRef }: { cardRef: React.RefObject<HTMLDivElement> }) {
   return (
     <div className="relative flex items-center justify-center">
-      {/* Radial glow behind card */}
-      <div className="absolute w-[420px] h-[420px] rounded-full pointer-events-none" style={{
-        background: 'radial-gradient(ellipse at center, rgba(139,92,246,0.30) 0%, rgba(99,102,241,0.18) 40%, transparent 70%)',
-        filter: 'blur(40px)',
+      {/* Glow orb behind card */}
+      <div className="pointer-events-none" style={{
+        position: 'absolute',
+        width: '500px',
+        height: '500px',
+        background: 'radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%)',
+        zIndex: -1,
+        right: '5%',
+        top: '50%',
+        transform: 'translateY(-50%)',
       }} />
 
       {/* Card wrapper — parallax target */}
@@ -37,8 +43,9 @@ function ResumeMockup({ cardRef }: { cardRef: React.RefObject<HTMLDivElement> })
         className="hero-card relative w-64 lg:w-72"
         style={{
           transformStyle: 'preserve-3d',
-          transform: 'perspective(1000px) rotateY(-8deg) rotateX(4deg)',
-          boxShadow: '0 40px 80px rgba(0,0,0,0.5), 0 20px 40px rgba(99,102,241,0.15), 0 0 0 1px rgba(255,255,255,0.06)',
+          transform: 'perspective(1200px) rotateY(-12deg) rotateX(4deg)',
+          boxShadow: '0 0 0 1px rgba(139,92,246,0.3), 0 30px 80px rgba(0,0,0,0.6), 0 0 120px rgba(99,102,241,0.15)',
+          transition: 'transform 0.3s ease',
         }}
       >
         {/* ATS badge top-right */}
@@ -122,7 +129,7 @@ export default function LandingPage() {
       const x = (e.clientX / window.innerWidth - 0.5) * 14;
       const y = (e.clientY / window.innerHeight - 0.5) * 9;
       heroCardRef.current.style.transform =
-        `perspective(1000px) rotateY(${x}deg) rotateX(${-y}deg) translateZ(20px)`;
+        `perspective(1200px) rotateY(${x}deg) rotateX(${-y}deg) translateZ(20px)`;
     };
     document.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => document.removeEventListener('mousemove', handleMouseMove);
@@ -166,18 +173,12 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* LEFT: Copy */}
             <div>
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-indigo-300 text-sm font-medium mb-7 gradient-border">
-                <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Powered by AI · ATS Match is live
-              </div>
-
               {/* Headline */}
-              <h1 className="text-[2.6rem] sm:text-[3.2rem] lg:text-[3.75rem] font-black leading-[1.05] tracking-[-0.03em] mb-6">
-                Land Your Dream Job<br />
-                in <span className="shimmer-text">Half the Time</span>
+              <h1
+                className="font-black leading-[1.05] tracking-[-0.03em] mb-6"
+                style={{ fontSize: 'clamp(48px, 5vw, 64px)', maxWidth: '560px' }}
+              >
+                Land Your Dream Job in <span className="shimmer-text">Half the Time</span>
               </h1>
 
               <p className="text-gray-400 text-lg sm:text-xl leading-relaxed mb-8 max-w-lg">
