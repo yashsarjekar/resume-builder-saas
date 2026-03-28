@@ -17,12 +17,23 @@ export interface Job {
   description?: string;
 }
 
+export interface AtsResult {
+  score: number;
+  matched_keywords: string[];
+  missing_keywords: string[];
+  suggestions: string[];
+}
+
 interface JobCardProps {
   job: Job;
   index: number;
   isLocked: boolean;
   onLockedClick: () => void;
   onViewDetails: (job: Job) => void;
+  atsResult?: AtsResult | null;
+  onAtsMatch?: (job: Job) => void;
+  atsLoading?: boolean;
+  canAtsMatch?: boolean; // true when logged in + has resume
 }
 
 const TAG_COLORS = [
@@ -58,7 +69,13 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(days / 7)}w ago`;
 }
 
-export default function JobCard({ job, index, isLocked, onLockedClick, onViewDetails }: JobCardProps) {
+function scoreColor(score: number) {
+  if (score >= 75) return { bar: 'from-emerald-500 to-teal-500', text: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' };
+  if (score >= 50) return { bar: 'from-amber-400 to-orange-400', text: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' };
+  return { bar: 'from-red-400 to-rose-500', text: 'text-red-700', bg: 'bg-red-50 border-red-200' };
+}
+
+export default function JobCard({ job, index, isLocked, onLockedClick, onViewDetails, atsResult, onAtsMatch, atsLoading, canAtsMatch }: JobCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [shine, setShine] = useState({ x: 50, y: 50, opacity: 0 });
@@ -221,16 +238,55 @@ export default function JobCard({ job, index, isLocked, onLockedClick, onViewDet
               Upgrade to Unlock
             </button>
           ) : (
-            <button
-              onClick={(e) => { e.stopPropagation(); onViewDetails(job); }}
-              className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r ${gradientClass} text-white text-sm font-semibold hover:opacity-90 transition-all duration-200 shadow-md`}
-              style={{ boxShadow: hovered ? '0 8px 25px -5px rgba(99,102,241,0.35)' : '' }}
-            >
-              View & Apply
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </button>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); onViewDetails(job); }}
+                className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r ${gradientClass} text-white text-sm font-semibold hover:opacity-90 transition-all duration-200 shadow-md`}
+                style={{ boxShadow: hovered ? '0 8px 25px -5px rgba(99,102,241,0.35)' : '' }}
+              >
+                View & Apply
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </button>
+
+              {/* ATS Match button / score badge */}
+              {canAtsMatch && (
+                atsResult ? (
+                  // Score badge — clicking opens modal with details
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onViewDetails(job); }}
+                    className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl border text-sm font-semibold transition-all duration-200 ${scoreColor(atsResult.score).bg} ${scoreColor(atsResult.score).text}`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    {atsResult.score}% ATS Match — View Details
+                  </button>
+                ) : atsLoading ? (
+                  <button
+                    disabled
+                    className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-400 text-sm font-medium"
+                  >
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Analyzing...
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onAtsMatch?.(job); }}
+                    className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl border border-indigo-200 text-indigo-600 text-sm font-semibold hover:bg-indigo-50 hover:border-indigo-400 transition-all duration-200"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    ATS Match
+                  </button>
+                )
+              )}
+            </div>
           )}
         </div>
       </div>

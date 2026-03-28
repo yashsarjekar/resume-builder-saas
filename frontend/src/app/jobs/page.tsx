@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
-import JobCard, { Job } from '@/components/jobs/JobCard';
+import JobCard, { Job, AtsResult } from '@/components/jobs/JobCard';
 import JobModal from '@/components/jobs/JobModal';
 import Pagination from '@/components/jobs/Pagination';
 import UpgradeModal from '@/components/UpgradeModal';
@@ -87,6 +87,9 @@ export default function JobsPage() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedJobLocked, setSelectedJobLocked] = useState(false);
+  const [atsResults, setAtsResults] = useState<Record<string, AtsResult>>({});
+  const [atsLoading, setAtsLoading] = useState<Record<string, boolean>>({});
+  const [hasResume, setHasResume] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const plan = (user?.subscription_type?.toLowerCase() || 'free') as string;
@@ -127,6 +130,44 @@ export default function JobsPage() {
   useEffect(() => {
     fetchJobs(page);
   }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Check if user has at least one resume (for ATS match)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    fetch(`${apiBase}/api/resume`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    })
+      .then((r) => r.json())
+      .then((data) => setHasResume(Array.isArray(data) ? data.length > 0 : false))
+      .catch(() => {});
+  }, [isAuthenticated, apiBase]);
+
+  const handleAtsMatch = async (job: Job) => {
+    if (!job.description) return;
+    const key = String(job.id);
+    setAtsLoading((prev) => ({ ...prev, [key]: true }));
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${apiBase}/api/jobs/ats-match`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ job_description: job.description, job_title: job.title }),
+      });
+      if (res.ok) {
+        const data: AtsResult = await res.json();
+        setAtsResults((prev) => ({ ...prev, [key]: data }));
+        // Open modal with result visible
+        setSelectedJob(job);
+        setSelectedJobLocked(false);
+      } else if (res.status === 429) {
+        alert('Daily AI limit reached. Upgrade to Pro for more analyses.');
+      }
+    } catch (e) {
+      console.error('ATS match error:', e);
+    } finally {
+      setAtsLoading((prev) => ({ ...prev, [key]: false }));
+    }
+  };
 
   const handleSearch = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -385,6 +426,10 @@ export default function JobsPage() {
                         isLocked={false}
                         onLockedClick={() => setShowUpgrade(true)}
                         onViewDetails={(j) => { setSelectedJob(j); setSelectedJobLocked(false); }}
+                        atsResult={atsResults[String(job.id)]}
+                        atsLoading={atsLoading[String(job.id)]}
+                        onAtsMatch={handleAtsMatch}
+                        canAtsMatch={isAuthenticated && hasResume}
                       />
                     ))}
                   </div>
@@ -527,6 +572,7 @@ export default function JobsPage() {
         isLocked={selectedJobLocked}
         onClose={() => setSelectedJob(null)}
         onUpgrade={() => { setSelectedJob(null); setShowUpgrade(true); }}
+        atsResult={selectedJob ? atsResults[String(selectedJob.id)] : null}
       />
 
       {/* Upgrade modal */}

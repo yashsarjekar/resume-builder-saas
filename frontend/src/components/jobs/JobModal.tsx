@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Job } from './JobCard';
+import { Job, AtsResult } from './JobCard';
 
 interface JobModalProps {
   job: Job | null;
   isLocked: boolean;
   onClose: () => void;
   onUpgrade: () => void;
+  atsResult?: AtsResult | null;
 }
 
 const TAG_COLORS = [
@@ -34,7 +35,71 @@ const LOGO_BG_COLORS = [
   'bg-pink-500', 'bg-cyan-500', 'bg-indigo-500', 'bg-rose-500',
 ];
 
-export default function JobModal({ job, isLocked, onClose, onUpgrade }: JobModalProps) {
+function AtsScorePanel({ result }: { result: AtsResult }) {
+  const score = result.score;
+  const color = score >= 75 ? 'emerald' : score >= 50 ? 'amber' : 'red';
+  const barWidth = `${score}%`;
+  const label = score >= 75 ? 'Great match!' : score >= 50 ? 'Decent match' : 'Needs work';
+
+  return (
+    <div className={`rounded-xl border p-4 bg-${color}-50 border-${color}-200`}>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">ATS Match Score</p>
+        <span className={`text-lg font-black text-${color}-700`}>{score}% — {label}</span>
+      </div>
+      {/* Score bar */}
+      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+        <div
+          className={`h-2.5 rounded-full bg-gradient-to-r ${score >= 75 ? 'from-emerald-500 to-teal-500' : score >= 50 ? 'from-amber-400 to-orange-400' : 'from-red-400 to-rose-500'}`}
+          style={{ width: barWidth, transition: 'width 0.6s ease-out' }}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        {/* Matched */}
+        <div>
+          <p className="text-xs font-semibold text-emerald-600 mb-1.5 flex items-center gap-1">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            Matched
+          </p>
+          <div className="flex flex-wrap gap-1">
+            {result.matched_keywords.map((kw, i) => (
+              <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium">{kw}</span>
+            ))}
+          </div>
+        </div>
+        {/* Missing */}
+        <div>
+          <p className="text-xs font-semibold text-red-500 mb-1.5 flex items-center gap-1">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Missing
+          </p>
+          <div className="flex flex-wrap gap-1">
+            {result.missing_keywords.map((kw, i) => (
+              <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-medium">{kw}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+      {/* Suggestions */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Suggestions</p>
+        <ul className="space-y-1">
+          {result.suggestions.map((s, i) => (
+            <li key={i} className="text-xs text-gray-700 flex items-start gap-1.5">
+              <span className="text-indigo-500 font-bold mt-0.5">💡</span>{s}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+export default function JobModal({ job, isLocked, onClose, onUpgrade, atsResult }: JobModalProps) {
   useEffect(() => {
     if (!job) return;
     const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -127,6 +192,9 @@ export default function JobModal({ job, isLocked, onClose, onUpgrade }: JobModal
               <span className="text-sm font-bold text-emerald-700">{job.salary}</span>
             </div>
           )}
+
+          {/* ATS Match result */}
+          {atsResult && <AtsScorePanel result={atsResult} />}
 
           {/* Tags */}
           {job.tags?.length > 0 && (
