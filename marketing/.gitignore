@@ -1,0 +1,27 @@
+# Environment variables (contains API keys)
+.env
+
+# Generated content (large files, regenerate as needed)
+content/*.json
+!content/.gitkeep
+
+# Tracking data
+data/*.json
+!data/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

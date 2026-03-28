@@ -1,0 +1,36 @@
+# Marketing Automation Dependencies
+# Install: pip install -r requirements.txt
+
+# AI Content Generation
+openai>=1.0.0
+
+# Telegram Bot
+python-telegram-bot>=20.0
+
+# Email Sending (Resend - 100 free emails/day)
+resend>=0.5.0
+
+# LinkedIn Automation
+linkedin-api>=2.0.0  # Unofficial but works
+
+# Scheduling
+schedule>=1.2.0
+apscheduler>=3.10.0
+
+# HTTP Requests
+httpx>=0.24.0
+requests>=2.31.0
+
+# Data Handling
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+
+# CLI & Progress
+rich>=13.0.0
+typer>=0.9.0
+
+# Date/Time
+python-dateutil>=2.8.0
+
+# YouTube (for metadata, not upload)
+google-api-python-client>=2.0.0
