@@ -37,21 +37,36 @@ const LOGO_BG_COLORS = [
 
 function AtsScorePanel({ result }: { result: AtsResult }) {
   const score = result.score;
-  const color = score >= 75 ? 'emerald' : score >= 50 ? 'amber' : 'red';
-  const barWidth = `${score}%`;
   const label = score >= 75 ? 'Great match!' : score >= 50 ? 'Decent match' : 'Needs work';
 
+  // Static class strings so Tailwind includes them in the build
+  const wrapperClass = score >= 75
+    ? 'rounded-xl border p-4 bg-emerald-50 border-emerald-200'
+    : score >= 50
+    ? 'rounded-xl border p-4 bg-amber-50 border-amber-200'
+    : 'rounded-xl border p-4 bg-red-50 border-red-200';
+
+  const scoreTextClass = score >= 75 ? 'text-lg font-black text-emerald-700'
+    : score >= 50 ? 'text-lg font-black text-amber-700'
+    : 'text-lg font-black text-red-700';
+
+  const barClass = score >= 75
+    ? 'h-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500'
+    : score >= 50
+    ? 'h-2.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-400'
+    : 'h-2.5 rounded-full bg-gradient-to-r from-red-400 to-rose-500';
+
   return (
-    <div className={`rounded-xl border p-4 bg-${color}-50 border-${color}-200`}>
+    <div className={wrapperClass}>
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">ATS Match Score</p>
-        <span className={`text-lg font-black text-${color}-700`}>{score}% — {label}</span>
+        <span className={scoreTextClass}>{score}% — {label}</span>
       </div>
       {/* Score bar */}
       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
         <div
-          className={`h-2.5 rounded-full bg-gradient-to-r ${score >= 75 ? 'from-emerald-500 to-teal-500' : score >= 50 ? 'from-amber-400 to-orange-400' : 'from-red-400 to-rose-500'}`}
-          style={{ width: barWidth, transition: 'width 0.6s ease-out' }}
+          className={barClass}
+          style={{ width: `${score}%`, transition: 'width 0.6s ease-out' }}
         />
       </div>
       <div className="grid grid-cols-2 gap-3 mb-3">

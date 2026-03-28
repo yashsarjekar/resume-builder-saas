@@ -162,6 +162,7 @@ export default function JobsPage() {
   const [selectedJobLocked, setSelectedJobLocked] = useState(false);
   const [atsResults, setAtsResults] = useState<Record<string, AtsResult>>({});
   const [atsLoading, setAtsLoading] = useState<Record<string, boolean>>({});
+  const [atsError, setAtsError] = useState<Record<string, string>>({});
   const [resumes, setResumes] = useState<{ id: number; title: string; updated_at: string }[]>([]);
   const [resumePickerJob, setResumePickerJob] = useState<Job | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -221,27 +222,35 @@ export default function JobsPage() {
   }, [isAuthenticated, apiBase]);
 
   const runAtsMatch = async (job: Job, resumeId: number) => {
-    if (!job.description) return;
     const key = String(job.id);
     setAtsLoading((prev) => ({ ...prev, [key]: true }));
+    setAtsError((prev) => { const n = { ...prev }; delete n[key]; return n; });
     setResumePickerJob(null);
     try {
       const token = localStorage.getItem('token');
+      const description = job.description || job.title; // fallback to title if no description
       const res = await fetch(`${apiBase}/api/jobs/ats-match`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ job_description: job.description, job_title: job.title, resume_id: resumeId }),
+        body: JSON.stringify({ job_description: description, job_title: job.title, resume_id: resumeId }),
       });
       if (res.ok) {
         const data: AtsResult = await res.json();
         setAtsResults((prev) => ({ ...prev, [key]: data }));
         setSelectedJob(job);
         setSelectedJobLocked(false);
-      } else if (res.status === 429) {
-        alert('Daily AI limit reached. Upgrade to Pro for more analyses.');
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        const msg = res.status === 429
+          ? 'Daily AI limit reached. Upgrade for more.'
+          : res.status === 404
+          ? 'No resume found. Please create a resume first.'
+          : errData?.detail || 'Analysis failed. Please try again.';
+        setAtsError((prev) => ({ ...prev, [key]: msg }));
       }
     } catch (e) {
       console.error('ATS match error:', e);
+      setAtsError((prev) => ({ ...prev, [key]: 'Network error. Please try again.' }));
     } finally {
       setAtsLoading((prev) => ({ ...prev, [key]: false }));
     }
@@ -515,6 +524,7 @@ export default function JobsPage() {
                         onViewDetails={(j) => { setSelectedJob(j); setSelectedJobLocked(false); }}
                         atsResult={atsResults[String(job.id)]}
                         atsLoading={atsLoading[String(job.id)]}
+                        atsError={atsError[String(job.id)]}
                         onAtsMatch={handleAtsMatch}
                         canAtsMatch={isAuthenticated && resumes.length > 0}
                       />
