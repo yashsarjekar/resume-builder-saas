@@ -181,10 +181,21 @@ export default function LandingPage() {
               {/* Social proof row */}
               <div className="flex items-center gap-4 mb-10">
                 <div className="flex -space-x-2">
-                  {['🧑‍💻','👩‍💼','👨‍🔬','👩‍🎨','🧑‍🏫'].map((emoji, i) => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border-2 border-[#050816] flex items-center justify-center text-sm">
-                      {emoji}
-                    </div>
+                  {[
+                    'https://i.pravatar.cc/150?img=47',
+                    'https://i.pravatar.cc/150?img=32',
+                    'https://i.pravatar.cc/150?img=11',
+                    'https://i.pravatar.cc/150?img=68',
+                    'https://i.pravatar.cc/150?img=26',
+                  ].map((src, i) => (
+                    <img
+                      key={i}
+                      src={src}
+                      alt="user"
+                      width={32}
+                      height={32}
+                      className="w-8 h-8 rounded-full border-2 border-[#050816] object-cover"
+                    />
                   ))}
                 </div>
                 <div>
