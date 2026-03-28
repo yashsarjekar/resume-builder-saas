@@ -25,15 +25,21 @@ function Counter({ target, suffix = '', started }: { target: number; suffix?: st
 function ResumeMockup({ cardRef }: { cardRef: React.RefObject<HTMLDivElement> }) {
   return (
     <div className="relative flex items-center justify-center">
-      {/* Glow halo */}
-      <div className="absolute w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl" />
-      <div className="absolute w-60 h-60 bg-purple-600/15 rounded-full blur-2xl translate-x-8 translate-y-4" />
+      {/* Radial glow behind card */}
+      <div className="absolute w-[420px] h-[420px] rounded-full pointer-events-none" style={{
+        background: 'radial-gradient(ellipse at center, rgba(139,92,246,0.30) 0%, rgba(99,102,241,0.18) 40%, transparent 70%)',
+        filter: 'blur(40px)',
+      }} />
 
       {/* Card wrapper — parallax target */}
       <div
         ref={cardRef}
         className="hero-card relative w-64 lg:w-72"
-        style={{ transformStyle: 'preserve-3d' }}
+        style={{
+          transformStyle: 'preserve-3d',
+          transform: 'perspective(1000px) rotateY(-8deg) rotateX(4deg)',
+          boxShadow: '0 40px 80px rgba(0,0,0,0.5), 0 20px 40px rgba(99,102,241,0.15), 0 0 0 1px rgba(255,255,255,0.06)',
+        }}
       >
         {/* ATS badge top-right */}
         <div className="badge-float absolute -top-4 -right-4 z-20 flex items-center gap-1.5 bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-emerald-500/40">
@@ -169,7 +175,7 @@ export default function LandingPage() {
               </div>
 
               {/* Headline */}
-              <h1 className="text-[2.8rem] sm:text-[3.5rem] lg:text-[4.2rem] font-black leading-[1.05] tracking-[-0.03em] mb-6">
+              <h1 className="text-[2.6rem] sm:text-[3.2rem] lg:text-[3.75rem] font-black leading-[1.05] tracking-[-0.03em] mb-6">
                 Land Your Dream Job<br />
                 in <span className="shimmer-text">Half the Time</span>
               </h1>
@@ -209,13 +215,13 @@ export default function LandingPage() {
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 mb-5">
-                <Link href="/signup" className="btn-primary flex items-center justify-center gap-2 text-base">
+                <Link href="/signup" className="btn-primary relative overflow-hidden flex items-center justify-center gap-2 text-base">
                   Build My Resume Free
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </Link>
-                <Link href="/jobs" className="btn-ghost flex items-center justify-center gap-2 text-base">
+                <Link href="/jobs" className="flex items-center justify-center gap-2 text-base font-semibold px-7 py-[14px] rounded-xl border border-white/30 text-white hover:bg-white/8 hover:border-white/50 transition-all duration-200">
                   Browse Jobs
                 </Link>
               </div>
