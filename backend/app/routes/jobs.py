@@ -50,11 +50,15 @@ async def _get_adzuna_jobs(
     country: str,
 ) -> dict:
     """Fetch jobs from Adzuna API."""
+    # Always include "remote" to surface remote-friendly roles.
+    # If user has a search term, combine it: "python remote"; otherwise just "remote".
+    what = f"{search} remote" if search else "remote"
+
     params = {
         "app_id": settings.ADZUNA_APP_ID,
         "app_key": settings.ADZUNA_APP_KEY,
         "results_per_page": per_page,
-        "what": search or "remote",
+        "what": what,
         "content-type": "application/json",
     }
 

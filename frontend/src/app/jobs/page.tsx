@@ -8,6 +8,22 @@ import Pagination from '@/components/jobs/Pagination';
 import UpgradeModal from '@/components/UpgradeModal';
 import Link from 'next/link';
 
+const COUNTRIES = [
+  { label: '🇺🇸 USA', value: 'us' },
+  { label: '🇬🇧 UK', value: 'gb' },
+  { label: '🇨🇦 Canada', value: 'ca' },
+  { label: '🇦🇺 Australia', value: 'au' },
+  { label: '🇮🇳 India', value: 'in' },
+  { label: '🇩🇪 Germany', value: 'de' },
+  { label: '🇫🇷 France', value: 'fr' },
+  { label: '🇸🇬 Singapore', value: 'sg' },
+  { label: '🇳🇱 Netherlands', value: 'nl' },
+  { label: '🇳🇿 New Zealand', value: 'nz' },
+  { label: '🇿🇦 South Africa', value: 'za' },
+  { label: '🇧🇷 Brazil', value: 'br' },
+  { label: '🇵🇱 Poland', value: 'pl' },
+];
+
 const CATEGORIES = [
   { label: 'All Jobs', value: '' },
   { label: 'Software Dev', value: 'software-dev' },
@@ -65,6 +81,7 @@ export default function JobsPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('');
+  const [country, setCountry] = useState('us');
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -84,6 +101,7 @@ export default function JobsPage() {
         const params = new URLSearchParams();
         params.set('page', String(currentPage));
         params.set('per_page', String(JOBS_PER_PAGE));
+        params.set('country', country);
         if (search) params.set('search', search);
         if (category) params.set('category', category);
 
@@ -98,13 +116,13 @@ export default function JobsPage() {
         setLoading(false);
       }
     },
-    [search, category, apiBase]
+    [search, category, country, apiBase]
   );
 
   useEffect(() => {
     setPage(1);
     fetchJobs(1);
-  }, [search, category]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [search, category, country]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetchJobs(page);
@@ -263,21 +281,44 @@ export default function JobsPage() {
             </div>
           )}
 
+          {/* Country filter */}
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">Country</p>
+            <div className="category-scroll flex gap-2 overflow-x-auto pb-2">
+              {COUNTRIES.map((c) => (
+                <button
+                  key={c.value}
+                  onClick={() => setCountry(c.value)}
+                  className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                    country === c.value
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-200'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:border-emerald-300 hover:text-emerald-600 hover:bg-emerald-50'
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Category filters */}
-          <div className="category-scroll flex gap-2 overflow-x-auto pb-2 mb-8">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.value}
-                onClick={() => setCategory(cat.value)}
-                className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                  category === cat.value
-                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-200'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">Category</p>
+            <div className="category-scroll flex gap-2 overflow-x-auto pb-2 mb-4">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.value}
+                  onClick={() => setCategory(cat.value)}
+                  className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                    category === cat.value
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-200'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Result count */}
