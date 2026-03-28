@@ -315,7 +315,7 @@ async def ats_match_job(
     )
 
     try:
-        raw = await claude_service._call_claude(system_prompt, user_prompt)
+        raw = claude_service._call_claude(system_prompt, user_prompt)
         # Strip any accidental markdown fences
         clean = raw.strip().lstrip("```json").lstrip("```").rstrip("```").strip()
         result = json.loads(clean)
