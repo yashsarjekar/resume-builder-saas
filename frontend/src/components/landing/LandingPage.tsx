@@ -37,15 +37,15 @@ function ResumeMockup({ cardRef }: { cardRef: React.RefObject<HTMLDivElement> })
         transform: 'translateY(-50%)',
       }} />
 
-      {/* Card wrapper — parallax target */}
+      {/* Perspective wrapper — keeps perspective stable while card animates */}
+      <div style={{ perspective: '1200px', perspectiveOrigin: 'center center' }}>
+      {/* Card wrapper — 3D float + mousemove target */}
       <div
         ref={cardRef}
         className="hero-card relative w-64 lg:w-72"
         style={{
           transformStyle: 'preserve-3d',
-          transform: 'perspective(1200px) rotateY(-12deg) rotateX(4deg)',
           boxShadow: '0 0 0 1px rgba(139,92,246,0.3), 0 30px 80px rgba(0,0,0,0.6), 0 0 120px rgba(99,102,241,0.15)',
-          transition: 'transform 0.3s ease',
         }}
       >
         {/* ATS badge top-right */}
@@ -112,6 +112,7 @@ function ResumeMockup({ cardRef }: { cardRef: React.RefObject<HTMLDivElement> })
         {/* Reflection shadow */}
         <div className="absolute -bottom-6 left-4 right-4 h-6 bg-black/30 blur-xl rounded-full" />
       </div>
+      </div>{/* end perspective wrapper */}
     </div>
   );
 }
@@ -122,17 +123,29 @@ export default function LandingPage() {
   const statsRef = useRef<HTMLDivElement>(null!);
   const [countersStarted, setCountersStarted] = useState(false);
 
-  /* Parallax on hero card */
+  /* Mouse-interactive 3D tilt — pauses float3d while hovering */
   useEffect(() => {
+    const card = heroCardRef.current;
+    if (!card) return;
     const handleMouseMove = (e: MouseEvent) => {
       if (!heroCardRef.current) return;
-      const x = (e.clientX / window.innerWidth - 0.5) * 14;
-      const y = (e.clientY / window.innerHeight - 0.5) * 9;
+      const x = (e.clientX / window.innerWidth - 0.5) * 20;
+      const y = (e.clientY / window.innerHeight - 0.5) * 12;
+      heroCardRef.current.style.animationPlayState = 'paused';
       heroCardRef.current.style.transform =
-        `perspective(1200px) rotateY(${x}deg) rotateX(${-y}deg) translateZ(20px)`;
+        `rotateY(${-12 + x}deg) rotateX(${4 - y}deg) translateZ(20px)`;
+    };
+    const handleMouseLeave = () => {
+      if (!heroCardRef.current) return;
+      heroCardRef.current.style.animationPlayState = 'running';
+      heroCardRef.current.style.transform = '';
     };
     document.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => document.removeEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
   }, []);
 
   /* Scroll-triggered reveal + counter */
@@ -176,7 +189,7 @@ export default function LandingPage() {
               {/* Headline */}
               <h1
                 className="font-black leading-[1.05] tracking-[-0.03em] mb-6"
-                style={{ fontSize: 'clamp(48px, 5vw, 64px)', maxWidth: '560px' }}
+                style={{ fontSize: 'clamp(36px, 3.2vw, 46px)' }}
               >
                 Land Your Dream Job<br />in <span className="shimmer-text">Half the Time</span>
               </h1>
