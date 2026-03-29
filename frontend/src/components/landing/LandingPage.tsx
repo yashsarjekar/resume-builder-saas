@@ -243,12 +243,44 @@ export default function LandingPage() {
 
               {/* Hired at */}
               <div className="mt-10 pt-8 border-t border-white/5">
-                <p className="text-xs text-gray-600 uppercase tracking-widest mb-4">Professionals hired at</p>
-                <div className="flex flex-wrap gap-3">
-                  {['Google', 'Amazon', 'Flipkart', 'Infosys', 'TCS', 'Zepto', 'Razorpay'].map((co) => (
-                    <span key={co} className="text-xs font-semibold text-gray-500 px-3 py-1.5 rounded-lg border border-white/8 hover:border-white/20 hover:text-gray-300 transition-colors cursor-default">
-                      {co}
-                    </span>
+                <p className="mb-4" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Professionals hired at
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                  {[
+                    { name: 'Google',   icon: 'google' },
+                    { name: 'Amazon',   icon: 'amazon' },
+                    { name: 'Flipkart', icon: 'flipkart' },
+                    { name: 'Razorpay', icon: 'razorpay' },
+                    { name: 'Infosys',  icon: null },
+                    { name: 'TCS',      icon: null },
+                    { name: 'Zepto',    icon: null },
+                  ].map(({ name, icon }) => (
+                    <div
+                      key={name}
+                      className="group flex items-center gap-2 cursor-default transition-all duration-200 hover:scale-105"
+                      style={{
+                        background: 'rgba(255,255,255,0.07)',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        borderRadius: '20px',
+                        padding: '6px 18px',
+                      }}
+                    >
+                      {icon ? (
+                        <img
+                          src={`https://cdn.simpleicons.org/${icon}/ffffff`}
+                          alt={name}
+                          height={16}
+                          width={16}
+                          className="opacity-50 group-hover:opacity-90 transition-opacity duration-200"
+                          style={{ height: '16px', width: '16px', objectFit: 'contain', filter: 'grayscale(1) brightness(2)' }}
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      ) : null}
+                      <span style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.02em' }}>
+                        {name}
+                      </span>
+                    </div>
                   ))}
                 </div>
               </div>
