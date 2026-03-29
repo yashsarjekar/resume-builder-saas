@@ -249,8 +249,8 @@ export default function LandingPage() {
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
                   {[
                     { name: 'Google',   icon: 'google' },
-                    { name: 'Amazon',   icon: 'amazon' },
-                    { name: 'Flipkart', icon: 'flipkart' },
+                    { name: 'Amazon',   icon: null },
+                    { name: 'Flipkart', icon: null },
                     { name: 'Razorpay', icon: 'razorpay' },
                     { name: 'Infosys',  icon: null },
                     { name: 'TCS',      icon: null },
@@ -544,7 +544,7 @@ export default function LandingPage() {
                 desc: 'The exact formula that gets resumes past robots and in front of hiring managers.',
               },
               {
-                href: '/blog/fresher-resume-mistakes',
+                href: '/blog/top-10-resume-mistakes-freshers',
                 cat: 'For Freshers', catColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
                 thumb: 'linear-gradient(135deg, #1c1917 0%, #292524 50%, #78350f 100%)',
                 thumbIcon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
