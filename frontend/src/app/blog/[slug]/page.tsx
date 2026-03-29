@@ -45,9 +45,9 @@ const categoryLabels = {
 };
 
 const categoryColors = {
-  'resume-tips': 'bg-blue-100 text-blue-700',
-  'interview-prep': 'bg-green-100 text-green-700',
-  'career-advice': 'bg-purple-100 text-purple-700',
+  'resume-tips': 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30',
+  'interview-prep': 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
+  'career-advice': 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
 };
 
 export default async function BlogPostPage({ params }: PageProps) {
@@ -85,33 +85,36 @@ export default async function BlogPostPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="bg-white">
+      <div className="bg-[#050816] min-h-screen">
         {/* Article Header */}
-        <header className="bg-gradient-to-br from-gray-50 to-gray-100 py-12 border-b border-gray-200">
-          <div className="container mx-auto px-4 max-w-4xl">
+        <header className="relative py-14 border-b border-white/10 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-[-30%] right-[-10%] w-[400px] h-[400px] rounded-full bg-indigo-600/10 blur-3xl" />
+          </div>
+          <div className="container mx-auto px-4 max-w-4xl relative z-10">
             {/* Breadcrumb */}
             <nav className="mb-6 text-sm">
-              <Link href="/blog" className="text-gray-500 hover:text-gray-700">
+              <Link href="/blog" className="text-gray-500 hover:text-gray-300 transition">
                 Blog
               </Link>
-              <span className="mx-2 text-gray-400">/</span>
-              <span className="text-gray-700">{categoryLabels[post.category]}</span>
+              <span className="mx-2 text-gray-600">/</span>
+              <span className="text-gray-400">{categoryLabels[post.category]}</span>
             </nav>
 
             <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-4 ${categoryColors[post.category]}`}>
               {categoryLabels[post.category]}
             </span>
 
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
               {post.title}
             </h1>
 
-            <p className="text-xl text-gray-600 mb-6">
+            <p className="text-xl text-gray-400 mb-6">
               {post.excerpt}
             </p>
 
             <div className="flex items-center text-sm text-gray-500">
-              <span className="font-medium text-gray-700">{post.author}</span>
+              <span className="font-medium text-gray-400">{post.author}</span>
               <span className="mx-2">•</span>
               <span>{new Date(post.publishedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
               <span className="mx-2">•</span>
@@ -124,18 +127,18 @@ export default async function BlogPostPage({ params }: PageProps) {
         <article className="py-12">
           <div className="container mx-auto px-4 max-w-4xl">
             <div
-              className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-li:text-gray-600 prose-strong:text-gray-900"
+              className="prose prose-lg max-w-none prose-invert prose-headings:text-white prose-p:text-gray-300 prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:underline prose-li:text-gray-300 prose-strong:text-white prose-blockquote:border-indigo-500 prose-blockquote:text-gray-400 prose-code:text-indigo-300 prose-code:bg-white/10 prose-pre:bg-white/5 prose-pre:border prose-pre:border-white/10 prose-hr:border-white/10"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
             {/* Tags */}
-            <div className="mt-12 pt-8 border-t border-gray-200">
+            <div className="mt-12 pt-8 border-t border-white/10">
               <h3 className="text-sm font-medium text-gray-500 mb-3">Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                    className="px-3 py-1 bg-white/5 border border-white/10 text-gray-400 rounded-full text-sm"
                   >
                     {tag}
                   </span>
@@ -147,23 +150,23 @@ export default async function BlogPostPage({ params }: PageProps) {
 
         {/* Related Posts */}
         {relatedPosts.length > 0 && (
-          <section className="py-12 bg-gray-50 border-t border-gray-200">
+          <section className="py-12 bg-white/[0.02] border-t border-white/10">
             <div className="container mx-auto px-4 max-w-6xl">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">Related Articles</h2>
+              <h2 className="text-2xl font-bold text-white mb-8">Related Articles</h2>
               <div className="grid md:grid-cols-3 gap-6">
                 {relatedPosts.map((relatedPost) => (
                   <Link
                     key={relatedPost.slug}
                     href={`/blog/${relatedPost.slug}`}
-                    className="group bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-md transition"
+                    className="group glass-card rounded-xl p-6 block"
                   >
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${categoryColors[relatedPost.category]}`}>
                       {categoryLabels[relatedPost.category]}
                     </span>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition line-clamp-2">
+                    <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-indigo-300 transition line-clamp-2">
                       {relatedPost.title}
                     </h3>
-                    <p className="text-gray-600 text-sm line-clamp-2">
+                    <p className="text-gray-400 text-sm line-clamp-2">
                       {relatedPost.excerpt}
                     </p>
                   </Link>
@@ -174,18 +177,17 @@ export default async function BlogPostPage({ params }: PageProps) {
         )}
 
         {/* CTA Section */}
-        <section className="py-12 bg-gradient-to-r from-blue-600 to-indigo-600">
-          <div className="container mx-auto px-4 max-w-4xl text-center">
+        <section className="py-12 relative overflow-hidden">
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.10) 50%, rgba(6,182,212,0.08) 100%)' }} />
+          <div className="absolute inset-0 border-y border-white/10" />
+          <div className="container mx-auto px-4 max-w-4xl text-center relative z-10">
             <h2 className="text-2xl font-bold text-white mb-4">
               Ready to Apply These Tips?
             </h2>
-            <p className="text-lg text-blue-100 mb-6">
+            <p className="text-lg text-gray-400 mb-6">
               Create your ATS-optimized resume with our AI-powered builder.
             </p>
-            <Link
-              href="/builder"
-              className="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
-            >
+            <Link href="/builder" className="btn-primary inline-block px-6 py-3">
               Build Your Resume Free
             </Link>
           </div>

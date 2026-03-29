@@ -32,9 +32,9 @@ const categoryLabels = {
 };
 
 const categoryColors = {
-  'resume-tips': 'bg-blue-100 text-blue-700',
-  'interview-prep': 'bg-green-100 text-green-700',
-  'career-advice': 'bg-purple-100 text-purple-700',
+  'resume-tips': 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30',
+  'interview-prep': 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
+  'career-advice': 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
 };
 
 export default function BlogPage() {
@@ -74,15 +74,22 @@ export default function BlogPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="bg-white">
+      <div className="bg-[#050816] min-h-screen">
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-16">
-          <div className="container mx-auto px-4 max-w-6xl">
+        <section className="relative py-20 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-600/10 blur-3xl" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-purple-600/10 blur-3xl" />
+          </div>
+          <div className="container mx-auto px-4 max-w-6xl relative z-10">
             <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              <span className="inline-block px-4 py-1.5 bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 rounded-full text-sm font-medium mb-6">
+                Career Resources
+              </span>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 Career Blog
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                 Expert tips on resume writing, interview preparation, and landing your dream job at top companies.
               </p>
             </div>
@@ -91,23 +98,23 @@ export default function BlogPage() {
 
         {/* Featured Posts */}
         {featuredPosts.length > 0 && (
-          <section className="py-12 border-b border-gray-200">
+          <section className="py-12 border-b border-white/10">
             <div className="container mx-auto px-4 max-w-6xl">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Articles</h2>
+              <h2 className="text-2xl font-bold text-white mb-8">Featured Articles</h2>
               <div className="grid md:grid-cols-2 gap-8">
                 {featuredPosts.map((post) => (
                   <Link
                     key={post.slug}
                     href={`/blog/${post.slug}`}
-                    className="group bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100 hover:border-blue-300 hover:shadow-lg transition"
+                    className="group glass-card rounded-xl p-6 block"
                   >
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-4 ${categoryColors[post.category]}`}>
                       {categoryLabels[post.category]}
                     </span>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition">
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-indigo-300 transition">
                       {post.title}
                     </h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">
+                    <p className="text-gray-400 mb-4 line-clamp-2">
                       {post.excerpt}
                     </p>
                     <div className="flex items-center text-sm text-gray-500">
@@ -126,7 +133,7 @@ export default function BlogPage() {
         <section className="py-12">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-gray-900">Resume Tips</h2>
+              <h2 className="text-2xl font-bold text-white">Resume Tips</h2>
               <span className="text-sm text-gray-500">{resumeTips.length} articles</span>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -134,15 +141,15 @@ export default function BlogPage() {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-md transition"
+                  className="group glass-card rounded-xl p-6 block"
                 >
                   <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${categoryColors[post.category]}`}>
                     {categoryLabels[post.category]}
                   </span>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition line-clamp-2">
+                  <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-indigo-300 transition line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">
                     {post.excerpt}
                   </p>
                   <div className="text-sm text-gray-500">
@@ -155,10 +162,10 @@ export default function BlogPage() {
         </section>
 
         {/* Interview Prep Section */}
-        <section className="py-12 bg-gray-50">
+        <section className="py-12 bg-white/[0.02]">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-gray-900">Interview Preparation</h2>
+              <h2 className="text-2xl font-bold text-white">Interview Preparation</h2>
               <span className="text-sm text-gray-500">{interviewPrep.length} articles</span>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -166,15 +173,15 @@ export default function BlogPage() {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group bg-white rounded-xl p-6 border border-gray-200 hover:border-green-300 hover:shadow-md transition"
+                  className="group glass-card rounded-xl p-6 block"
                 >
                   <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${categoryColors[post.category]}`}>
                     {categoryLabels[post.category]}
                   </span>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-green-600 transition line-clamp-2">
+                  <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-emerald-300 transition line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">
                     {post.excerpt}
                   </p>
                   <div className="text-sm text-gray-500">
@@ -191,7 +198,7 @@ export default function BlogPage() {
           <section className="py-12">
             <div className="container mx-auto px-4 max-w-6xl">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold text-gray-900">Career Advice</h2>
+                <h2 className="text-2xl font-bold text-white">Career Advice</h2>
                 <span className="text-sm text-gray-500">{careerAdvice.length} articles</span>
               </div>
               <div className="grid md:grid-cols-3 gap-6">
@@ -199,15 +206,15 @@ export default function BlogPage() {
                   <Link
                     key={post.slug}
                     href={`/blog/${post.slug}`}
-                    className="group bg-white rounded-xl p-6 border border-gray-200 hover:border-purple-300 hover:shadow-md transition"
+                    className="group glass-card rounded-xl p-6 block"
                   >
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${categoryColors[post.category]}`}>
                       {categoryLabels[post.category]}
                     </span>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition line-clamp-2">
+                    <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-purple-300 transition line-clamp-2">
                       {post.title}
                     </h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">
                       {post.excerpt}
                     </p>
                     <div className="text-sm text-gray-500">
@@ -221,18 +228,17 @@ export default function BlogPage() {
         )}
 
         {/* CTA Section */}
-        <section className="py-16 bg-gradient-to-r from-blue-600 to-indigo-600">
-          <div className="container mx-auto px-4 max-w-4xl text-center">
+        <section className="py-16 relative overflow-hidden">
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.10) 50%, rgba(6,182,212,0.08) 100%)' }} />
+          <div className="absolute inset-0 border-y border-white/10" />
+          <div className="container mx-auto px-4 max-w-4xl text-center relative z-10">
             <h2 className="text-3xl font-bold text-white mb-4">
               Ready to Build Your Resume?
             </h2>
-            <p className="text-xl text-blue-100 mb-8">
+            <p className="text-xl text-gray-400 mb-8">
               Put these tips into action with our AI-powered resume builder.
             </p>
-            <Link
-              href="/builder"
-              className="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition"
-            >
+            <Link href="/builder" className="btn-primary inline-block px-8 py-4 text-lg">
               Create Your Resume Free
             </Link>
           </div>
