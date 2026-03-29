@@ -384,25 +384,46 @@ export default function LandingPage() {
             <p className="text-indigo-400 text-sm font-semibold uppercase tracking-widest mb-3">Simple Process</p>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight">Get Hired in <span className="shimmer-text">3 Steps</span></h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 relative">
-            {/* Connector line */}
-            <div className="hidden md:block absolute top-8 left-[28%] right-[28%] h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
+          <div className="flex flex-col md:flex-row items-center md:items-start">
             {[
               { step: '01', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', title: 'Build Your Resume', desc: 'Fill in your details or import from LinkedIn. Our AI structures everything for maximum impact.' },
               { step: '02', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: 'AI Optimizes It', desc: 'AI analyzes your target job and rewrites your resume to score 85%+ on ATS systems.' },
               { step: '03', icon: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4', title: 'Apply & Get Hired', desc: 'Download your ATS-optimized PDF and start applying. Track your match score for every job.' },
             ].map((step, i) => (
-              <div key={step.step} className="text-center scroll-reveal" style={{ transitionDelay: `${i * 150}ms` }}>
-                <div className="relative inline-flex mb-5">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/30 flex items-center justify-center">
-                    <svg className="w-7 h-7 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div key={step.step} className="flex flex-col md:flex-row items-center md:items-start flex-1 min-w-0">
+                {/* Step card */}
+                <div
+                  className="glass-card scroll-reveal text-center p-7 rounded-2xl w-full"
+                  style={{ transitionDelay: `${i * 150}ms`, transition: 'all 0.3s ease' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(99,102,241,0.3)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.borderColor = ''; }}
+                >
+                  {/* Gradient step number */}
+                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white', fontSize: '16px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(99,102,241,0.4)', margin: '0 auto 16px' }}>
+                    {i + 1}
+                  </div>
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/30 flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={step.icon} />
                     </svg>
                   </div>
-                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-indigo-600 rounded-full text-[10px] font-black text-white flex items-center justify-center">{i + 1}</span>
+                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">{step.desc}</p>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{step.desc}</p>
+
+                {/* Connector (between steps only) */}
+                {i < 2 && (
+                  <>
+                    {/* Desktop arrow */}
+                    <div className="hidden md:flex items-center justify-center flex-shrink-0 w-10 mt-16">
+                      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'rgba(99,102,241,0.6)' }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                    {/* Mobile vertical line */}
+                    <div className="md:hidden mx-auto my-2" style={{ width: '2px', height: '32px', background: 'linear-gradient(180deg, rgba(99,102,241,0.6), rgba(6,182,212,0.4))' }} />
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -422,21 +443,23 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', color: '#818cf8', bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.2)', title: 'ATS Optimization', desc: 'AI scans your resume against job descriptions and rewrites it to score 85%+ on any ATS. No more silent rejections.' },
-              { icon: 'M13 10V3L4 14h7v7l9-11h-7z', color: '#34d399', bg: 'rgba(52,211,153,0.1)', border: 'rgba(52,211,153,0.2)', title: 'Keyword Extraction', desc: 'Automatically pull the exact keywords, skills, and phrases recruiters are searching for in any job posting.' },
-              { icon: 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01', color: '#a78bfa', bg: 'rgba(167,139,250,0.1)', border: 'rgba(167,139,250,0.2)', title: 'Pro Templates', desc: '10+ ATS-friendly templates designed by hiring experts at top companies. Beautiful, clean, and machine-readable.' },
-              { icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', color: '#fbbf24', bg: 'rgba(251,191,36,0.1)', border: 'rgba(251,191,36,0.2)', title: 'Cover Letter AI', desc: 'Generate a personalized, compelling cover letter for any job in 30 seconds. Tailored to the company and role.' },
-              { icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', color: '#06b6d4', bg: 'rgba(6,182,212,0.1)', border: 'rgba(6,182,212,0.2)', title: 'Job ATS Match', desc: 'Browse 100,000+ remote jobs and instantly check how well your resume matches each one. Know before you apply.' },
-              { icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', color: '#f472b6', bg: 'rgba(244,114,182,0.1)', border: 'rgba(244,114,182,0.2)', title: 'LinkedIn Optimizer', desc: 'Rewrite your LinkedIn headline, summary, and skills to attract 3× more recruiter messages.' },
+              { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', color: '#6366f1', bg: 'rgba(99,102,241,0.15)', border: 'rgba(99,102,241,0.2)', shadow: '0 0 20px rgba(99,102,241,0.3)', title: 'ATS Optimization', desc: 'AI scans your resume against job descriptions and rewrites it to score 85%+ on any ATS. No more silent rejections.' },
+              { icon: 'M13 10V3L4 14h7v7l9-11h-7z', color: '#06b6d4', bg: 'rgba(6,182,212,0.15)', border: 'rgba(6,182,212,0.2)', shadow: '0 0 20px rgba(6,182,212,0.3)', title: 'Keyword Extraction', desc: 'Automatically pull the exact keywords, skills, and phrases recruiters are searching for in any job posting.' },
+              { icon: 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01', color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)', border: 'rgba(139,92,246,0.2)', shadow: '0 0 20px rgba(139,92,246,0.3)', title: 'Pro Templates', desc: '10+ ATS-friendly templates designed by hiring experts at top companies. Beautiful, clean, and machine-readable.' },
+              { icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.2)', shadow: '0 0 20px rgba(245,158,11,0.3)', title: 'Cover Letter AI', desc: 'Generate a personalized, compelling cover letter for any job in 30 seconds. Tailored to the company and role.' },
+              { icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.2)', shadow: '0 0 20px rgba(16,185,129,0.3)', title: 'Job ATS Match', desc: 'Browse 100,000+ remote jobs and instantly check how well your resume matches each one. Know before you apply.' },
+              { icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.2)', shadow: '0 0 20px rgba(59,130,246,0.3)', title: 'LinkedIn Optimizer', desc: 'Rewrite your LinkedIn headline, summary, and skills to attract 3× more recruiter messages.' },
             ].map((f, i) => (
               <div
                 key={f.title}
                 className="glass-card scroll-reveal p-6 rounded-2xl"
-                style={{ transitionDelay: `${i * 80}ms`, borderColor: f.border }}
+                style={{ transitionDelay: `${i * 80}ms`, borderColor: f.border, transition: 'all 0.3s ease' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(99,102,241,0.4)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.borderColor = f.border; }}
               >
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 border" style={{ background: f.bg, borderColor: f.border }}>
-                  <svg className="w-5 h-5" style={{ color: f.color }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={f.icon} />
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', background: f.bg, boxShadow: f.shadow, border: `1px solid ${f.border}` }}>
+                  <svg width="20" height="20" style={{ color: f.color }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={f.icon} />
                   </svg>
                 </div>
                 <h3 className="text-base font-bold text-white mb-2">{f.title}</h3>
@@ -511,23 +534,56 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-5">
             {[
-              { href: '/blog/how-to-write-ats-friendly-resume', cat: 'Resume Tips', catColor: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20', title: 'How to Write an ATS-Friendly Resume in 2025', time: '5 min read', desc: 'The exact formula that gets resumes past robots and in front of hiring managers.' },
-              { href: '/blog/fresher-resume-mistakes', cat: 'For Freshers', catColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', title: 'Top 10 Resume Mistakes Fresh Graduates Make', time: '7 min read', desc: 'Avoid these silent killers that keep smart graduates from getting interview calls.' },
-              { href: '/blog/coding-interview-tips-for-beginners', cat: 'Interview Prep', catColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20', title: 'Coding Interview Tips That Top 1% Follow', time: '8 min read', desc: 'The mental models and preparation system used by engineers who crack FAANG interviews.' },
+              {
+                href: '/blog/how-to-write-ats-friendly-resume',
+                cat: 'Resume Tips', catColor: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+                thumb: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
+                thumbIcon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+                thumbColor: '#818cf8',
+                title: 'How to Write an ATS-Friendly Resume in 2025', time: '5 min read',
+                desc: 'The exact formula that gets resumes past robots and in front of hiring managers.',
+              },
+              {
+                href: '/blog/fresher-resume-mistakes',
+                cat: 'For Freshers', catColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+                thumb: 'linear-gradient(135deg, #1c1917 0%, #292524 50%, #78350f 100%)',
+                thumbIcon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
+                thumbColor: '#fbbf24',
+                title: 'Top 10 Resume Mistakes Fresh Graduates Make', time: '7 min read',
+                desc: 'Avoid these silent killers that keep smart graduates from getting interview calls.',
+              },
+              {
+                href: '/blog/coding-interview-tips-for-beginners',
+                cat: 'Interview Prep', catColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
+                thumb: 'linear-gradient(135deg, #042f2e 0%, #134e4a 50%, #0f766e 100%)',
+                thumbIcon: 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4',
+                thumbColor: '#2dd4bf',
+                title: 'Coding Interview Tips That Top 1% Follow', time: '8 min read',
+                desc: 'The mental models and preparation system used by engineers who crack FAANG interviews.',
+              },
             ].map((post, i) => (
               <Link
                 key={post.href}
                 href={post.href}
-                className="glass-card scroll-reveal p-6 rounded-2xl group block"
+                className="glass-card scroll-reveal rounded-2xl group block overflow-hidden"
                 style={{ transitionDelay: `${i * 100}ms` }}
               >
-                <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border mb-4 ${post.catColor}`}>
-                  {post.cat}
+                {/* Gradient thumbnail */}
+                <div style={{ height: '160px', background: post.thumb, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="48" height="48" style={{ color: post.thumbColor, opacity: 0.9 }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={post.thumbIcon} />
+                  </svg>
+                  <span style={{ position: 'absolute', bottom: '10px', right: '12px', background: 'rgba(255,255,255,0.1)', fontSize: '11px', color: 'rgba(255,255,255,0.7)', padding: '3px 8px', borderRadius: '6px', backdropFilter: 'blur(4px)' }}>
+                    {post.time}
+                  </span>
                 </div>
-                <h3 className="text-base font-bold text-white mb-3 leading-snug group-hover:text-indigo-300 transition-colors">{post.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-4">{post.desc}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">⏱ {post.time}</span>
+                {/* Content */}
+                <div className="p-6">
+                  <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border mb-4 ${post.catColor}`}>
+                    {post.cat}
+                  </div>
+                  <h3 className="text-base font-bold text-white mb-3 leading-snug group-hover:text-indigo-300 transition-colors">{post.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-4">{post.desc}</p>
                   <span className="text-xs text-indigo-400 font-semibold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
                     Read →
                   </span>
@@ -548,46 +604,40 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ FINAL CTA ══════════════════════════════════════════════════ */}
-      <section className="py-24 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <div className="scroll-reveal relative overflow-hidden rounded-3xl p-px">
-            <div className="absolute inset-0 animated-gradient-bg opacity-60 rounded-3xl" />
-            <div className="relative bg-[#0a0f2e] rounded-[23px] px-8 py-16 text-center overflow-hidden">
-              {/* Grid overlay */}
-              <div className="absolute inset-0 opacity-[0.04]" style={{
-                backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)',
-                backgroundSize: '40px 40px',
-              }} />
-              <div className="relative">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-indigo-300 text-sm font-medium mb-6">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  Free plan always available
-                </div>
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4">
-                  Ready to Land Your<br />
-                  <span className="shimmer-text">Dream Job?</span>
-                </h2>
-                <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
-                  Join 12,000+ professionals who built ATS-winning resumes in under 10 minutes.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center mb-5">
-                  <Link href="/signup" className="btn-primary flex items-center justify-center gap-2 text-base px-8">
-                    Start Building for Free
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </Link>
-                  <Link href="/pricing" className="btn-ghost flex items-center justify-center gap-2 text-base px-8">
-                    View Pricing
-                  </Link>
-                </div>
-                <div className="flex items-center justify-center gap-6 text-xs text-gray-600">
-                  <span>✓ No credit card required</span>
-                  <span>✓ Cancel anytime</span>
-                  <span>✓ ATS-Guaranteed</span>
-                </div>
-              </div>
-            </div>
+      <section className="py-24 px-4" style={{ borderTop: '1px solid rgba(99,102,241,0.25)', borderBottom: '1px solid rgba(99,102,241,0.15)', background: 'linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(139,92,246,0.12) 40%, rgba(6,182,212,0.08) 100%)', position: 'relative', overflow: 'hidden' }}>
+        {/* Purple orb top-left */}
+        <div className="pointer-events-none" style={{ position: 'absolute', top: '-100px', left: '-100px', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)' }} />
+        {/* Cyan orb bottom-right */}
+        <div className="pointer-events-none" style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%)' }} />
+
+        <div className="container mx-auto max-w-3xl relative text-center scroll-reveal">
+          <p style={{ fontSize: '12px', color: '#06b6d4', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '20px', fontWeight: 600 }}>
+            Free plan always available
+          </p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4">
+            Ready to Land Your<br />
+            <span className="shimmer-text">Dream Job?</span>
+          </h2>
+          <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
+            Join 12,000+ professionals who built ATS-winning resumes in under 10 minutes.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-7">
+            <Link href="/signup" className="btn-primary flex items-center justify-center gap-2 text-base px-8">
+              Start Building for Free
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+            <Link href="/pricing" className="btn-ghost flex items-center justify-center gap-2 text-base px-8">
+              View Pricing
+            </Link>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
+            {['No credit card required', 'Cancel anytime', 'ATS-Guaranteed'].map(t => (
+              <span key={t} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
+                <span style={{ color: '#10b981', fontWeight: 700 }}>✓</span> {t}
+              </span>
+            ))}
           </div>
         </div>
       </section>
