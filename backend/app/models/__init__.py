@@ -9,6 +9,7 @@ from .resume import Resume
 from .payment import Payment, PaymentStatus
 from .coupon import Coupon
 from .drip_email_log import DripEmailLog
+from .blog import BlogPost, BlogKeyword, BlogDailyReport
 
 __all__ = [
     "User",
@@ -18,4 +19,7 @@ __all__ = [
     "PaymentStatus",
     "Coupon",
     "DripEmailLog",
+    "BlogPost",
+    "BlogKeyword",
+    "BlogDailyReport",
 ]
