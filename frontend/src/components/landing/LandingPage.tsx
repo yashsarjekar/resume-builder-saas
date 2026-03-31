@@ -189,9 +189,9 @@ export default function LandingPage() {
               {/* Headline */}
               <h1
                 className="font-black leading-[1.05] tracking-[-0.03em] mb-6"
-                style={{ fontSize: 'clamp(36px, 3.2vw, 46px)' }}
+                style={{ fontSize: 'clamp(30px, 7.5vw, 46px)' }}
               >
-                Land Your Dream Job<br />in <span className="shimmer-text">Half the Time</span>
+                Land Your Dream Job<span className="hidden md:inline"><br /></span>{' '}in <span className="shimmer-text">Half the Time</span>
               </h1>
 
               <p className="text-gray-400 text-lg sm:text-xl leading-relaxed mb-8 max-w-lg">
