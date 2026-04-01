@@ -1,0 +1,364 @@
+"""
+Automated blog generation service using Claude AI.
+
+Picks the highest-intent pending keywords from blog_keywords,
+generates full SEO-optimised HTML posts, and persists them to
+the blog_posts table.  Called once per day by the cron endpoint.
+"""
+
+import json
+import logging
+import re
+import time
+from datetime import datetime
+from typing import Optional
+
+from anthropic import Anthropic, APIError, APITimeoutError, RateLimitError
+from sqlalchemy.orm import Session
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
+
+from app.config import get_settings
+from app.models.blog import BlogDailyReport, BlogKeyword, BlogPost
+
+logger = logging.getLogger(__name__)
+settings = get_settings()
+
+# ── Constants ──────────────────────────────────────────────────────────────
+
+SITE_URL = settings.SITE_URL
+AUTHOR   = "Resume Builder Team"
+
+VALID_CATEGORIES = {"resume-tips", "interview-prep", "career-advice"}
+
+# Map broad keyword categories → blog categories
+CATEGORY_MAP: dict[str, str] = {
+    "ats":            "resume-tips",
+    "resume":         "resume-tips",
+    "cv":             "resume-tips",
+    "format":         "resume-tips",
+    "template":       "resume-tips",
+    "interview":      "interview-prep",
+    "question":       "interview-prep",
+    "answer":         "interview-prep",
+    "hr":             "interview-prep",
+    "gd":             "interview-prep",
+    "group discussion": "interview-prep",
+    "career":         "career-advice",
+    "salary":         "career-advice",
+    "appraisal":      "career-advice",
+    "job search":     "career-advice",
+    "linkedin":       "career-advice",
+    "fresher":        "career-advice",
+    "switch":         "career-advice",
+}
+
+
+# ── Helpers ────────────────────────────────────────────────────────────────
+
+def _slugify(text: str) -> str:
+    """Convert title text to a URL-safe slug."""
+    slug = text.lower().strip()
+    slug = re.sub(r"[^\w\s-]", "", slug)
+    slug = re.sub(r"[\s_]+", "-", slug)
+    slug = re.sub(r"-{2,}", "-", slug)
+    return slug[:100].strip("-")
+
+
+def _infer_category(keyword: str, kw_category: Optional[str]) -> str:
+    """Guess the blog category from the keyword text."""
+    kw_lower = keyword.lower()
+    for fragment, cat in CATEGORY_MAP.items():
+        if fragment in kw_lower:
+            return cat
+    if kw_category:
+        for fragment, cat in CATEGORY_MAP.items():
+            if fragment in kw_category.lower():
+                return cat
+    return "career-advice"
+
+
+def _estimate_read_time(html: str) -> int:
+    """Estimate read time in minutes from HTML content (200 wpm)."""
+    text = re.sub(r"<[^>]+>", " ", html)
+    word_count = len(text.split())
+    return max(3, round(word_count / 200))
+
+
+def _count_words(html: str) -> int:
+    text = re.sub(r"<[^>]+>", " ", html)
+    return len(text.split())
+
+
+# ── Claude prompt ──────────────────────────────────────────────────────────
+
+SYSTEM_PROMPT = """\
+You are an expert career coach and SEO content writer specialising in the \
+Indian job market.  You write in-depth, actionable blog posts targeting \
+Indian job seekers (freshers and experienced professionals).
+
+Your posts MUST:
+- Be at least 1 500 words of readable prose (excluding HTML tags)
+- Use clean, semantic HTML (h2, h3, p, ul/ol, strong, blockquote only — NO \
+  inline styles, NO divs)
+- Follow the "blog-content" CSS class conventions used on the site (headings \
+  with clear hierarchy, a lead paragraph for the opening)
+- Include specific, real-world Indian examples (TCS, Infosys, Wipro, \
+  Cognizant, Flipkart, etc.)
+- Weave the primary keyword and LSI variants naturally into the text
+- Add 1–2 internal CTAs linking to """ + SITE_URL + """/builder
+  (anchor text like "build your free ATS resume" — no bare URLs)
+- Return ONLY valid JSON — no markdown fences, no commentary
+"""
+
+USER_PROMPT_TEMPLATE = """\
+Write a comprehensive blog post targeting the keyword: "{keyword}"
+
+Category hint: {category}
+LSI / related keywords to weave in: {lsi}
+
+Return this exact JSON shape:
+{{
+  "title":            "<60 chars, includes primary keyword>",
+  "slug":             "<url-slug-derived-from-title>",
+  "excerpt":          "<155-160 chars, includes keyword, ends with a hook>",
+  "meta_description": "<150-160 chars for Google snippet>",
+  "tags":             ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "lsi_keywords":     ["kw1", "kw2", "kw3"],
+  "content":          "<full HTML article — at least 1500 words of visible text>"
+}}
+
+HTML structure rules for "content":
+1. Open with <p class=\\"lead\\">…</p> (one punchy sentence)
+2. Use <h2> for major sections, <h3> for sub-sections
+3. Use <ul> or <ol> for lists
+4. Bold key terms with <strong>
+5. Add exactly one internal CTA as:
+   <p class=\\"cta-inline\\"><a href=\\"{site}/builder\\">…anchor text…</a></p>
+6. Close with an <h2>Conclusion</h2> section
+7. NO inline styles, NO <div>, NO <img>
+""".format(
+    keyword="{keyword}",
+    category="{category}",
+    lsi="{lsi}",
+    site=SITE_URL,
+)
+
+
+# ── Service class ──────────────────────────────────────────────────────────
+
+class BlogGeneratorService:
+    """
+    Generates SEO blog posts via Claude and persists them to PostgreSQL.
+
+    Usage:
+        svc = BlogGeneratorService()
+        report = svc.run_daily_generation(db, count=3)
+    """
+
+    def __init__(self) -> None:
+        self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        self.model  = "claude-sonnet-4-6"   # latest Claude 4.6 Sonnet
+        self.max_tokens = 8000
+
+    # ── Internal Claude call ───────────────────────────────────────────────
+
+    @retry(
+        retry=retry_if_exception_type((APITimeoutError, RateLimitError)),
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=2, min=5, max=30),
+    )
+    def _call_claude(self, keyword: str, category: str, lsi: list[str]) -> dict:
+        """Call Claude and return the parsed JSON blog dict."""
+        user_prompt = USER_PROMPT_TEMPLATE.format(
+            keyword=keyword,
+            category=category,
+            lsi=", ".join(lsi) if lsi else keyword,
+        )
+
+        t0 = time.time()
+        resp = self.client.messages.create(
+            model=self.model,
+            max_tokens=self.max_tokens,
+            system=SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": user_prompt}],
+        )
+        elapsed = time.time() - t0
+        logger.info(f"Claude blog generation for '{keyword}' took {elapsed:.1f}s")
+
+        raw = resp.content[0].text.strip()
+
+        # Strip accidental markdown fences
+        if raw.startswith("```"):
+            raw = re.sub(r"^```[a-z]*\n?", "", raw)
+            raw = raw.rstrip("`").strip()
+
+        return json.loads(raw)
+
+    # ── Generate one post ──────────────────────────────────────────────────
+
+    def generate_post(self, kw: BlogKeyword, db: Session) -> BlogPost:
+        """
+        Generate a single blog post from a BlogKeyword row.
+
+        Raises ValueError if the slug already exists.
+        Raises on Claude/network errors (caller handles and logs).
+        """
+        category = (
+            kw.category
+            if kw.category in VALID_CATEGORIES
+            else _infer_category(kw.keyword, kw.category)
+        )
+        lsi: list[str] = []  # could be extended later
+
+        data = self._call_claude(kw.keyword, category, lsi)
+
+        # Ensure slug is unique — append date suffix if needed
+        base_slug = _slugify(data.get("slug") or _slugify(data["title"]))
+        slug = base_slug
+        attempt = 0
+        while db.query(BlogPost).filter(BlogPost.slug == slug).first():
+            attempt += 1
+            slug = f"{base_slug}-{datetime.utcnow().strftime('%Y%m%d')}"
+            if attempt > 1:
+                slug = f"{base_slug}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+
+        content: str = data["content"]
+        tags: list[str] = data.get("tags", [kw.keyword])[:8]
+        lsi_kw: list[str] = data.get("lsi_keywords", [])[:10]
+
+        post = BlogPost(
+            slug             = slug,
+            title            = data["title"][:255],
+            excerpt          = data.get("excerpt", "")[:500],
+            content          = content,
+            category         = category,
+            tags             = tags,
+            author           = AUTHOR,
+            read_time        = _estimate_read_time(content),
+            featured         = False,
+            status           = "published",
+            meta_description = data.get("meta_description", data.get("excerpt", ""))[:160],
+            primary_keyword  = kw.keyword,
+            lsi_keywords     = lsi_kw,
+            word_count       = _count_words(content),
+            indexnow_submitted = False,
+            google_submitted   = False,
+            published_at     = datetime.utcnow(),
+        )
+
+        db.add(post)
+        db.flush()  # get id without committing
+
+        # Mark keyword used
+        kw.status  = "used"
+        kw.used_at = datetime.utcnow()
+        kw.blog_id = post.id
+
+        logger.info(
+            f"Generated post '{post.title}' (slug={post.slug}, "
+            f"words={post.word_count}, read={post.read_time}min)"
+        )
+        return post
+
+    # ── Daily run ─────────────────────────────────────────────────────────
+
+    def run_daily_generation(
+        self,
+        db: Session,
+        count: int = 3,
+    ) -> BlogDailyReport:
+        """
+        Main entry point called by the cron endpoint.
+
+        Picks `count` highest-intent pending keywords, generates a post for
+        each, commits, and returns a BlogDailyReport.
+        """
+        today = datetime.utcnow().date()
+
+        # ── Upsert daily report ──────────────────────────────────────────
+        report = db.query(BlogDailyReport).filter(
+            BlogDailyReport.report_date == today
+        ).first()
+        if not report:
+            report = BlogDailyReport(
+                report_date          = today,
+                blogs_generated      = 0,
+                blogs_published      = 0,
+                indexnow_submitted   = 0,
+                indexnow_success     = 0,
+                google_submitted     = 0,
+                google_success       = 0,
+                sitemap_updated      = False,
+                keywords_used        = [],
+                total_blogs_published= db.query(BlogPost).filter(
+                    BlogPost.status == "published"
+                ).count(),
+                errors               = [],
+            )
+            db.add(report)
+            db.flush()
+
+        # ── Pick keywords ────────────────────────────────────────────────
+        keywords = (
+            db.query(BlogKeyword)
+            .filter(BlogKeyword.status == "pending")
+            .order_by(BlogKeyword.buyer_intent.desc())
+            .limit(count)
+            .all()
+        )
+
+        if not keywords:
+            logger.warning("No pending keywords found — skipping generation")
+            db.commit()
+            return report
+
+        logger.info(f"Generating {len(keywords)} blog posts: "
+                    f"{[kw.keyword for kw in keywords]}")
+
+        errors: list[str] = list(report.errors or [])
+        keywords_used: list[str] = list(report.keywords_used or [])
+
+        for kw in keywords:
+            try:
+                self.generate_post(kw, db)
+                report.blogs_generated += 1
+                report.blogs_published += 1
+                keywords_used.append(kw.keyword)
+            except json.JSONDecodeError as exc:
+                msg = f"JSON parse error for '{kw.keyword}': {exc}"
+                logger.error(msg)
+                errors.append(msg)
+                kw.status = "skipped"
+            except (APIError, APITimeoutError, RateLimitError) as exc:
+                msg = f"Claude API error for '{kw.keyword}': {exc}"
+                logger.error(msg)
+                errors.append(msg)
+                # Don't mark as skipped — retry next run
+            except Exception as exc:
+                msg = f"Unexpected error for '{kw.keyword}': {exc}"
+                logger.error(msg)
+                errors.append(msg)
+                kw.status = "skipped"
+
+        report.keywords_used        = keywords_used
+        report.errors               = errors
+        report.total_blogs_published = db.query(BlogPost).filter(
+            BlogPost.status == "published"
+        ).count()
+
+        db.commit()
+        logger.info(
+            f"Daily generation complete — "
+            f"published={report.blogs_published}, errors={len(errors)}"
+        )
+        return report
+
+
+# ── Singleton ──────────────────────────────────────────────────────────────
+
+blog_generator = BlogGeneratorService()

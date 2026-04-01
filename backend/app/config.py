@@ -111,6 +111,11 @@ class Settings(BaseSettings):
     ADZUNA_APP_ID: Optional[str] = None
     ADZUNA_APP_KEY: Optional[str] = None
 
+    # Blog Automation
+    BLOG_POSTS_PER_RUN: int = 3            # how many posts the cron generates per run
+    INDEXNOW_API_KEY: Optional[str] = None  # get from Bing Webmaster Tools
+    SITE_URL: str = "https://resumebuilder.pulsestack.in"
+
     # Legacy SMTP Configuration (Backward compatibility)
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
