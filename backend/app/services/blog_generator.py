@@ -374,39 +374,18 @@ class BlogGeneratorService:
 
         errors: list[str] = list(report.errors or [])
         keywords_used: list[str] = list(report.keywords_used or [])
+        generated: list[BlogPost] = []   # posts successfully written to DB
 
+        # ── Phase 1: generate all posts and commit ────────────────────────
+        # Must commit BEFORE pinging search engines so the posts are visible
+        # to Googlebot / Bingbot when they crawl immediately after the ping.
         for kw in keywords:
             try:
                 post = self.generate_post(kw, db)
                 report.blogs_generated += 1
                 report.blogs_published += 1
                 keywords_used.append(kw.keyword)
-
-                # ── IndexNow: ping Bing immediately after publish ─────────
-                now = datetime.utcnow()
-                ok, msg = indexnow_service.submit_blog_post(post.slug)
-                if ok:
-                    post.indexnow_submitted    = True
-                    post.indexnow_submitted_at = now
-                    report.indexnow_submitted += 1
-                    report.indexnow_success   += 1
-                    logger.info(f"IndexNow: {msg}")
-                else:
-                    report.indexnow_submitted += 1
-                    errors.append(f"IndexNow failed for {post.slug}: {msg}")
-
-                # ── Google: notify Search Console Indexing API ────────────
-                g_ok, g_msg = google_indexing_service.submit_blog_post(post.slug)
-                if g_ok:
-                    post.google_submitted    = True
-                    post.google_submitted_at = now
-                    report.google_submitted += 1
-                    report.google_success   += 1
-                    logger.info(f"Google Indexing: {g_msg}")
-                else:
-                    report.google_submitted += 1
-                    errors.append(f"Google Indexing failed for {post.slug}: {g_msg}")
-
+                generated.append(post)
             except json.JSONDecodeError as exc:
                 msg = f"JSON parse error for '{kw.keyword}': {exc}"
                 logger.error(msg)
@@ -423,12 +402,43 @@ class BlogGeneratorService:
                 errors.append(msg)
                 kw.status = "skipped"
 
-        report.keywords_used        = keywords_used
-        report.errors               = errors
+        report.keywords_used         = keywords_used
+        report.errors                = errors
         report.total_blogs_published = db.query(BlogPost).filter(
             BlogPost.status == "published"
         ).count()
 
+        # Commit everything — posts are now live in the DB
+        db.commit()
+        logger.info(f"Committed {len(generated)} post(s) to DB")
+
+        # ── Phase 2: ping search engines now that posts are committed ─────
+        now = datetime.utcnow()
+        for post in generated:
+            ok, msg = indexnow_service.submit_blog_post(post.slug)
+            if ok:
+                post.indexnow_submitted    = True
+                post.indexnow_submitted_at = now
+                report.indexnow_submitted += 1
+                report.indexnow_success   += 1
+                logger.info(f"IndexNow: {msg}")
+            else:
+                report.indexnow_submitted += 1
+                errors.append(f"IndexNow failed for {post.slug}: {msg}")
+
+            g_ok, g_msg = google_indexing_service.submit_blog_post(post.slug)
+            if g_ok:
+                post.google_submitted    = True
+                post.google_submitted_at = now
+                report.google_submitted += 1
+                report.google_success   += 1
+                logger.info(f"Google Indexing: {g_msg}")
+            else:
+                report.google_submitted += 1
+                errors.append(f"Google Indexing failed for {post.slug}: {g_msg}")
+
+        # Persist submission flags
+        report.errors = errors
         db.commit()
         logger.info(
             f"Daily generation complete — "
