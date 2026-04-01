@@ -116,6 +116,10 @@ class Settings(BaseSettings):
     INDEXNOW_API_KEY: Optional[str] = None  # get from Bing Webmaster Tools
     SITE_URL: str = "https://resumebuilder.pulsestack.in"
 
+    # Google Search Console Indexing API
+    # Paste the full service account JSON as a single-line string in Railway env vars
+    GOOGLE_INDEXING_SERVICE_ACCOUNT_JSON: Optional[str] = None
+
     # Legacy SMTP Configuration (Backward compatibility)
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587

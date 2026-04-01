@@ -25,6 +25,7 @@ from tenacity import (
 from app.config import get_settings
 from app.models.blog import BlogDailyReport, BlogKeyword, BlogPost
 from app.services.indexnow_service import indexnow_service
+from app.services.google_indexing_service import google_indexing_service
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -332,16 +333,29 @@ class BlogGeneratorService:
                 keywords_used.append(kw.keyword)
 
                 # ── IndexNow: ping Bing immediately after publish ─────────
+                now = datetime.utcnow()
                 ok, msg = indexnow_service.submit_blog_post(post.slug)
                 if ok:
                     post.indexnow_submitted    = True
-                    post.indexnow_submitted_at = datetime.utcnow()
+                    post.indexnow_submitted_at = now
                     report.indexnow_submitted += 1
                     report.indexnow_success   += 1
                     logger.info(f"IndexNow: {msg}")
                 else:
                     report.indexnow_submitted += 1
                     errors.append(f"IndexNow failed for {post.slug}: {msg}")
+
+                # ── Google: notify Search Console Indexing API ────────────
+                g_ok, g_msg = google_indexing_service.submit_blog_post(post.slug)
+                if g_ok:
+                    post.google_submitted    = True
+                    post.google_submitted_at = now
+                    report.google_submitted += 1
+                    report.google_success   += 1
+                    logger.info(f"Google Indexing: {g_msg}")
+                else:
+                    report.google_submitted += 1
+                    errors.append(f"Google Indexing failed for {post.slug}: {g_msg}")
 
             except json.JSONDecodeError as exc:
                 msg = f"JSON parse error for '{kw.keyword}': {exc}"
