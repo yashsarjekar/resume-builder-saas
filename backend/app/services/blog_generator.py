@@ -24,6 +24,7 @@ from tenacity import (
 
 from app.config import get_settings
 from app.models.blog import BlogDailyReport, BlogKeyword, BlogPost
+from app.services.indexnow_service import indexnow_service
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -325,10 +326,23 @@ class BlogGeneratorService:
 
         for kw in keywords:
             try:
-                self.generate_post(kw, db)
+                post = self.generate_post(kw, db)
                 report.blogs_generated += 1
                 report.blogs_published += 1
                 keywords_used.append(kw.keyword)
+
+                # ── IndexNow: ping Bing immediately after publish ─────────
+                ok, msg = indexnow_service.submit_blog_post(post.slug)
+                if ok:
+                    post.indexnow_submitted    = True
+                    post.indexnow_submitted_at = datetime.utcnow()
+                    report.indexnow_submitted += 1
+                    report.indexnow_success   += 1
+                    logger.info(f"IndexNow: {msg}")
+                else:
+                    report.indexnow_submitted += 1
+                    errors.append(f"IndexNow failed for {post.slug}: {msg}")
+
             except json.JSONDecodeError as exc:
                 msg = f"JSON parse error for '{kw.keyword}': {exc}"
                 logger.error(msg)
