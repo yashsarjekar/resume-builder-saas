@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
 import { getAllJobSlugs, getAllCompanySlugs } from '@/data/jobs';
-import { getAllBlogSlugs, getBlogPost } from '@/data/blog';
+import { fetchSitemapData } from '@/lib/blog-api';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://resumebuilder.pulsestack.in';
 
   // Static pages - homepage has trailing slash (how browsers/Google crawl it)
@@ -100,17 +100,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  // Blog posts - use actual publishedAt dates
-  const blogSlugs = getAllBlogSlugs();
-  const blogPages: MetadataRoute.Sitemap = blogSlugs.map((slug) => {
-    const post = getBlogPost(slug);
-    return {
-      url: `${baseUrl}/blog/${slug}`,
-      lastModified: post ? new Date(post.publishedAt) : new Date('2026-02-20'),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    };
-  });
+  // Blog posts - use actual publishedAt dates from API
+  const sitemapData = await fetchSitemapData();
+  const blogPages: MetadataRoute.Sitemap = sitemapData.map((entry) => ({
+    url: `${baseUrl}/blog/${entry.slug}`,
+    lastModified: entry.updated_at
+      ? new Date(entry.updated_at)
+      : entry.published_at
+        ? new Date(entry.published_at)
+        : new Date('2026-02-20'),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
 
   return [...staticPages, ...jobPages, ...companyPages, ...blogPages];
 }

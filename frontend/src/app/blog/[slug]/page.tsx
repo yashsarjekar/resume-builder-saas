@@ -1,21 +1,24 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getAllBlogSlugs, getBlogPost, getRelatedPosts } from '@/data/blog';
+import { fetchAllSlugs, fetchBlogPost, fetchRelatedPosts } from '@/lib/blog-api';
 import ReadingProgress from '@/components/blog/ReadingProgress';
+
+// ISR — revalidate every hour so updated posts appear automatically
+export const revalidate = 3600;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  const slugs = getAllBlogSlugs();
+  const slugs = await fetchAllSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await fetchBlogPost(slug);
   if (!post) return {};
 
   return {
@@ -97,10 +100,10 @@ function injectHeadingIds(html: string): string {
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await fetchBlogPost(slug);
   if (!post) notFound();
 
-  const relatedPosts = getRelatedPosts(slug, 3);
+  const relatedPosts = await fetchRelatedPosts(slug, post.category);
   const headings = extractHeadings(post.content);
   const processedContent = injectHeadingIds(post.content);
 
