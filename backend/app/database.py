@@ -70,7 +70,7 @@ def init_db() -> None:
     This should be called once during application startup
     or handled by Alembic migrations in production.
     """
-    from app.models import user, resume, payment, coupon, drip_email_log, blog  # Import all models
+    from app.models import user, resume, payment, coupon, drip_email_log, blog, interview  # Import all models
     Base.metadata.create_all(bind=engine)
 
 
