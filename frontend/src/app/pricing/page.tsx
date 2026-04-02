@@ -84,6 +84,7 @@ function PricingContent() {
         'AI Resume Optimization',
         'Cover Letter Generator',
         'Keyword Extraction',
+        'AI Mock Interview (3/day)',
         '4 Premium Templates',
         'Access & apply first to 100,000+ remote jobs from 10,000+ top companies',
         'Email Support'
@@ -94,6 +95,7 @@ function PricingContent() {
         'AI Resume Optimization',
         'Cover Letter Generator',
         'Keyword Extraction',
+        'AI Mock Interview (3/day)',
         '4 Premium Templates',
         'Access & apply first to 100,000+ remote jobs from 10,000+ top companies',
         'Email Support'
@@ -113,6 +115,7 @@ function PricingContent() {
         'Cover Letter Generator',
         'LinkedIn Profile Optimizer',
         'Keyword Extraction',
+        'AI Mock Interview (10/day)',
         '4 Premium Templates',
         'Access & apply first to 100,000+ remote jobs from 10,000+ top companies',
         'Priority Email Support',

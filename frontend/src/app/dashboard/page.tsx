@@ -267,7 +267,19 @@ export default function DashboardPage() {
         {/* AI Tools Section */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">AI Tools</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link
+              href="/tools/interview"
+              className="p-4 border border-purple-200 rounded-lg hover:border-purple-500 hover:shadow-md transition bg-gradient-to-br from-purple-50 to-indigo-50"
+            >
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+                <span className="text-xl">🎤</span>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">AI Mock Interview</h3>
+              <p className="text-sm text-gray-600">Practice with AI-scored interview questions</p>
+              <span className="inline-block mt-2 text-xs font-medium text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">Starter &amp; Pro</span>
+            </Link>
+
             <Link
               href="/tools/keywords"
               className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition"
