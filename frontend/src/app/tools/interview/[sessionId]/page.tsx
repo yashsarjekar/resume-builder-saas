@@ -183,7 +183,7 @@ export default function InterviewRoomPage() {
 
     rec.onresult = (e: any) => {
       const transcript = Array.from(e.results)
-        .map((r) => r[0].transcript)
+        .map((r: any) => r[0].transcript)
         .join(" ");
       setAnswer((prev) => {
         const base = prev.replace(/\s*\[voice input\].*$/i, "");
