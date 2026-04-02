@@ -65,6 +65,18 @@ from .blog import (
     BlogStatsResponse,
 )
 
+from .interview import (
+    StartInterviewRequest,
+    StartInterviewResponse,
+    SubmitAnswerRequest,
+    AnswerFeedbackResponse,
+    InterviewReportResponse,
+    SessionListResponse,
+    SessionSummary,
+    QuestionOut,
+    AnswerOut,
+)
+
 __all__ = [
     # User schemas
     "UserCreate",
@@ -117,4 +129,14 @@ __all__ = [
     "BlogKeywordResponse",
     "BlogDailyReportResponse",
     "BlogStatsResponse",
+    # Interview schemas
+    "StartInterviewRequest",
+    "StartInterviewResponse",
+    "SubmitAnswerRequest",
+    "AnswerFeedbackResponse",
+    "InterviewReportResponse",
+    "SessionListResponse",
+    "SessionSummary",
+    "QuestionOut",
+    "AnswerOut",
 ]
