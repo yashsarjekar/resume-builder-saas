@@ -140,7 +140,7 @@ export default function InterviewRoomPage() {
   // Voice recording
   const [isRecording, setIsRecording]   = useState(false);
   const [voiceError, setVoiceError]     = useState("");
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
   const answerRef = useRef<HTMLTextAreaElement>(null);
 
   // ── Load session from localStorage (set by the setup page) ────────────────
@@ -176,12 +176,12 @@ export default function InterviewRoomPage() {
       return;
     }
 
-    const rec: SpeechRecognition = new SpeechRecognitionAPI();
+    const rec: any = new SpeechRecognitionAPI();
     rec.continuous   = true;
     rec.interimResults = true;
     rec.lang         = "en-IN";
 
-    rec.onresult = (e: SpeechRecognitionEvent) => {
+    rec.onresult = (e: any) => {
       const transcript = Array.from(e.results)
         .map((r) => r[0].transcript)
         .join(" ");
