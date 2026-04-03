@@ -150,7 +150,7 @@ export default function InterviewRoomPage() {
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/interview/${sessionId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/interview/${sessionId}/state`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 

@@ -286,7 +286,7 @@ def submit_answer(
 
 # ── GET /api/interview/{session_id} ────────────────────────────────────────
 
-@router.get("/{session_id}", response_model=SessionStateResponse)
+@router.get("/{session_id}/state", response_model=SessionStateResponse)
 def get_session_state(
     session_id: int,
     db:         Session = Depends(get_db),
