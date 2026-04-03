@@ -141,7 +141,8 @@ export default function InterviewRoomPage() {
   const [isRecording, setIsRecording]   = useState(false);
   const [voiceError, setVoiceError]     = useState("");
   const recognitionRef = useRef<any>(null);
-  const answerRef = useRef<HTMLTextAreaElement>(null);
+  const answerRef      = useRef<HTMLTextAreaElement>(null);
+  const voiceBaseRef   = useRef<string>("");  // text captured before recording started
 
   // ── Load session from localStorage (set by the setup page) ────────────────
   useEffect(() => {
@@ -176,19 +177,27 @@ export default function InterviewRoomPage() {
       return;
     }
 
+    // Snapshot what's already typed so we can append voice on top of it
+    voiceBaseRef.current = answer.trimEnd();
+
     const rec: any = new SpeechRecognitionAPI();
-    rec.continuous   = true;
+    rec.continuous    = true;
     rec.interimResults = true;
-    rec.lang         = "en-IN";
+    rec.lang          = "en-IN";
 
     rec.onresult = (e: any) => {
-      const transcript = Array.from(e.results)
-        .map((r: any) => r[0].transcript)
-        .join(" ");
-      setAnswer((prev) => {
-        const base = prev.replace(/\s*\[voice input\].*$/i, "");
-        return base + " " + transcript;
-      });
+      // Rebuild only from the results delivered in THIS event batch
+      // to avoid re-joining already-committed results
+      let interim = "";
+      let final   = "";
+      for (let i = 0; i < e.results.length; i++) {
+        const text = e.results[i][0].transcript;
+        if (e.results[i].isFinal) final += text + " ";
+        else interim += text;
+      }
+      setAnswer(voiceBaseRef.current + (voiceBaseRef.current ? " " : "") + final + interim);
+      // Advance base when a chunk is finalised
+      if (final) voiceBaseRef.current = (voiceBaseRef.current + (voiceBaseRef.current ? " " : "") + final).trimEnd();
     };
 
     rec.onerror = () => {
