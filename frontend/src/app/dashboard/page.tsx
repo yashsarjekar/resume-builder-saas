@@ -29,43 +29,29 @@ export default function DashboardPage() {
     };
     initAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount, don't depend on checkAuth
+  }, []);
 
   useEffect(() => {
-    if (!authChecked) return; // Wait for auth check to complete
-
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-
+    if (!authChecked) return;
+    if (!isAuthenticated) { router.push('/login'); return; }
     fetchResumes();
   }, [authChecked, isAuthenticated, router]);
 
   const fetchResumes = async () => {
     try {
       const response = await api.get('/api/resume');
-      // Ensure we always set an array
       if (Array.isArray(response.data)) {
         setResumes(response.data);
       } else if (response.data && Array.isArray(response.data.resumes)) {
         setResumes(response.data.resumes);
       } else {
-        console.warn('[Dashboard] Unexpected resume data format:', response.data);
         setResumes([]);
       }
     } catch (error: any) {
-      console.error('Failed to fetch resumes:', error);
-      setResumes([]); // Set empty array on error
-      // Only redirect on 401 (truly unauthorized)
-      // 403 might be rate limiting or temporary issue - don't clear token
+      setResumes([]);
       if (error.response?.status === 401) {
-        console.error('[Dashboard] 401 error, clearing auth');
         localStorage.removeItem('token');
         router.push('/login');
-      } else if (error.response?.status === 403) {
-        console.warn('[Dashboard] 403 error (rate limit?), keeping user logged in');
-        // Keep user logged in, just show empty state
       }
     } finally {
       setLoading(false);
@@ -74,7 +60,6 @@ export default function DashboardPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this resume?')) return;
-
     try {
       await api.delete(`/api/resume/${id}`);
       setResumes(resumes.filter(r => r.id !== id));
@@ -86,36 +71,17 @@ export default function DashboardPage() {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Validate file type
     const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
-    if (!allowedTypes.includes(file.type)) {
-      alert('Please upload a PDF or Word document');
-      return;
-    }
-
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      alert('File size must be less than 10MB');
-      return;
-    }
-
+    if (!allowedTypes.includes(file.type)) { alert('Please upload a PDF or Word document'); return; }
+    if (file.size > 10 * 1024 * 1024) { alert('File size must be less than 10MB'); return; }
     setUploading(true);
     try {
       const formData = new FormData();
       formData.append('file', file);
-
-      const response = await api.post('/api/resume/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-
-      console.log('Resume uploaded successfully:', response.data);
+      const response = await api.post('/api/resume/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
       alert('Resume uploaded successfully! Redirecting to builder...');
-
-      // Redirect to builder with new resume
       router.push(`/builder?id=${response.data.id}`);
     } catch (error: any) {
-      console.error('Failed to upload resume:', error);
       if (error.response?.status === 429) {
         alert(error.response.data.detail || 'Resume limit reached for your plan');
       } else {
@@ -123,7 +89,6 @@ export default function DashboardPage() {
       }
     } finally {
       setUploading(false);
-      // Reset file input
       e.target.value = '';
     }
   };
@@ -132,321 +97,291 @@ export default function DashboardPage() {
     try {
       const response = await api.get('/api/payment/history');
       setPaymentHistory(response.data.payments || []);
-    } catch (error) {
-      console.error('Failed to fetch payment history:', error);
-      setPaymentHistory([]);
-    }
+    } catch { setPaymentHistory([]); }
   };
 
   const fetchResumeStats = async () => {
     try {
       const response = await api.get('/api/resume/stats/summary');
       setResumeStats(response.data);
-    } catch (error) {
-      console.error('Failed to fetch resume stats:', error);
-      setResumeStats(null);
-    }
+    } catch { setResumeStats(null); }
   };
 
-  // Show loading state while checking authentication
   if (!authChecked || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#050816] flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white/50">Loading dashboard…</p>
         </div>
       </div>
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   const getResumeLimit = () => {
-    const isInternational = user.region === 'INTL';
-    const billingDuration = user.billing_duration || 1;
-
-    let baseLimit: number;
-    switch (user.subscription_type) {
-      case 'pro': return 'Unlimited';
-      case 'starter':
-        baseLimit = isInternational ? 15 : 5;
-        break;
-      default:
-        baseLimit = isInternational ? 5 : 1;
-    }
-    // Scale limit by billing duration (quarterly = 3x, half-yearly = 6x, yearly = 12x)
-    return baseLimit * billingDuration;
+    const isIntl = user.region === 'INTL';
+    const dur = user.billing_duration || 1;
+    if (user.subscription_type === 'pro') return 'Unlimited';
+    const base = user.subscription_type === 'starter' ? (isIntl ? 15 : 5) : (isIntl ? 5 : 1);
+    return base * dur;
   };
 
   const getATSLimit = () => {
-    const isInternational = user.region === 'INTL';
-    const billingDuration = user.billing_duration || 1;
-
-    let baseLimit: number;
-    switch (user.subscription_type) {
-      case 'pro': return 'Unlimited';
-      case 'starter':
-        baseLimit = isInternational ? 15 : 10;
-        break;
-      default:
-        baseLimit = isInternational ? 5 : 2;
-    }
-    // Scale limit by billing duration (quarterly = 3x, half-yearly = 6x, yearly = 12x)
-    return baseLimit * billingDuration;
+    const isIntl = user.region === 'INTL';
+    const dur = user.billing_duration || 1;
+    if (user.subscription_type === 'pro') return 'Unlimited';
+    const base = user.subscription_type === 'starter' ? (isIntl ? 15 : 10) : (isIntl ? 5 : 2);
+    return base * dur;
   };
 
+  const resumeLimit  = getResumeLimit();
+  const atsLimit     = getATSLimit();
+  const resumePct    = typeof resumeLimit  === 'number' ? Math.min((user.resume_count      / resumeLimit)  * 100, 100) : 100;
+  const atsPct       = typeof atsLimit     === 'number' ? Math.min((user.ats_analysis_count / atsLimit)    * 100, 100) : 100;
+
+  const planGradient =
+    user.subscription_type === 'pro'     ? 'from-amber-500 to-orange-500' :
+    user.subscription_type === 'starter' ? 'from-indigo-500 to-purple-500' :
+                                           'from-gray-500 to-gray-600';
+
+  const AI_TOOLS = [
+    { href: '/tools/interview',    emoji: '🎤', label: 'AI Mock Interview',     desc: 'Practice with AI-scored questions', color: '#a855f7', bg: 'rgba(168,85,247,0.12)', border: 'rgba(168,85,247,0.25)', badge: 'Starter & Pro' },
+    { href: '/tools/keywords',     emoji: '🔑', label: 'Keyword Extractor',      desc: 'Pull exact skills from any JD',     color: '#22c55e', bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.25)'  },
+    { href: '/tools/cover-letter', emoji: '📝', label: 'Cover Letter Generator', desc: 'Tailored letters in 30 seconds',    color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)' },
+    { href: '/tools/linkedin',     emoji: '💼', label: 'LinkedIn Optimizer',     desc: 'Attract 3× more recruiter views',  color: '#3b82f6', bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.25)' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Upgrade popup for free users */}
+    <div className="min-h-screen bg-[#050816] text-white">
+      <style>{STYLES}</style>
+
       {user.subscription_type === 'free' && (
-        <UpgradeModal
-          isOpen={showUpgradeModal}
-          onClose={() => setShowUpgradeModal(false)}
-          region={user.region}
-        />
+        <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} region={user.region} />
       )}
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-2">Welcome back, {user.name}!</p>
+      {/* Ambient background orbs */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #7c3aed, transparent 70%)' }} />
+        <div className="absolute top-1/2 -right-40 w-80 h-80 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #2563eb, transparent 70%)' }} />
+        <div className="absolute -bottom-40 left-1/3 w-96 h-96 rounded-full opacity-10" style={{ background: 'radial-gradient(circle, #0891b2, transparent 70%)' }} />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-10">
+
+        {/* ── Header ──────────────────────────────────────────────────────── */}
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <p className="text-white/40 text-sm mb-1">Welcome back 👋</p>
+            <h1 className="text-3xl font-black tracking-tight">
+              {user.name?.split(' ')[0] ?? 'Dashboard'}
+              <span className="text-white/30">'s Workspace</span>
+            </h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-gradient-to-r ${planGradient} text-white shadow-lg`}>
+              {user.subscription_type}
+            </span>
+            {user.subscription_type === 'free' && (
+              <Link href="/pricing"
+                className="px-4 py-1.5 rounded-full text-xs font-semibold border border-purple-500/40 text-purple-300 hover:bg-purple-500/10 transition"
+              >
+                Upgrade ↗
+              </Link>
+            )}
+          </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* ── Stats row ───────────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-600">Subscription</h3>
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getSubscriptionColor(user.subscription_type)}`}>
-                {user.subscription_type.toUpperCase()}
-              </span>
+          {/* Subscription card */}
+          <div className="stat-card glass-card rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                style={{ background: 'rgba(168,85,247,0.15)' }}>🏆</div>
+              <div>
+                <p className="text-xs text-white/40 uppercase tracking-wider">Plan</p>
+                <p className="font-bold capitalize text-white">{user.subscription_type}</p>
+              </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{user.subscription_type}</p>
+            {user.subscription_expiry && (
+              <p className="text-xs text-white/30">Expires {formatDate(user.subscription_expiry)}</p>
+            )}
             {user.subscription_type === 'free' && (
-              <Link href="/pricing" className="text-sm text-blue-600 hover:text-blue-500 mt-2 inline-block">
-                Upgrade now →
+              <Link href="/pricing"
+                className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-purple-400 hover:text-purple-300 transition"
+              >
+                Upgrade for more features →
               </Link>
             )}
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-sm font-medium text-gray-600 mb-2">Resumes Created</h3>
-            <p className="text-2xl font-bold text-gray-900">
-              {user.resume_count} / {getResumeLimit()}
-            </p>
-            <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full"
-                style={{
-                  width: `${typeof getResumeLimit() === 'number' ? Math.min((user.resume_count / (getResumeLimit() as number)) * 100, 100) : 0}%`
-                }}
-              />
+          {/* Resumes card */}
+          <div className="stat-card glass-card rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                style={{ background: 'rgba(99,102,241,0.15)' }}>📄</div>
+              <div>
+                <p className="text-xs text-white/40 uppercase tracking-wider">Resumes</p>
+                <p className="font-bold text-white">{user.resume_count} <span className="text-white/40 font-normal text-sm">/ {resumeLimit}</span></p>
+              </div>
             </div>
+            <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+              <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000"
+                style={{ width: `${resumePct}%` }} />
+            </div>
+            <p className="text-xs text-white/30 mt-1.5">{Math.round(resumePct)}% used</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-sm font-medium text-gray-600 mb-2">ATS Analyses</h3>
-            <p className="text-2xl font-bold text-gray-900">
-              {user.ats_analysis_count} / {getATSLimit()}
-            </p>
-            <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-green-600 h-2 rounded-full"
-                style={{
-                  width: `${typeof getATSLimit() === 'number' ? Math.min((user.ats_analysis_count / (getATSLimit() as number)) * 100, 100) : 0}%`
-                }}
-              />
+          {/* ATS analyses card */}
+          <div className="stat-card glass-card rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                style={{ background: 'rgba(34,197,94,0.15)' }}>🎯</div>
+              <div>
+                <p className="text-xs text-white/40 uppercase tracking-wider">ATS Analyses</p>
+                <p className="font-bold text-white">{user.ats_analysis_count} <span className="text-white/40 font-normal text-sm">/ {atsLimit}</span></p>
+              </div>
             </div>
+            <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+              <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all duration-1000"
+                style={{ width: `${atsPct}%` }} />
+            </div>
+            <p className="text-xs text-white/30 mt-1.5">{Math.round(atsPct)}% used</p>
           </div>
         </div>
 
-        {/* AI Tools Section */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">AI Tools</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link
-              href="/tools/interview"
-              className="p-4 border border-purple-200 rounded-lg hover:border-purple-500 hover:shadow-md transition bg-gradient-to-br from-purple-50 to-indigo-50"
-            >
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
-                <span className="text-xl">🎤</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1">AI Mock Interview</h3>
-              <p className="text-sm text-gray-600">Practice with AI-scored interview questions</p>
-              <span className="inline-block mt-2 text-xs font-medium text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">Starter &amp; Pro</span>
-            </Link>
-
-            <Link
-              href="/tools/keywords"
-              className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition"
-            >
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1">Keyword Extractor</h3>
-              <p className="text-sm text-gray-600">Extract key skills from job postings</p>
-            </Link>
-
-            <Link
-              href="/tools/cover-letter"
-              className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition"
-            >
-              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1">Cover Letter Generator</h3>
-              <p className="text-sm text-gray-600">Create personalized cover letters</p>
-            </Link>
-
-            <Link
-              href="/tools/linkedin"
-              className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition"
-            >
-              <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1">LinkedIn Optimizer</h3>
-              <p className="text-sm text-gray-600">Optimize your LinkedIn profile</p>
-            </Link>
+        {/* ── AI Tools ────────────────────────────────────────────────────── */}
+        <div className="glass-card rounded-2xl p-6 mb-8">
+          <div className="flex items-center gap-2 mb-6">
+            <span className="text-lg">⚡</span>
+            <h2 className="text-lg font-bold text-white">AI Tools</h2>
+            <span className="ml-auto text-xs text-white/30">Click to open</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {AI_TOOLS.map((t) => (
+              <Link
+                key={t.href}
+                href={t.href}
+                className="tool-card group relative rounded-xl p-4 transition-all duration-300 overflow-hidden"
+                style={{ background: t.bg, border: `1px solid ${t.border}` }}
+              >
+                {/* Hover glow */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"
+                  style={{ background: `radial-gradient(circle at 50% 0%, ${t.color}20, transparent 60%)` }} />
+                <div className="relative">
+                  <div className="text-2xl mb-3">{t.emoji}</div>
+                  <h3 className="font-semibold text-white text-sm mb-1">{t.label}</h3>
+                  <p className="text-xs text-white/50 leading-relaxed">{t.desc}</p>
+                  {t.badge && (
+                    <span className="inline-block mt-2 text-xs font-medium px-2 py-0.5 rounded-full"
+                      style={{ color: t.color, background: `${t.color}20`, border: `1px solid ${t.color}30` }}>
+                      {t.badge}
+                    </span>
+                  )}
+                </div>
+                <div className="absolute top-3 right-3 text-white/20 group-hover:text-white/60 transition-colors text-xs">→</div>
+              </Link>
+            ))}
           </div>
         </div>
 
-        {/* Resume Statistics Section */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">Resume Analytics</h2>
-            <button
-              onClick={() => {
-                setShowStats(!showStats);
-                if (!showStats && !resumeStats) {
-                  fetchResumeStats();
-                }
-              }}
-              className="text-sm text-blue-600 hover:text-blue-700"
-            >
-              {showStats ? 'Hide' : 'Show'} Detailed Stats
-            </button>
-          </div>
+        {/* ── Resume Analytics (collapsible) ──────────────────────────────── */}
+        <div className="glass-card rounded-2xl p-6 mb-8">
+          <button
+            onClick={() => { setShowStats(!showStats); if (!showStats && !resumeStats) fetchResumeStats(); }}
+            className="w-full flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-lg">📊</span>
+              <h2 className="text-lg font-bold text-white">Resume Analytics</h2>
+            </div>
+            <span className={`text-white/40 text-sm transition-transform duration-300 ${showStats ? 'rotate-180' : ''}`}>▼</span>
+          </button>
 
-          {showStats && resumeStats && (
-            <div className="grid md:grid-cols-4 gap-4">
-              <div className="p-4 border border-gray-200 rounded-lg bg-blue-50">
-                <h3 className="text-sm font-medium text-gray-600 mb-1">Total Resumes</h3>
-                <p className="text-3xl font-bold text-blue-600">{resumeStats.total_resumes || 0}</p>
-              </div>
-
-              <div className="p-4 border border-gray-200 rounded-lg bg-green-50">
-                <h3 className="text-sm font-medium text-gray-600 mb-1">ATS Optimized</h3>
-                <p className="text-3xl font-bold text-green-600">{resumeStats.optimized_count || 0}</p>
-              </div>
-
-              <div className="p-4 border border-gray-200 rounded-lg bg-purple-50">
-                <h3 className="text-sm font-medium text-gray-600 mb-1">Avg ATS Score</h3>
-                <p className="text-3xl font-bold text-purple-600">
-                  {resumeStats.average_ats_score ? `${Math.round(resumeStats.average_ats_score)}%` : 'N/A'}
-                </p>
-              </div>
-
-              <div className="p-4 border border-gray-200 rounded-lg bg-yellow-50">
-                <h3 className="text-sm font-medium text-gray-600 mb-1">Templates Used</h3>
-                <p className="text-3xl font-bold text-yellow-600">
-                  {resumeStats.templates_used ? Object.keys(resumeStats.templates_used).length : 0}
-                </p>
-              </div>
-
-              {resumeStats.most_used_template && (
-                <div className="col-span-full p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <h3 className="text-sm font-medium text-gray-600 mb-1">Most Used Template</h3>
-                  <p className="text-lg font-semibold text-gray-900 capitalize">{resumeStats.most_used_template}</p>
+          {showStats && (
+            <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: 'Total Resumes',  value: resumeStats?.total_resumes   ?? 0,  color: '#6366f1', bg: 'rgba(99,102,241,0.1)'  },
+                { label: 'ATS Optimized',  value: resumeStats?.optimized_count ?? 0,  color: '#22c55e', bg: 'rgba(34,197,94,0.1)'   },
+                { label: 'Avg ATS Score',  value: resumeStats?.average_ats_score ? `${Math.round(resumeStats.average_ats_score)}%` : 'N/A', color: '#a855f7', bg: 'rgba(168,85,247,0.1)' },
+                { label: 'Templates Used', value: resumeStats?.templates_used ? Object.keys(resumeStats.templates_used).length : 0, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+              ].map((s) => (
+                <div key={s.label} className="rounded-xl p-4 text-center"
+                  style={{ background: s.bg, border: `1px solid ${s.color}25` }}>
+                  <p className="text-2xl font-black mb-1" style={{ color: s.color }}>{s.value}</p>
+                  <p className="text-xs text-white/40">{s.label}</p>
+                </div>
+              ))}
+              {resumeStats?.most_used_template && (
+                <div className="col-span-full rounded-xl p-4 flex items-center gap-3"
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <span className="text-white/40 text-sm">Most used template:</span>
+                  <span className="font-semibold text-white capitalize">{resumeStats.most_used_template}</span>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Payment History Section */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">Subscription & Payments</h2>
-            <button
-              onClick={() => {
-                setShowPaymentHistory(!showPaymentHistory);
-                if (!showPaymentHistory && paymentHistory.length === 0) {
-                  fetchPaymentHistory();
-                }
-              }}
-              className="text-sm text-blue-600 hover:text-blue-700"
-            >
-              {showPaymentHistory ? 'Hide' : 'Show'} Payment History
-            </button>
-          </div>
+        {/* ── Subscription & Payments ──────────────────────────────────────── */}
+        <div className="glass-card rounded-2xl p-6 mb-8">
+          <button
+            onClick={() => { setShowPaymentHistory(!showPaymentHistory); if (!showPaymentHistory && paymentHistory.length === 0) fetchPaymentHistory(); }}
+            className="w-full flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-lg">💳</span>
+              <h2 className="text-lg font-bold text-white">Subscription & Payments</h2>
+            </div>
+            <span className={`text-white/40 text-sm transition-transform duration-300 ${showPaymentHistory ? 'rotate-180' : ''}`}>▼</span>
+          </button>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-4">
-            <div className="p-4 border border-gray-200 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Current Plan</h3>
-              <p className="text-xl font-bold text-gray-900 capitalize">{user.subscription_type}</p>
+          <div className="mt-5 grid md:grid-cols-2 gap-3">
+            <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <p className="text-xs text-white/40 mb-1">Current Plan</p>
+              <p className="text-xl font-bold text-white capitalize">{user.subscription_type}</p>
               {user.subscription_expiry && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Expires: {formatDate(user.subscription_expiry)}
-                </p>
+                <p className="text-xs text-white/30 mt-1">Expires {formatDate(user.subscription_expiry)}</p>
               )}
             </div>
-
-            <div className="p-4 border border-gray-200 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">
-                Usage This {user.billing_duration === 1 ? 'Month' : user.billing_duration === 3 ? 'Quarter' : user.billing_duration === 6 ? 'Half-Year' : 'Year'}
-              </h3>
-              <div className="text-sm text-gray-700">
-                <p>Resumes: {user.resume_count} / {getResumeLimit()}</p>
-                <p>ATS Analyses: {user.ats_analysis_count} / {getATSLimit()}</p>
-              </div>
+            <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <p className="text-xs text-white/40 mb-1">
+                Usage this {user.billing_duration === 1 ? 'Month' : user.billing_duration === 3 ? 'Quarter' : user.billing_duration === 6 ? 'Half-Year' : 'Year'}
+              </p>
+              <p className="text-sm text-white/70">Resumes: <span className="text-white font-semibold">{user.resume_count} / {resumeLimit}</span></p>
+              <p className="text-sm text-white/70">ATS Analyses: <span className="text-white font-semibold">{user.ats_analysis_count} / {atsLimit}</span></p>
             </div>
           </div>
 
           {showPaymentHistory && (
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Payment History</h3>
+            <div className="mt-5">
+              <p className="text-sm font-semibold text-white/60 mb-3">Payment History</p>
               {paymentHistory.length === 0 ? (
-                <p className="text-sm text-gray-500">No payment history found</p>
+                <p className="text-sm text-white/30 text-center py-6">No payment history found</p>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Date</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Plan</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Amount</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Status</th>
+                <div className="overflow-x-auto rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <table className="min-w-full">
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                        {['Date', 'Plan', 'Amount', 'Status'].map(h => (
+                          <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">{h}</th>
+                        ))}
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody>
                       {paymentHistory.map((payment: any) => (
-                        <tr key={payment.id}>
-                          <td className="px-4 py-2 text-sm text-gray-900">
-                            {formatDate(payment.created_at)}
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-900 capitalize">
-                            {payment.plan}
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-900">
-                            ₹{(Number(payment.amount) / 100).toFixed(0)}
-                          </td>
-                          <td className="px-4 py-2 text-sm">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              payment.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {payment.status}
-                            </span>
+                        <tr key={payment.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                          <td className="px-4 py-3 text-sm text-white/70">{formatDate(payment.created_at)}</td>
+                          <td className="px-4 py-3 text-sm text-white/70 capitalize">{payment.plan}</td>
+                          <td className="px-4 py-3 text-sm text-white/70">₹{(Number(payment.amount) / 100).toFixed(0)}</td>
+                          <td className="px-4 py-3 text-sm">
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                              payment.status === 'completed'
+                                ? 'bg-emerald-500/15 text-emerald-400'
+                                : 'bg-amber-500/15 text-amber-400'
+                            }`}>{payment.status}</span>
                           </td>
                         </tr>
                       ))}
@@ -458,103 +393,136 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Resumes Section */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        {/* ── My Resumes ──────────────────────────────────────────────────── */}
+        <div className="glass-card rounded-2xl p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">My Resumes</h2>
-            <div className="flex gap-3">
-              <label className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition cursor-pointer">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">📂</span>
+              <h2 className="text-lg font-bold text-white">My Resumes</h2>
+              <span className="ml-2 text-xs text-white/30 bg-white/5 px-2 py-0.5 rounded-full">{resumes.length}</span>
+            </div>
+            <div className="flex gap-2">
+              <label className="cursor-pointer px-4 py-2 rounded-xl text-sm font-semibold text-emerald-300 transition-all hover:scale-105"
+                style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)' }}>
                 {uploading ? (
-                  <>
-                    <span className="inline-block animate-spin mr-2">⟳</span>
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    📤 Upload Resume
-                  </>
-                )}
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileUpload}
-                  disabled={uploading}
-                  className="hidden"
-                />
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 border-2 border-emerald-400/40 border-t-emerald-400 rounded-full animate-spin" />
+                    Uploading…
+                  </span>
+                ) : '📤 Upload'}
+                <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileUpload} disabled={uploading} className="hidden" />
               </label>
-              <Link
-                href="/builder"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              <Link href="/builder"
+                className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:scale-105"
+                style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)' }}
               >
-                + Create Resume
+                + New Resume
               </Link>
             </div>
           </div>
 
           {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="mt-2 text-gray-600">Loading resumes...</p>
+            <div className="text-center py-16">
+              <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+              <p className="text-white/40 text-sm">Loading resumes…</p>
             </div>
           ) : resumes.length === 0 ? (
-            <div className="text-center py-12">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No resumes yet</h3>
-              <p className="mt-1 text-sm text-gray-500">Get started by creating your first resume.</p>
-              <div className="mt-6">
-                <Link
-                  href="/builder"
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-                >
-                  Create Resume
-                </Link>
-              </div>
+            <div className="text-center py-16">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"
+                style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>📄</div>
+              <h3 className="text-white font-semibold mb-1">No resumes yet</h3>
+              <p className="text-white/40 text-sm mb-6">Create your first ATS-optimized resume in minutes.</p>
+              <Link href="/builder"
+                className="inline-block px-6 py-3 rounded-xl text-sm font-semibold text-white"
+                style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)' }}>
+                Create Resume →
+              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {resumes.map((resume) => (
-                <div key={resume.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition overflow-hidden min-w-0">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="text-base font-semibold text-gray-900 truncate min-w-0">{resume.title}</h3>
-                    {resume.ats_score && (
-                      <span className={`flex-shrink-0 text-sm font-medium ${getATSScoreColor(resume.ats_score)}`}>
-                        {resume.ats_score}%
-                      </span>
+              {resumes.map((resume) => {
+                const score = resume.ats_score;
+                const scoreColor = score ? (score >= 80 ? '#22c55e' : score >= 60 ? '#f59e0b' : '#ef4444') : null;
+                return (
+                  <div key={resume.id}
+                    className="resume-card group rounded-2xl p-5 flex flex-col gap-3 transition-all duration-300 hover:-translate-y-1"
+                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}
+                  >
+                    {/* Top: title + ATS score */}
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-semibold text-white text-sm leading-snug truncate">{resume.title}</h3>
+                      {score && (
+                        <div className="flex-shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold"
+                          style={{ color: scoreColor!, background: `${scoreColor}18`, border: `1px solid ${scoreColor}30` }}>
+                          {score}%
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-xs text-white/40 line-clamp-2 leading-relaxed">
+                      {resume.job_description?.substring(0, 100) || 'No description'}…
+                    </p>
+
+                    {/* Meta */}
+                    <div className="flex items-center gap-2 text-xs text-white/30 flex-wrap">
+                      <span>{resume.updated_at ? formatDate(resume.updated_at) : 'Recently'}</span>
+                      <span>·</span>
+                      <span className="capitalize">{resume.template_name || 'modern'}</span>
+                    </div>
+
+                    {/* ATS score bar */}
+                    {score && (
+                      <div className="h-1 rounded-full bg-white/10 overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-700"
+                          style={{ width: `${score}%`, background: scoreColor! }} />
+                      </div>
                     )}
-                  </div>
 
-                  <p className="text-sm text-gray-600 mb-2 line-clamp-2 break-words">
-                    {resume.job_description?.substring(0, 100) || 'No description'}...
-                  </p>
-
-                  <div className="flex items-center text-xs text-gray-500 mb-4 flex-wrap gap-1">
-                    <span>{resume.updated_at ? formatDate(resume.updated_at) : 'Recently'}</span>
-                    <span>•</span>
-                    <span>{resume.template_name || 'modern'}</span>
+                    {/* Actions */}
+                    <div className="flex gap-2 mt-auto">
+                      <Link href={`/builder?id=${resume.id}`}
+                        className="flex-1 py-2 rounded-lg text-xs font-semibold text-center text-indigo-300 transition-all hover:bg-indigo-500/20"
+                        style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>
+                        Edit
+                      </Link>
+                      <button onClick={() => handleDelete(resume.id)}
+                        className="px-4 py-2 rounded-lg text-xs font-semibold text-red-400 transition-all hover:bg-red-500/20"
+                        style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)' }}>
+                        Delete
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/builder?id=${resume.id}`}
-                      className="flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100 text-center"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(resume.id)}
-                      className="px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded hover:bg-red-100"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
+
       </div>
     </div>
   );
 }
+
+const STYLES = `
+  .glass-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.07);
+    backdrop-filter: blur(16px);
+  }
+  .stat-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  .tool-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.35);
+  }
+  .resume-card:hover {
+    box-shadow: 0 0 0 1px rgba(99,102,241,0.3), 0 20px 40px rgba(0,0,0,0.4);
+    border-color: rgba(99,102,241,0.3) !important;
+  }
+`;
