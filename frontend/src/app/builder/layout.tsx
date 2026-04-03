@@ -13,5 +13,6 @@ export default function BuilderLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  // Reset the global white text colour so the light-bg builder renders correctly
+  return <div style={{ color: '#111827' }}>{children}</div>;
 }
