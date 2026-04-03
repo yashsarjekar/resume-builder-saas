@@ -186,21 +186,25 @@ export default function InterviewRoomPage() {
     rec.lang          = "en-IN";
 
     rec.onresult = (e: any) => {
-      // Rebuild only from the results delivered in THIS event batch
-      // to avoid re-joining already-committed results
-      let interim = "";
-      let final   = "";
-      for (let i = 0; i < e.results.length; i++) {
+      // e.resultIndex = first NEW result since last event — avoids re-processing history
+      let newFinal = "";
+      let interim  = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
         const text = e.results[i][0].transcript;
-        if (e.results[i].isFinal) final += text + " ";
+        if (e.results[i].isFinal) newFinal += text + " ";
         else interim += text;
       }
-      setAnswer(voiceBaseRef.current + (voiceBaseRef.current ? " " : "") + final + interim);
-      // Advance base when a chunk is finalised
-      if (final) voiceBaseRef.current = (voiceBaseRef.current + (voiceBaseRef.current ? " " : "") + final).trimEnd();
+      // Commit finalised text into the base ref
+      if (newFinal) {
+        voiceBaseRef.current = (voiceBaseRef.current + (voiceBaseRef.current ? " " : "") + newFinal).trimEnd();
+      }
+      // Display = committed base + current interim (if any)
+      setAnswer(voiceBaseRef.current + (interim ? (voiceBaseRef.current ? " " : "") + interim : ""));
     };
 
-    rec.onerror = () => {
+    rec.onerror = (e: any) => {
+      // "aborted" fires normally when rec.stop() is called — not a real error
+      if (e.error === "aborted" || e.error === "no-speech") return;
       setVoiceError("Voice recording error. Please type your answer.");
       setIsRecording(false);
     };
