@@ -329,7 +329,7 @@ export default function InterviewReportPage() {
   useEffect(() => {
     async function fetchReport() {
       try {
-        const token = localStorage.getItem("access_token");
+        const token = localStorage.getItem("token");
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/interview/${sessionId}/report`,
           { headers: { Authorization: `Bearer ${token}` } }

@@ -228,7 +228,7 @@ export default function InterviewRoomPage() {
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem("access_token");
+      const token = localStorage.getItem("token");
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/interview/${sessionId}/answer/${currentQ.question_number}`,
         {
