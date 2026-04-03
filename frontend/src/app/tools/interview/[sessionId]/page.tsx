@@ -144,26 +144,50 @@ export default function InterviewRoomPage() {
   const answerRef      = useRef<HTMLTextAreaElement>(null);
   const voiceBaseRef   = useRef<string>("");  // text captured before recording started
 
-  // ── Load session from localStorage (set by the setup page) ────────────────
+  // ── Load session state from backend (always fetch to get correct resume point) ──
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(`interview_session_${sessionId}`);
-      if (raw) {
-        const data = JSON.parse(raw);
-        setQuestions(data.questions);
+    async function loadSession() {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/interview/${sessionId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (res.status === 401) { router.replace("/login"); return; }
+        if (res.status === 403) { router.replace("/pricing"); return; }
+        if (!res.ok) { router.replace("/tools/interview"); return; }
+
+        const data = await res.json();
+
+        // If already completed, jump straight to report
+        if (data.status === "completed") {
+          router.replace(`/tools/interview/${sessionId}/report`);
+          return;
+        }
+
+        const qs: Question[] = data.questions;
+        // Resume at the first unanswered question (current_question_number is 1-based)
+        const resumeIndex = Math.max(0, data.current_question_number - 1);
+
+        setQuestions(qs);
         setJobRole(data.job_role ?? "");
-        setCurrentQ(data.questions[0]);
-        setCurrentIndex(0);
+        setCurrentQ(qs[resumeIndex]);
+        setCurrentIndex(resumeIndex);
         setPhase("question");
-        // Trigger flip animation
         setTimeout(() => setFlipDone(true), 600);
-      } else {
-        // Session data not in sessionStorage — redirect back
+
+        // Update sessionStorage so it stays fresh for any future navigation
+        sessionStorage.setItem(
+          `interview_session_${sessionId}`,
+          JSON.stringify({ questions: qs, job_role: data.job_role })
+        );
+      } catch {
         router.replace("/tools/interview");
       }
-    } catch {
-      router.replace("/tools/interview");
     }
+
+    loadSession();
   }, [sessionId, router]);
 
   // ── Voice recording ────────────────────────────────────────────────────────

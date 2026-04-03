@@ -128,3 +128,16 @@ class InterviewReportResponse(BaseModel):
 class SessionListResponse(BaseModel):
     sessions: list[SessionSummary]
     total:    int
+
+
+class SessionStateResponse(BaseModel):
+    """Current state of an in-progress (or completed) session — used to resume."""
+    session_id:               int
+    job_role:                 Optional[str]
+    status:                   str            # in_progress / completed
+    current_question_number:  int            # next question to answer (1-10)
+    questions_answered:       int
+    answered_question_numbers: list[int]     # e.g. [1, 2]
+    questions:                list[QuestionOut]
+
+    model_config = {"from_attributes": True}

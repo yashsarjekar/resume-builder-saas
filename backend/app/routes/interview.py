@@ -33,6 +33,7 @@ from app.schemas.interview import (
     ReportQuestionDetail,
     SessionListResponse,
     SessionSummary,
+    SessionStateResponse,
     QuestionOut,
 )
 from app.services.interview_service import interview_service
@@ -280,6 +281,51 @@ def submit_answer(
         ideal_answer_hint = answer.ideal_answer_hint,
         next_question     = next_q,
         session_complete  = session_complete,
+    )
+
+
+# ── GET /api/interview/{session_id} ────────────────────────────────────────
+
+@router.get("/{session_id}", response_model=SessionStateResponse)
+def get_session_state(
+    session_id: int,
+    db:         Session = Depends(get_db),
+    user:       User    = Depends(require_paid_plan),
+):
+    """
+    Return the current state of a session so the frontend can resume
+    at the correct question after closing/reopening.
+    """
+    session = _get_session(session_id, user.id, db)
+
+    answered_numbers = [
+        a.question_number for a in session.answers
+    ]
+
+    questions_out = [
+        QuestionOut(
+            id              = q.id,
+            question_number = q.question_number,
+            question_text   = q.question_text,
+            category        = q.category,
+            difficulty      = q.difficulty,
+            tip             = q.tip,
+        )
+        for q in session.questions
+    ]
+
+    # Next unanswered question number (1-based); cap at 10 for completed sessions
+    next_q_number = (max(answered_numbers) + 1) if answered_numbers else 1
+    next_q_number = min(next_q_number, 10)
+
+    return SessionStateResponse(
+        session_id               = session.id,
+        job_role                 = session.job_role,
+        status                   = session.status,
+        current_question_number  = next_q_number,
+        questions_answered       = len(answered_numbers),
+        answered_question_numbers= answered_numbers,
+        questions                = questions_out,
     )
 
 
