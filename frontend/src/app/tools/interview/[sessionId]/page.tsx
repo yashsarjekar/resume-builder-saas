@@ -137,6 +137,35 @@ export default function InterviewRoomPage() {
   const [flipDone, setFlipDone]       = useState(false);
   const [error, setError]             = useState("");
 
+  // TTS (question read-aloud)
+  const [isSpeaking, setIsSpeaking]     = useState(false);
+
+  const speakQuestion = useCallback((text: string) => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate  = 0.92;
+    utterance.pitch = 1;
+    utterance.lang  = "en-IN";
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend   = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
+  // Auto-read each new question once the flip animation finishes
+  useEffect(() => {
+    if (phase === "question" && currentQ && flipDone) {
+      speakQuestion(currentQ.question_text);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQ?.id, flipDone]);
+
+  // Cancel speech on unmount
+  useEffect(() => {
+    return () => { window.speechSynthesis?.cancel(); };
+  }, []);
+
   // Voice recording
   const [isRecording, setIsRecording]   = useState(false);
   const [voiceError, setVoiceError]     = useState("");
@@ -200,6 +229,10 @@ export default function InterviewRoomPage() {
       setVoiceError("Voice input not supported in this browser");
       return;
     }
+
+    // Stop TTS so the mic doesn't pick up the speaker
+    window.speechSynthesis?.cancel();
+    setIsSpeaking(false);
 
     // Snapshot what's already typed so we can append voice on top of it
     voiceBaseRef.current = answer.trimEnd();
@@ -419,6 +452,35 @@ export default function InterviewRoomPage() {
               <p className="text-white text-lg leading-relaxed font-medium">
                 {currentQ.question_text}
               </p>
+
+              {/* TTS repeat button */}
+              <div className="flex items-center gap-2 mt-5 pt-4 border-t border-white/5">
+                <button
+                  onClick={() => speakQuestion(currentQ.question_text)}
+                  title="Repeat question aloud"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    background: isSpeaking ? "rgba(168,85,247,0.15)" : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${isSpeaking ? "rgba(168,85,247,0.4)" : "rgba(255,255,255,0.08)"}`,
+                    color: isSpeaking ? "#c084fc" : "rgba(255,255,255,0.45)",
+                  }}
+                >
+                  {isSpeaking ? (
+                    <>
+                      <span className="flex gap-0.5 items-end h-3">
+                        <span className="w-0.5 bg-purple-400 rounded-full animate-[soundbar_0.6s_ease-in-out_infinite]"    style={{ height: "6px" }} />
+                        <span className="w-0.5 bg-purple-400 rounded-full animate-[soundbar_0.6s_ease-in-out_0.1s_infinite]" style={{ height: "10px" }} />
+                        <span className="w-0.5 bg-purple-400 rounded-full animate-[soundbar_0.6s_ease-in-out_0.2s_infinite]" style={{ height: "7px" }} />
+                        <span className="w-0.5 bg-purple-400 rounded-full animate-[soundbar_0.6s_ease-in-out_0.15s_infinite]" style={{ height: "12px" }} />
+                        <span className="w-0.5 bg-purple-400 rounded-full animate-[soundbar_0.6s_ease-in-out_0.05s_infinite]" style={{ height: "8px" }} />
+                      </span>
+                      Reading…
+                    </>
+                  ) : (
+                    <>🔊 Repeat question</>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -641,5 +703,9 @@ const globalStyles = `
   @keyframes feedbackSlideIn {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes soundbar {
+    0%, 100% { transform: scaleY(0.4); }
+    50%       { transform: scaleY(1); }
   }
 `;
