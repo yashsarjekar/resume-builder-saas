@@ -16,8 +16,9 @@ async function fetchPortfolio(slug: string) {
   }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const data = await fetchPortfolio(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await fetchPortfolio(slug);
   if (!data) return { title: 'Portfolio Not Found' };
   return {
     title: `${data.name} — Portfolio`,
@@ -30,8 +31,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function PortfolioPage({ params }: { params: { slug: string } }) {
-  const data = await fetchPortfolio(params.slug);
+export default async function PortfolioPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const data = await fetchPortfolio(slug);
   if (!data) notFound();
   return <PublicPortfolioClient data={data} />;
 }
