@@ -107,7 +107,7 @@ export default function PublicPortfolioClient({ data }: { data: any }) {
         style={{ background: 'rgba(3,7,18,0.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <span className="font-bold text-sm" style={{ color: theme.primary }}>{data.name}</span>
         <div className="hidden sm:flex items-center gap-6 text-xs text-white/40">
-          {['about', 'skills', 'experience', 'projects'].map(s => (
+          {['skills', 'experience', 'projects'].map(s => (
             <button key={s} onClick={() => scrollTo(s)}
               className="hover:text-white/80 capitalize transition-colors">{s}</button>
           ))}
@@ -142,8 +142,20 @@ export default function PublicPortfolioClient({ data }: { data: any }) {
           )}
 
           {data.bio && (
-            <p className="text-white/55 text-base leading-relaxed max-w-md mb-8">{data.bio}</p>
+            <p className="text-white/55 text-base leading-relaxed max-w-md mb-4">{data.bio}</p>
           )}
+
+          {/* Quick stat chips */}
+          <div className="flex flex-wrap gap-2 mb-8">
+            {data.location && <StatChip icon="📍" label={data.location} color={theme.primary} />}
+            {data.email    && <StatChip icon="✉️" label={data.email}    color={theme.primary} />}
+            {data.experience?.length > 0 && (
+              <StatChip icon="💼" label={`${data.experience.length} ${data.experience.length === 1 ? 'role' : 'roles'}`} color={theme.primary} />
+            )}
+            {data.projects?.length > 0 && (
+              <StatChip icon="🚀" label={`${data.projects.length} projects`} color={theme.primary} />
+            )}
+          </div>
 
           {/* Social + CTA */}
           <div className="flex flex-wrap items-center gap-3">
@@ -194,27 +206,6 @@ export default function PublicPortfolioClient({ data }: { data: any }) {
                   {initials}
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ── ABOUT ────────────────────────────────────────────────────── */}
-      <section id="about" className="max-w-6xl mx-auto px-6 py-20">
-        <SectionHeading title="About Me" color={theme.primary} />
-        <div className="reveal glass-section rounded-2xl p-8 mt-8">
-          <p className="text-white/65 text-base leading-relaxed max-w-3xl">
-            {data.bio ?? 'No bio provided yet.'}
-          </p>
-          {/* Quick stat chips */}
-          <div className="flex flex-wrap gap-3 mt-6">
-            {data.location && <StatChip icon="📍" label={data.location} color={theme.primary} />}
-            {data.email    && <StatChip icon="✉️" label={data.email}    color={theme.primary} />}
-            {data.experience?.length > 0 && (
-              <StatChip icon="💼" label={`${data.experience.length} ${data.experience.length === 1 ? 'role' : 'roles'}`} color={theme.primary} />
-            )}
-            {data.projects?.length > 0 && (
-              <StatChip icon="🚀" label={`${data.projects.length} projects`} color={theme.primary} />
             )}
           </div>
         </div>
