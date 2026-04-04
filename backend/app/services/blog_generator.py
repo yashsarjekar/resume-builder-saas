@@ -414,18 +414,25 @@ class BlogGeneratorService:
 
         # ── Phase 2: ping search engines now that posts are committed ─────
         now = datetime.utcnow()
-        for post in generated:
-            ok, msg = indexnow_service.submit_blog_post(post.slug)
-            if ok:
-                post.indexnow_submitted    = True
-                post.indexnow_submitted_at = now
-                report.indexnow_submitted += 1
-                report.indexnow_success   += 1
-                logger.info(f"IndexNow: {msg}")
-            else:
-                report.indexnow_submitted += 1
-                errors.append(f"IndexNow failed for {post.slug}: {msg}")
 
+        # Submit ALL new URLs in one batch call to avoid Bing rate-limiting
+        # when multiple posts are generated in a single cron run.
+        if generated:
+            indexnow_urls = [
+                f"{indexnow_service.site_url}/blog/{p.slug}" for p in generated
+            ]
+            ok, msg = indexnow_service.submit_urls(indexnow_urls)
+            for post in generated:
+                report.indexnow_submitted += 1
+                if ok:
+                    post.indexnow_submitted    = True
+                    post.indexnow_submitted_at = now
+                    report.indexnow_success   += 1
+                else:
+                    errors.append(f"IndexNow failed for {post.slug}: {msg}")
+            logger.info(f"IndexNow batch ({len(indexnow_urls)} URLs): {msg}")
+
+        for post in generated:
             g_ok, g_msg = google_indexing_service.submit_blog_post(post.slug)
             if g_ok:
                 post.google_submitted    = True
