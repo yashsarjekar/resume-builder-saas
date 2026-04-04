@@ -147,10 +147,11 @@ export default function DashboardPage() {
                                            'from-gray-500 to-gray-600';
 
   const AI_TOOLS = [
-    { href: '/tools/interview',    emoji: '🎤', label: 'AI Mock Interview',     desc: 'Practice with AI-scored questions', color: '#a855f7', bg: 'rgba(168,85,247,0.12)', border: 'rgba(168,85,247,0.25)', badge: 'Starter & Pro' },
-    { href: '/tools/keywords',     emoji: '🔑', label: 'Keyword Extractor',      desc: 'Pull exact skills from any JD',     color: '#22c55e', bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.25)'  },
-    { href: '/tools/cover-letter', emoji: '📝', label: 'Cover Letter Generator', desc: 'Tailored letters in 30 seconds',    color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)' },
-    { href: '/tools/linkedin',     emoji: '💼', label: 'LinkedIn Optimizer',     desc: 'Attract 3× more recruiter views',  color: '#3b82f6', bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.25)' },
+    { href: '/tools/interview',    emoji: '🎤', label: 'AI Mock Interview',       desc: 'Practice with AI-scored questions',  color: '#a855f7', bg: 'rgba(168,85,247,0.12)', border: 'rgba(168,85,247,0.25)', badge: 'Starter & Pro' },
+    { href: '/tools/portfolio',    emoji: '🌐', label: 'Portfolio Page',           desc: 'One-click shareable 3D portfolio',   color: '#6366f1', bg: 'rgba(99,102,241,0.12)',  border: 'rgba(99,102,241,0.25)', badge: 'Starter & Pro' },
+    { href: '/tools/keywords',     emoji: '🔑', label: 'Keyword Extractor',        desc: 'Pull exact skills from any JD',      color: '#22c55e', bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.25)'  },
+    { href: '/tools/cover-letter', emoji: '📝', label: 'Cover Letter Generator',   desc: 'Tailored letters in 30 seconds',     color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)' },
+    { href: '/tools/linkedin',     emoji: '💼', label: 'LinkedIn Optimizer',       desc: 'Attract 3× more recruiter views',    color: '#3b82f6', bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.25)' },
   ];
 
   return (

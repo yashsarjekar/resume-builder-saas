@@ -17,6 +17,7 @@ from app.routes.cron import router as cron_router
 from app.routes.jobs import router as jobs_router
 from app.routes.blog import router as blog_router
 from app.routes.interview import router as interview_router
+from app.routes.portfolio import router as portfolio_router
 from app.services.redis_service import RedisService
 from app.middleware.rate_limit import RateLimitMiddleware
 import app.services.redis_service as redis_service_module
@@ -102,6 +103,7 @@ app.include_router(cron_router, prefix="/api/cron", tags=["Cron"])
 app.include_router(jobs_router, prefix="/api/jobs", tags=["Jobs"])
 app.include_router(blog_router, prefix="/api/blog", tags=["Blog"])
 app.include_router(interview_router, prefix="/api/interview", tags=["Interview"])
+app.include_router(portfolio_router, prefix="/api/portfolio", tags=["Portfolio"])
 
 
 @app.get("/", tags=["Root"])
