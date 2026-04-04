@@ -12,16 +12,20 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 // ── Shared fetch helper ────────────────────────────────────────────────────
 
-async function apiFetch<T>(path: string, revalidate = 3600): Promise<T | null> {
+async function apiFetch<T>(path: string, revalidate = 3600, timeoutMs = 8000): Promise<T | null> {
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     const res = await fetch(`${API_URL}${path}`, {
       next: { revalidate },
       headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
     });
+    clearTimeout(timer);
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {
-    // API unavailable during build or network error — return null gracefully
+    // API unavailable, timed out, or network error — return null gracefully
     return null;
   }
 }

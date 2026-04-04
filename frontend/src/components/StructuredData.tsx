@@ -38,11 +38,6 @@ export default function StructuredData() {
       price: '0',
       priceCurrency: 'INR',
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      ratingCount: '150',
-    },
     description: 'Build ATS-friendly resumes with AI optimization. Get more interviews with professional templates and keyword extraction.',
   };
 
