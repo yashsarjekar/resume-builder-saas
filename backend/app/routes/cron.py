@@ -191,6 +191,81 @@ def run_generate_blogs(
     }
 
 
+# ── POST /api/cron/reindex-all ────────────────────────────────────────────
+
+@router.post("/reindex-all")
+def reindex_all(
+    x_cron_secret: str = Header(..., alias="X-Cron-Secret"),
+    db: Session = Depends(get_db),
+):
+    """
+    One-time endpoint to submit ALL published blog posts + key static pages
+    to IndexNow in a single batch call.
+
+    Use this to recover from the bug where only 1 URL was submitted per
+    cron run. Safe to call multiple times (idempotent).
+    Protected by X-Cron-Secret header.
+    """
+    from app.models.blog import BlogPost
+
+    settings = get_settings()
+    if not settings.CRON_SECRET or x_cron_secret != settings.CRON_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid cron secret",
+        )
+
+    site_url = indexnow_service.site_url
+
+    # ── Static public pages ────────────────────────────────────────────────
+    static_paths = [
+        "/",
+        "/blog",
+        "/pricing",
+        "/jobs",
+        "/resume",
+        "/privacy",
+        "/terms",
+        "/refund",
+    ]
+    static_urls = [f"{site_url}{p}" for p in static_paths]
+
+    # ── All published blog posts ───────────────────────────────────────────
+    posts = (
+        db.query(BlogPost)
+        .filter(BlogPost.status == "published")
+        .order_by(BlogPost.published_at.desc())
+        .all()
+    )
+    blog_urls = [f"{site_url}/blog/{p.slug}" for p in posts]
+
+    all_urls = static_urls + blog_urls
+    logger.info(
+        f"reindex-all: submitting {len(all_urls)} URLs "
+        f"({len(static_urls)} static + {len(blog_urls)} blog posts)"
+    )
+
+    ok, msg = indexnow_service.submit_urls(all_urls)
+
+    from datetime import datetime
+    now = datetime.utcnow()
+    if ok:
+        for post in posts:
+            post.indexnow_submitted    = True
+            post.indexnow_submitted_at = now
+        db.commit()
+
+    return {
+        "status":        "ok" if ok else "error",
+        "message":       msg,
+        "total_urls":    len(all_urls),
+        "static_pages":  len(static_urls),
+        "blog_posts":    len(blog_urls),
+        "blog_slugs":    [p.slug for p in posts],
+        "static_urls":   static_urls,
+    }
+
+
 # ── POST /api/cron/seed-keywords ──────────────────────────────────────────
 
 @router.post("/seed-keywords")
