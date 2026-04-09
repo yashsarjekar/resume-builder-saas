@@ -1,403 +1,15 @@
-'use client';
-
-import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-
-/* ─── Counter component ──────────────────────────────────────────────── */
-function Counter({ target, suffix = '', started }: { target: number; suffix?: string; started: boolean }) {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    if (!started) return;
-    const steps = 60;
-    const increment = target / steps;
-    let current = 0;
-    const timer = setInterval(() => {
-      current = Math.min(current + increment, target);
-      setValue(Math.floor(current));
-      if (current >= target) clearInterval(timer);
-    }, 2000 / steps);
-    return () => clearInterval(timer);
-  }, [started, target]);
-  return <>{value.toLocaleString()}{suffix}</>;
-}
-
-/* ─── Floating Resume Mockup ─────────────────────────────────────────── */
-function ResumeMockup({ cardRef }: { cardRef: React.RefObject<HTMLDivElement> }) {
-  return (
-    <div className="relative flex items-center justify-center">
-      {/* Glow orb behind card */}
-      <div className="pointer-events-none" style={{
-        position: 'absolute',
-        width: '500px',
-        height: '500px',
-        background: 'radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%)',
-        zIndex: -1,
-        right: '5%',
-        top: '50%',
-        transform: 'translateY(-50%)',
-      }} />
-
-      {/* Perspective wrapper — keeps perspective stable while card animates */}
-      <div style={{ perspective: '800px', perspectiveOrigin: 'center center' }}>
-      {/* Card wrapper — 3D float + mousemove target */}
-      <div
-        ref={cardRef}
-        className="hero-card relative w-64 lg:w-72"
-        style={{
-          transformStyle: 'preserve-3d',
-          boxShadow: '0 0 0 1px rgba(139,92,246,0.3), 0 30px 80px rgba(0,0,0,0.6), 0 0 120px rgba(99,102,241,0.15)',
-        }}
-      >
-        {/* ATS badge top-right */}
-        <div className="badge-float absolute -top-4 -right-4 z-20 flex items-center gap-1.5 bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-emerald-500/40">
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-          </svg>
-          ATS Score: 94%
-        </div>
-
-        {/* AI badge bottom-left */}
-        <div className="badge-float absolute -bottom-4 -left-4 z-20 flex items-center gap-2 bg-[#0d1224] border border-indigo-500/40 text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-lg" style={{ animationDelay: '0.8s' }}>
-          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-          AI Optimized
-        </div>
-
-        {/* Main resume card */}
-        <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
-          <div className="h-1.5 bg-gradient-to-r from-indigo-600 to-purple-600" />
-          <div className="p-5">
-            {/* Person row */}
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex-shrink-0" />
-              <div className="space-y-1.5">
-                <div className="h-2.5 w-24 bg-gray-800 rounded-sm" />
-                <div className="h-1.5 w-32 bg-gray-300 rounded-sm" />
-              </div>
-            </div>
-            {/* Contact chips */}
-            <div className="flex gap-1.5 mb-4">
-              {[14, 18, 12].map((w, i) => (
-                <div key={i} className="h-1.5 bg-gray-200 rounded-sm" style={{ width: `${w * 4}px` }} />
-              ))}
-            </div>
-            {/* Experience section */}
-            <div className="mb-3">
-              <div className="h-1.5 w-20 bg-indigo-600 rounded-sm mb-2" />
-              <div className="pl-2 border-l-2 border-indigo-100 space-y-1">
-                <div className="h-1.5 w-full bg-gray-200 rounded-sm" />
-                <div className="h-1.5 w-4/5 bg-gray-200 rounded-sm" />
-                <div className="h-1.5 w-3/4 bg-gray-100 rounded-sm" />
-              </div>
-            </div>
-            {/* Skills */}
-            <div className="mb-3">
-              <div className="h-1.5 w-14 bg-indigo-600 rounded-sm mb-2" />
-              <div className="flex flex-wrap gap-1">
-                {['React', 'Node.js', 'Python', 'AWS'].map((s) => (
-                  <span key={s} className="text-[9px] px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">{s}</span>
-                ))}
-              </div>
-            </div>
-            {/* Education */}
-            <div>
-              <div className="h-1.5 w-18 bg-indigo-600 rounded-sm mb-2" />
-              <div className="space-y-1">
-                <div className="h-1.5 w-full bg-gray-200 rounded-sm" />
-                <div className="h-1.5 w-2/3 bg-gray-100 rounded-sm" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Reflection shadow */}
-        <div className="absolute -bottom-6 left-4 right-4 h-6 bg-black/30 blur-xl rounded-full" />
-      </div>
-      </div>{/* end perspective wrapper */}
-    </div>
-  );
-}
-
-/* ─── Testimonials ───────────────────────────────────────────────────── */
-const TESTIMONIALS = [
-  {
-    name: 'Priya Mehta',
-    role: 'Software Engineer',
-    company: 'Infosys → Flipkart',
-    avatar: 'PM',
-    color: '#6366f1',
-    text: 'Built my ATS resume in 8 minutes. Got a call from Flipkart the next week. The AI actually understands what recruiters look for.',
-    stars: 5,
-  },
-  {
-    name: 'Rahul Sharma',
-    role: 'Product Manager',
-    company: 'Freshworks',
-    avatar: 'RS',
-    color: '#8b5cf6',
-    text: 'The mock interview feature is insane. It reads questions aloud, I answer, it gives real feedback. Felt like a real interview. Landed the PM role.',
-    stars: 5,
-  },
-  {
-    name: 'Anika Patel',
-    role: 'Data Analyst',
-    company: 'Deloitte',
-    avatar: 'AP',
-    color: '#06b6d4',
-    text: 'My old resume had a 12% ATS pass rate. After one edit session here it hit 94%. Three interviews in two weeks.',
-    stars: 5,
-  },
-  {
-    name: 'James Okafor',
-    role: 'Backend Developer',
-    company: 'TCS → Remote US startup',
-    avatar: 'JO',
-    color: '#10b981',
-    text: 'The portfolio page feature is what closed the deal. Sent a 3D shareable link — the interviewer said it was the most impressive application they received.',
-    stars: 5,
-  },
-  {
-    name: 'Sneha Rao',
-    role: 'UX Designer',
-    company: 'Byju\'s → Swiggy',
-    avatar: 'SR',
-    color: '#f59e0b',
-    text: 'Generated 6 tailored resumes for different roles in one evening. Each one felt custom-written. Worth every rupee.',
-    stars: 5,
-  },
-  {
-    name: 'Arjun Nair',
-    role: 'Full-Stack Engineer',
-    company: 'Google',
-    avatar: 'AN',
-    color: '#ef4444',
-    text: 'Cover letter AI is genuinely good. It matched my tone, referenced the job description, and didn\'t sound robotic. Hiring manager mentioned it specifically.',
-    stars: 5,
-  },
-];
-
-function StarRow() {
-  return (
-    <span style={{ display: 'inline-flex', gap: '2px' }}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-      ))}
-    </span>
-  );
-}
-
-function TestimonialsSection() {
-  const rowRef1 = useRef<HTMLDivElement>(null);
-  const rowRef2 = useRef<HTMLDivElement>(null);
-
-  // Duplicate cards for seamless infinite scroll
-  const row1 = [...TESTIMONIALS.slice(0, 3), ...TESTIMONIALS.slice(0, 3)];
-  const row2 = [...TESTIMONIALS.slice(3), ...TESTIMONIALS.slice(3)];
-
-  return (
-    <section
-      style={{
-        padding: '96px 0',
-        background: 'linear-gradient(180deg, #030712 0%, #05080f 50%, #030712 100%)',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Ambient glows */}
-      <div style={{ position: 'absolute', top: '20%', left: '5%', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '10%', right: '5%', width: '350px', height: '350px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
-        {/* Header */}
-        <div className="text-center scroll-reveal" style={{ marginBottom: '64px' }}>
-          <p style={{ fontSize: '12px', color: '#06b6d4', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '12px', fontWeight: 600 }}>
-            Real results from real people
-          </p>
-          <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 900, color: '#fff', lineHeight: 1.15, marginBottom: '16px' }}>
-            Job Seekers Love{' '}
-            <span className="shimmer-text">Resume Builder AI</span>
-          </h2>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '16px', maxWidth: '480px', margin: '0 auto' }}>
-            Thousands of professionals landed interviews and offers using our AI-powered tools.
-          </p>
-        </div>
-
-        {/* Marquee row 1 — scrolls left */}
-        <style>{`
-          @keyframes marquee-left {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          @keyframes marquee-right {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(0); }
-          }
-          .marquee-track-left { animation: marquee-left 32s linear infinite; }
-          .marquee-track-right { animation: marquee-right 36s linear infinite; }
-          .marquee-track-left:hover, .marquee-track-right:hover { animation-play-state: paused; }
-          .t-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 28px 28px 24px;
-            width: 320px;
-            flex-shrink: 0;
-            cursor: default;
-            transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
-            backdrop-filter: blur(12px);
-            position: relative;
-            overflow: hidden;
-          }
-          .t-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(99,102,241,0.07) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity 0.35s ease;
-          }
-          .t-card:hover {
-            transform: translateY(-6px) scale(1.02);
-            border-color: rgba(99,102,241,0.35);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px rgba(99,102,241,0.12);
-          }
-          .t-card:hover::before { opacity: 1; }
-        `}</style>
-
-        {/* Row 1 */}
-        <div style={{ overflow: 'hidden', marginBottom: '20px', maskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)' }}>
-          <div ref={rowRef1} className="marquee-track-left" style={{ display: 'flex', gap: '20px', width: 'max-content' }}>
-            {row1.map((t, i) => (
-              <div key={i} className="t-card">
-                {/* Quote mark */}
-                <div style={{ fontSize: '40px', lineHeight: 1, color: t.color, opacity: 0.4, fontFamily: 'Georgia, serif', marginBottom: '4px' }}>&ldquo;</div>
-                <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '14px', lineHeight: '1.7', marginBottom: '20px', minHeight: '80px' }}>
-                  {t.text}
-                </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  {/* Avatar */}
-                  <div style={{
-                    width: '40px', height: '40px', borderRadius: '50%',
-                    background: `linear-gradient(135deg, ${t.color}cc, ${t.color}55)`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '13px', fontWeight: 700, color: '#fff',
-                    border: `2px solid ${t.color}66`,
-                    flexShrink: 0,
-                  }}>
-                    {t.avatar}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ color: '#fff', fontWeight: 700, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.name}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.role} · {t.company}</div>
-                  </div>
-                  <StarRow />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Row 2 — scrolls right (slightly slower) */}
-        <div style={{ overflow: 'hidden', maskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)' }}>
-          <div ref={rowRef2} className="marquee-track-right" style={{ display: 'flex', gap: '20px', width: 'max-content' }}>
-            {row2.map((t, i) => (
-              <div key={i} className="t-card">
-                <div style={{ fontSize: '40px', lineHeight: 1, color: t.color, opacity: 0.4, fontFamily: 'Georgia, serif', marginBottom: '4px' }}>&ldquo;</div>
-                <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '14px', lineHeight: '1.7', marginBottom: '20px', minHeight: '80px' }}>
-                  {t.text}
-                </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{
-                    width: '40px', height: '40px', borderRadius: '50%',
-                    background: `linear-gradient(135deg, ${t.color}cc, ${t.color}55)`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '13px', fontWeight: 700, color: '#fff',
-                    border: `2px solid ${t.color}66`,
-                    flexShrink: 0,
-                  }}>
-                    {t.avatar}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ color: '#fff', fontWeight: 700, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.name}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.role} · {t.company}</div>
-                  </div>
-                  <StarRow />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Social proof bar */}
-        <div className="scroll-reveal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '32px', flexWrap: 'wrap', marginTop: '56px' }}>
-          {[
-            { value: '12,000+', label: 'Resumes built' },
-            { value: '4.9★', label: 'Average rating' },
-            { value: '3×', label: 'More interview calls' },
-          ].map(({ value, label }) => (
-            <div key={label} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '26px', fontWeight: 900, color: '#fff', lineHeight: 1 }}>{value}</div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+import ScrollRevealInit from './ScrollRevealInit';
+import ResumeMockupClient from './ResumeMockupClient';
+import AnimatedStats from './AnimatedStats';
+import TestimonialsSection from './TestimonialsSection';
 
 /* ─── Main LandingPage ───────────────────────────────────────────────── */
 export default function LandingPage() {
-  const heroCardRef = useRef<HTMLDivElement>(null!);
-  const statsRef = useRef<HTMLDivElement>(null!);
-  const [countersStarted, setCountersStarted] = useState(false);
-
-  /* Mouse-interactive 3D tilt — pauses float3d while hovering */
-  useEffect(() => {
-    const card = heroCardRef.current;
-    if (!card) return;
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!heroCardRef.current) return;
-      const x = (e.clientX / window.innerWidth - 0.5) * 20;
-      const y = (e.clientY / window.innerHeight - 0.5) * 12;
-      heroCardRef.current.style.animationPlayState = 'paused';
-      heroCardRef.current.style.transform =
-        `rotateY(${-12 + x}deg) rotateX(${4 - y}deg) translateZ(20px)`;
-    };
-    const handleMouseLeave = () => {
-      if (!heroCardRef.current) return;
-      heroCardRef.current.style.animationPlayState = 'running';
-      heroCardRef.current.style.transform = '';
-    };
-    document.addEventListener('mousemove', handleMouseMove, { passive: true });
-    document.addEventListener('mouseleave', handleMouseLeave);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
-
-  /* Scroll-triggered reveal + counter */
-  useEffect(() => {
-    const revealObserver = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); }),
-      { threshold: 0.12 }
-    );
-    document.querySelectorAll('.scroll-reveal').forEach((el) => revealObserver.observe(el));
-
-    const counterObserver = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setCountersStarted(true); counterObserver.disconnect(); } },
-      { threshold: 0.5 }
-    );
-    if (statsRef.current) counterObserver.observe(statsRef.current);
-
-    return () => { revealObserver.disconnect(); counterObserver.disconnect(); };
-  }, []);
 
   return (
     <div className="bg-[#050816] text-white overflow-x-hidden">
+      <ScrollRevealInit />
 
       {/* ═══ HERO ═══════════════════════════════════════════════════════ */}
       <section className="aurora-bg relative min-h-[92vh] flex items-center pt-12 pb-20 px-4">
@@ -519,31 +131,14 @@ export default function LandingPage() {
 
             {/* RIGHT: 3D Resume Mockup */}
             <div className="hidden lg:flex items-center justify-center">
-              <ResumeMockup cardRef={heroCardRef} />
+              <ResumeMockupClient />
             </div>
           </div>
         </div>
       </section>
 
       {/* ═══ STATS BAR ══════════════════════════════════════════════════ */}
-      <div ref={statsRef} className="border-y border-white/5 bg-white/[0.02] py-10">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="grid grid-cols-3 gap-6 text-center">
-            {[
-              { value: 12000, suffix: '+', label: 'Resumes Built' },
-              { value: 85, suffix: '%', label: 'Interview Rate' },
-              { value: 94, suffix: '%', label: 'Avg ATS Score' },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <div className="text-3xl sm:text-4xl font-black gradient-text counter-value mb-1">
-                  <Counter target={stat.value} suffix={stat.suffix} started={countersStarted} />
-                </div>
-                <p className="text-sm text-gray-500">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <AnimatedStats />
 
       {/* ═══ PROBLEM SECTION ════════════════════════════════════════════ */}
       <section className="py-24 px-4">
@@ -624,10 +219,8 @@ export default function LandingPage() {
               <div key={step.step} className="flex flex-col md:flex-row items-center md:items-start flex-1 min-w-0">
                 {/* Step card */}
                 <div
-                  className="glass-card scroll-reveal text-center p-7 rounded-2xl w-full"
-                  style={{ transitionDelay: `${i * 150}ms`, transition: 'all 0.3s ease' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(99,102,241,0.3)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.borderColor = ''; }}
+                  className="glass-card scroll-reveal text-center p-7 rounded-2xl w-full hover:-translate-y-1.5 hover:border-indigo-500/30 transition-all duration-300"
+                  style={{ transitionDelay: `${i * 150}ms` }}
                 >
                   {/* Gradient step number */}
                   <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white', fontSize: '16px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(99,102,241,0.4)', margin: '0 auto 16px' }}>
@@ -685,10 +278,8 @@ export default function LandingPage() {
             ].map((f, i) => (
               <div
                 key={f.title}
-                className="glass-card scroll-reveal p-6 rounded-2xl"
-                style={{ transitionDelay: `${i * 80}ms`, borderColor: f.border, transition: 'all 0.3s ease' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(99,102,241,0.4)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.borderColor = f.border; }}
+                className="glass-card scroll-reveal p-6 rounded-2xl hover:-translate-y-1 hover:border-indigo-500/40 transition-all duration-300"
+                style={{ transitionDelay: `${i * 80}ms`, borderColor: f.border }}
               >
                 <div style={{ width: '44px', height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', background: f.bg, boxShadow: f.shadow, border: `1px solid ${f.border}` }}>
                   <svg width="20" height="20" style={{ color: f.color }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
