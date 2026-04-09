@@ -4,7 +4,7 @@ export default function StructuredData() {
     '@type': 'Organization',
     name: 'Resume Builder',
     url: 'https://resumebuilder.pulsestack.in',
-    logo: 'https://resumebuilder.pulsestack.in/logo.png',
+    logo: 'https://resumebuilder.pulsestack.in/opengraph-image',
     description: 'AI-powered resume builder with ATS optimization',
     sameAs: [
       'https://www.instagram.com/resumebuilder.pulsestack.in/',
