@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import api from '@/lib/api';
 import { trackStarterPurchase, trackProPurchase } from '@/lib/tracking';
@@ -32,12 +32,11 @@ const billingOptions: { value: BillingCycle; label: string; discount?: string }[
 
 function PricingContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { user, isAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('');
-  const [userCountry, setUserCountry] = useState<string | null>(null);
-  const [countryLoading, setCountryLoading] = useState(true);
+  // Default to 'US' so plans render immediately; updated in background
+  const [userCountry, setUserCountry] = useState<string>('US');
   const [billingCycle, setBillingCycle] = useState<BillingCycle>(1);
 
   // Coupon state
@@ -130,28 +129,28 @@ function PricingContent() {
   const plans = getPlans(userCountry === 'IN');
 
   useEffect(() => {
+    // Read coupon from URL immediately (no Suspense needed)
+    const urlCoupon = new URLSearchParams(window.location.search).get('coupon');
+    if (urlCoupon) {
+      setCouponInput(urlCoupon);
+      validateCoupon(urlCoupon);
+    }
+
+    // Detect country in background; plans already render with USD default
     const detectCountry = async () => {
       try {
-        const response = await fetch('https://ipapi.co/json/');
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 4000);
+        const response = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+        clearTimeout(timer);
         const data = await response.json();
-        setUserCountry(data.country_code || 'US');
-      } catch (error) {
-        console.log('Country detection failed, defaulting to US');
-        setUserCountry('US');
-      } finally {
-        setCountryLoading(false);
+        if (data.country_code) setUserCountry(data.country_code);
+      } catch {
+        // Keep 'US' default on failure or timeout
       }
     };
     detectCountry();
   }, []);
-
-  useEffect(() => {
-    const urlCoupon = searchParams.get('coupon');
-    if (urlCoupon && userCountry) {
-      setCouponInput(urlCoupon);
-      validateCoupon(urlCoupon);
-    }
-  }, [searchParams, userCountry]);
 
   useEffect(() => {
     if (userCountry === 'IN') {
@@ -324,9 +323,7 @@ function PricingContent() {
             Start free, upgrade when you need more. No hidden fees.
           </p>
           <p className="mt-2 text-sm">
-            {countryLoading ? (
-              <span className="text-gray-600">Detecting your location...</span>
-            ) : isIndian ? (
+            {isIndian ? (
               <span className="text-emerald-400 font-semibold">Starting at just ₹50/month · Indian Rupee pricing</span>
             ) : (
               <span className="text-emerald-400 font-semibold">Starting at just $1/month · International pricing (USD)</span>
@@ -467,7 +464,7 @@ function PricingContent() {
 
                   <button
                     onClick={() => handleUpgrade(plan.name)}
-                    disabled={loading || countryLoading || isCurrentPlan || plan.name === 'FREE'}
+                    disabled={loading || isCurrentPlan || plan.name === 'FREE'}
                     className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                       isPro
                         ? 'btn-primary'
@@ -512,13 +509,5 @@ function PricingContent() {
 }
 
 export default function PricingPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500 text-sm">Loading pricing...</div>
-      </div>
-    }>
-      <PricingContent />
-    </Suspense>
-  );
+  return <PricingContent />;
 }
