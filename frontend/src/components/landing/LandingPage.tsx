@@ -117,7 +117,6 @@ export default function LandingPage() {
                           width={16}
                           className="opacity-50 group-hover:opacity-90 transition-opacity duration-200"
                           style={{ height: '16px', width: '16px', objectFit: 'contain', filter: 'grayscale(1) brightness(2)' }}
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                         />
                       ) : null}
                       <span style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.02em' }}>

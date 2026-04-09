@@ -14,6 +14,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://resumebuilder.pulsestack.in'),
   title: 'Resume Builder - AI-Powered ATS Optimization',
   description: 'Create professional resumes with AI-powered ATS optimization. Get hired faster with our resume builder.',
 };
