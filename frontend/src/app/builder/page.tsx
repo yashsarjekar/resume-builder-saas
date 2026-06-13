@@ -484,7 +484,14 @@ function BuilderContent() {
                     <option value="classic">Classic</option>
                     <option value="professional">Professional</option>
                     <option value="classic-professional">Classic Professional (ATS-Optimized)</option>
+                    <option value="formal-cv">Formal CV — LaTeX (ATS-Clean)</option>
                   </select>
+                  {templateName === 'formal-cv' && (
+                    <p className="mt-1 text-xs text-gray-500">
+                      Generated via LaTeX compiler — ATS-clean black/white design with tight margins.
+                      Includes all AI optimization changes in the final PDF.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

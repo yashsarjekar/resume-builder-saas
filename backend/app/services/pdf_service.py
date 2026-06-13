@@ -465,6 +465,32 @@ class ClassicProfessionalTemplate(PDFTemplate):
         self.styles['SectionHeading'].borderColor = colors.HexColor('#2E86C1')
 
 
+class FormalCVTemplate(PDFTemplate):
+    """
+    Formal CV template generated via LaTeX (pdflatex).
+
+    Overrides generate() to produce the PDF through the latex_service pipeline
+    instead of ReportLab.  Requires pdflatex on the server PATH — see
+    backend/nixpacks.toml for the Railway installation config.
+
+    The visual design matches the Komodo LaTeX template:
+      - A4, 1.5 cm margins, 11pt Computer Modern
+      - ATS-clean black/white — zero colour
+      - Section headings: large bold + full-width titlerule
+      - Experience: Title, Company (bold left) | Duration (italic right)
+      - Bullet lists with 2 pt itemsep — faithful to the .tex source
+    """
+
+    def generate(self, resume_content: Dict[str, Any]) -> BytesIO:
+        from app.services.latex_service import (
+            generate_formal_cv_latex,
+            compile_latex_to_pdf,
+        )
+        tex_source = generate_formal_cv_latex(resume_content)
+        logger.info("Generated LaTeX source (%d chars), compiling with pdflatex", len(tex_source))
+        return compile_latex_to_pdf(tex_source)
+
+
 class PDFService:
     """Main PDF generation service."""
 
@@ -474,6 +500,7 @@ class PDFService:
         'minimal': MinimalTemplate,
         'professional': ProfessionalTemplate,
         'classic-professional': ClassicProfessionalTemplate,
+        'formal-cv': FormalCVTemplate,
     }
 
     @staticmethod

@@ -1,0 +1,8 @@
+# Nixpacks build config for Railway
+# Adds TeX Live (medium scheme) so pdflatex is available for the Formal CV template.
+# scheme-medium covers geometry, enumitem, hyperref, titlesec, parskip and all
+# packages used in the LaTeX CV template.
+# Note: ~1.5 GB Nix store addition; cached by Railway after the first build.
+
+[phases.setup]
+nixPkgs = ["texlive.combined.scheme-medium"]
