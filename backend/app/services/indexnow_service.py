@@ -20,7 +20,7 @@ import httpx
 from app.config import get_settings
 from app.models.blog import BlogPost
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -103,18 +103,23 @@ class IndexNowService:
 
     # ── DB helper: mark posts submitted ───────────────────────────────────
 
-    def submit_pending_posts(self, db: Session, limit: int = 50) -> dict:
+    def submit_pending_posts(self, db: Session, limit: int = 50, cooldown_minutes: int = 60) -> dict:
         """
         Find blog posts where indexnow_submitted=False and submit them.
 
+        `cooldown_minutes` skips posts published within the last N minutes so
+        that posts newly created in the same cron run (which already had their
+        own submit attempt) aren't immediately retried — avoiding the 429 loop.
+
         Returns a summary dict: { submitted, failed, errors }.
-        Used by the cron endpoint to catch any posts that failed on first try.
         """
+        cutoff = datetime.utcnow() - timedelta(minutes=cooldown_minutes)
         posts = (
             db.query(BlogPost)
             .filter(
                 BlogPost.status == "published",
                 BlogPost.indexnow_submitted == False,  # noqa: E712
+                BlogPost.published_at < cutoff,
             )
             .order_by(BlogPost.published_at.desc())
             .limit(limit)
@@ -128,22 +133,21 @@ class IndexNowService:
         success, msg = self._post(urls)
 
         now = datetime.utcnow()
-        errors: list[str] = []
 
-        for post in posts:
-            if success:
+        if success:
+            for post in posts:
                 post.indexnow_submitted    = True
                 post.indexnow_submitted_at = now
-            else:
-                errors.append(f"{post.slug}: {msg}")
-
-        db.commit()
-
-        return {
-            "submitted": len(posts) if success else 0,
-            "failed":    0 if success else len(posts),
-            "errors":    errors,
-        }
+            db.commit()
+            return {"submitted": len(posts), "failed": 0, "errors": []}
+        else:
+            logger.warning("IndexNow retry batch failed (%d posts): %s", len(posts), msg)
+            db.commit()
+            return {
+                "submitted": 0,
+                "failed":    len(posts),
+                "errors":    [f"IndexNow retry ({len(posts)} posts): {msg}"],
+            }
 
 
 # ── Singleton ──────────────────────────────────────────────────────────────

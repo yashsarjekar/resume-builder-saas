@@ -276,6 +276,55 @@ def _count_words(html: str) -> int:
     return len(text.split())
 
 
+def _pick_diverse_keywords(db: Session, count: int) -> list:
+    """
+    Pick `count` pending keywords ensuring one per category before doubling up.
+
+    With count=3 (default) this yields:
+      1 × resume-tips | 1 × interview-prep | 1 × career-advice
+
+    This prevents 3 near-identical articles (e.g. three "free resume builder"
+    posts) being generated in the same cron run.
+    """
+    categories = list(VALID_CATEGORIES)   # resume-tips, interview-prep, career-advice
+    slots_per_cat = max(1, count // len(categories))
+    remainder     = count - slots_per_cat * len(categories)
+
+    selected: list = []
+    used_ids: set  = set()
+
+    # First pass: top N from each category
+    for cat in categories:
+        rows = (
+            db.query(BlogKeyword)
+            .filter(
+                BlogKeyword.status == "pending",
+                BlogKeyword.category == cat,
+            )
+            .order_by(BlogKeyword.buyer_intent.desc())
+            .limit(slots_per_cat)
+            .all()
+        )
+        selected.extend(rows)
+        used_ids.update(r.id for r in rows)
+
+    # Second pass: fill any remaining slots with highest-intent across all cats
+    if remainder > 0 and len(selected) < count:
+        extra = (
+            db.query(BlogKeyword)
+            .filter(
+                BlogKeyword.status == "pending",
+                BlogKeyword.id.notin_(used_ids),
+            )
+            .order_by(BlogKeyword.buyer_intent.desc())
+            .limit(remainder)
+            .all()
+        )
+        selected.extend(extra)
+
+    return selected[:count]
+
+
 def _auto_seed_keywords(db: Session) -> int:
     """
     Seed GLOBAL_KEYWORD_BANK into blog_keywords, skipping duplicates.
@@ -526,26 +575,14 @@ class BlogGeneratorService:
             db.add(report)
             db.flush()
 
-        keywords = (
-            db.query(BlogKeyword)
-            .filter(BlogKeyword.status == "pending")
-            .order_by(BlogKeyword.buyer_intent.desc())
-            .limit(count)
-            .all()
-        )
+        keywords = _pick_diverse_keywords(db, count)
 
         # ── Auto-seed when keyword bank is exhausted ──────────────────────
         if not keywords:
             logger.warning("No pending keywords found — auto-seeding global keyword bank")
             seeded = _auto_seed_keywords(db)
             if seeded > 0:
-                keywords = (
-                    db.query(BlogKeyword)
-                    .filter(BlogKeyword.status == "pending")
-                    .order_by(BlogKeyword.buyer_intent.desc())
-                    .limit(count)
-                    .all()
-                )
+                keywords = _pick_diverse_keywords(db, count)
             if not keywords:
                 logger.error("Auto-seed produced 0 new keywords — all entries already exist and are used")
                 db.commit()
