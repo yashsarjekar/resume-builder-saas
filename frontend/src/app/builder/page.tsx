@@ -350,7 +350,8 @@ function BuilderContent() {
       // Backend will fall back to original content if optimization doesn't exist
       const response = await api.get(`/api/resume/${resumeId}/download`, {
         params: {
-          use_optimized: true  // Always prefer optimized content if available
+          use_optimized: true,  // Always prefer optimized content if available
+          template_override: templateName,  // Use currently selected template
         },
         responseType: 'blob'
       });
