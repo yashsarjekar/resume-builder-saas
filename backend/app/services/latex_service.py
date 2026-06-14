@@ -209,9 +209,11 @@ def _skills(skills: Union[List[str], Dict, str]) -> str:
     if not skills:
         return ''
 
-    out = [r'\resumesec{Technical Skills}', r'\begin{cvitems}']
+    out = [r'\resumesec{Technical Skills}', '']
 
     if isinstance(skills, dict):
+        # Categorised dict → one bold "Category: ..." bullet per category
+        out.append(r'\begin{cvitems}')
         for category, skill_list in skills.items():
             if isinstance(skill_list, list):
                 skills_text = ', '.join(_tex(s) for s in skill_list if s)
@@ -219,16 +221,15 @@ def _skills(skills: Union[List[str], Dict, str]) -> str:
                 skills_text = _tex(str(skill_list))
             if skills_text:
                 out.append(r'    \item \textbf{' + _tex(str(category).title()) + r'}: ' + skills_text)
+        out.append(r'\end{cvitems}')
     elif isinstance(skills, list):
-        # Flat list — emit as one wrapped line per skill group
-        # If skills are already "Category: skill1, skill2" strings, preserve structure
-        for s in skills:
-            if s and str(s).strip():
-                out.append(r'    \item ' + _tex(str(s).strip()))
+        # Flat list — join with commas into a single wrapped paragraph (saves pages)
+        joined = ', '.join(_tex(str(s).strip()) for s in skills if s and str(s).strip())
+        if joined:
+            out.append(joined)
     else:
-        out.append(r'    \item ' + _tex(str(skills)))
+        out.append(_tex(str(skills)))
 
-    out.append(r'\end{cvitems}')
     return '\n'.join(out) + '\n\n'
 
 
