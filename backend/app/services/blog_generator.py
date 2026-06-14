@@ -370,8 +370,14 @@ Your posts MUST:
 - Address both global best practices AND call out regional nuances where \
   relevant (US resume vs UK CV format differences, visa considerations, etc.)
 - Weave the primary keyword and LSI variants naturally — no keyword stuffing
-- Add 1–2 internal CTAs linking to {SITE_URL}/builder \
-  (anchor text like "build your free ATS-optimised resume" — no bare URLs)
+- Add 2–3 internal links from this list, placed naturally in the prose \
+  (not bunched together, not bare URLs):
+    * {SITE_URL}/builder  — anchor: "build your free ATS resume", "try our resume builder"
+    * {SITE_URL}/resume   — anchor: "ATS resume templates", "browse resume templates"
+    * {SITE_URL}/tools/cover-letter — anchor: "write a cover letter", "AI cover letter generator"
+    * {SITE_URL}/tools/keywords     — anchor: "extract job keywords", "find ATS keywords"
+    * {SITE_URL}/pricing  — anchor: "upgrade to Pro", "unlock premium features"
+  Choose links that are RELEVANT to the paragraph context — do not force them
 
 RESPONSE FORMAT — follow this EXACTLY (no deviations):
 1. First output a JSON object (no markdown fences) with these keys ONLY:
@@ -410,10 +416,12 @@ HTML content rules (after the {delimiter} line):
 2. Use <h2> for major sections, <h3> for sub-sections
 3. Use <ul> or <ol> for lists — never bare text lists
 4. Bold key terms with <strong>
-5. Add one CTA: <p class="cta-inline"><a href="{site}/builder">anchor text</a></p>
-6. Close with <h2>Conclusion</h2>
-7. NO inline styles, NO <div>, NO <img>, NO markdown
-8. Minimum 1 500 words of actual prose — this is non-negotiable
+5. Weave 2–3 internal links naturally into body paragraphs (see system prompt for URL list)
+6. Add one prominent CTA block near the end: <p class="cta-inline"><a href="{site}/builder">anchor text</a></p>
+7. Close with <h2>Conclusion</h2> — summarise key takeaways in 3–4 sentences
+8. NO inline styles, NO <div>, NO <img>, NO markdown
+9. Minimum 1 500 words of actual prose — this is non-negotiable
+10. Write as a knowledgeable human career coach — specific, opinionated, with concrete examples
 """.format(
     keyword="{keyword}",
     category="{category}",

@@ -22,17 +22,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!post) return {};
 
   return {
-    title: `${post.title} | Resume Builder Blog`,
-    description: post.excerpt,
+    title: `${post.title} | Resume Builder AI Blog`,
+    description: post.metaDescription || post.excerpt,
     keywords: post.tags,
     authors: [{ name: post.author }],
     openGraph: {
       title: post.title,
-      description: post.excerpt,
+      description: post.metaDescription || post.excerpt,
       type: 'article',
       publishedTime: post.publishedAt,
+      modifiedTime: post.publishedAt,
       authors: [post.author],
-      locale: 'en_IN',
+      locale: 'en_US',
+      siteName: 'Resume Builder AI',
+      url: `https://resumebuilder.pulsestack.in/blog/${slug}`,
     },
     alternates: {
       canonical: `https://resumebuilder.pulsestack.in/blog/${slug}`,
@@ -107,17 +110,44 @@ export default async function BlogPostPage({ params }: PageProps) {
   const headings = extractHeadings(post.content);
   const processedContent = injectHeadingIds(post.content);
 
+  const postUrl = `https://resumebuilder.pulsestack.in/blog/${slug}`;
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
-    description: post.excerpt,
-    author: { '@type': 'Organization', name: post.author },
-    publisher: { '@type': 'Organization', name: 'ResumeBuilder.in' },
+    description: post.metaDescription || post.excerpt,
+    url: postUrl,
     datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
+    keywords: post.tags?.join(', '),
+    articleSection: post.category,
+    inLanguage: 'en-US',
+    author: {
+      '@type': 'Organization',
+      name: 'Resume Builder AI',
+      url: 'https://resumebuilder.pulsestack.in',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Resume Builder AI',
+      url: 'https://resumebuilder.pulsestack.in',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://resumebuilder.pulsestack.in/opengraph-image',
+      },
+    },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://resumebuilder.pulsestack.in/blog/${slug}`,
+      '@id': postUrl,
+    },
+    isPartOf: {
+      '@type': 'Blog',
+      '@id': 'https://resumebuilder.pulsestack.in/blog',
+      name: 'Resume Builder AI Blog',
+      publisher: {
+        '@type': 'Organization',
+        name: 'Resume Builder AI',
+      },
     },
   };
 
@@ -216,7 +246,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 </div>
                 <div>
                   <p className="font-semibold text-white mb-1">{post.author}</p>
-                  <p className="text-sm text-gray-400">Career experts helping job seekers build better resumes and land their dream jobs at top companies across India.</p>
+                  <p className="text-sm text-gray-400">Career experts and former recruiters helping job seekers worldwide build stronger resumes and land roles at top companies.</p>
                 </div>
               </div>
             </article>
