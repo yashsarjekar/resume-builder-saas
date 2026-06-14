@@ -109,7 +109,7 @@ def _summary(summary: str) -> str:
     if not summary or not summary.strip():
         return ''
     return (
-        r'\section*{Professional Summary}' + '\n'
+        r'\resumesec{Professional Summary}' + '\n'
         + _tex(summary) + '\n\n'
     )
 
@@ -118,7 +118,7 @@ def _experience(experience: List[Dict[str, Any]]) -> str:
     if not experience:
         return ''
 
-    out = [r'\section*{Work Experience}', '']
+    out = [r'\resumesec{Work Experience}', '']
 
     for exp in experience:
         # Support both "title" (from builder) and "position" (from parsed upload)
@@ -152,10 +152,10 @@ def _experience(experience: List[Dict[str, Any]]) -> str:
             bullet_lines = [l.strip() for l in bullets.split('\n') if l.strip()]
 
         if bullet_lines:
-            out.append(r'\begin{itemize}')
+            out.append(r'\begin{cvitems}')
             for b in bullet_lines:
                 out.append(r'    \item ' + _tex(b))
-            out.append(r'\end{itemize}')
+            out.append(r'\end{cvitems}')
 
         out.append('')
 
@@ -166,7 +166,7 @@ def _projects(projects: List[Dict[str, Any]]) -> str:
     if not projects:
         return ''
 
-    out = [r'\section*{Selected Projects}', '']
+    out = [r'\resumesec{Selected Projects}', '']
 
     for proj in projects:
         name        = _tex(proj.get('name', ''))
@@ -195,10 +195,10 @@ def _projects(projects: List[Dict[str, Any]]) -> str:
             items.append(r'\textbf{Tech}: ' + tech_str)
 
         if items:
-            out.append(r'\begin{itemize}')
+            out.append(r'\begin{cvitems}')
             for item in items:
                 out.append(r'    \item ' + item)
-            out.append(r'\end{itemize}')
+            out.append(r'\end{cvitems}')
 
         out.append('')
 
@@ -209,7 +209,7 @@ def _skills(skills: Union[List[str], Dict, str]) -> str:
     if not skills:
         return ''
 
-    out = [r'\section*{Technical Skills}', r'\begin{itemize}']
+    out = [r'\resumesec{Technical Skills}', r'\begin{cvitems}']
 
     if isinstance(skills, dict):
         for category, skill_list in skills.items():
@@ -228,7 +228,7 @@ def _skills(skills: Union[List[str], Dict, str]) -> str:
     else:
         out.append(r'    \item ' + _tex(str(skills)))
 
-    out.append(r'\end{itemize}')
+    out.append(r'\end{cvitems}')
     return '\n'.join(out) + '\n\n'
 
 
@@ -236,7 +236,7 @@ def _education(education: List[Dict[str, Any]]) -> str:
     if not education:
         return ''
 
-    out = [r'\section*{Education}', '']
+    out = [r'\resumesec{Education}', '']
 
     for edu in education:
         institution = _tex(edu.get('institution', ''))
@@ -267,7 +267,7 @@ def _certifications(certifications: List) -> str:
     if not certifications:
         return ''
 
-    out = [r'\section*{Certifications \& Training}', r'\begin{itemize}']
+    out = [r'\resumesec{Certifications \& Training}', r'\begin{cvitems}']
 
     for cert in certifications:
         if isinstance(cert, str):
@@ -283,7 +283,7 @@ def _certifications(certifications: List) -> str:
                 entry += ' (' + date + ')'
             out.append(r'    \item ' + entry)
 
-    out.append(r'\end{itemize}')
+    out.append(r'\end{cvitems}')
     return '\n'.join(out) + '\n\n'
 
 
@@ -293,18 +293,27 @@ def _certifications(certifications: List) -> str:
 
 _PREAMBLE = r"""\documentclass[a4paper,11pt]{article}
 \usepackage[top=1.5cm, bottom=1.5cm, left=1.5cm, right=1.5cm]{geometry}
-\usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
-\usepackage{titlesec}
-\usepackage{parskip}
-
-% ATS-friendly section headings: large bold + horizontal rule below
-\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
-\titlespacing*{\section}{0pt}{10pt}{6pt}
 \pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
 
-% Tight bullet spacing to mirror LaTeX résumé convention
-\setlist[itemize]{leftmargin=*, itemsep=2pt, topsep=2pt}
+% Section heading with rule — no titlesec needed (not in scheme-medium)
+\newcommand{\resumesec}[1]{%
+  \vspace{8pt}\noindent{\large\bfseries #1}\par\vspace{1pt}%
+  \noindent\rule{\linewidth}{0.4pt}\vspace{5pt}%
+}
+
+% Compact bullet list — no enumitem needed (not in scheme-medium)
+\newenvironment{cvitems}{%
+  \begin{list}{\textbullet}{%
+    \setlength{\leftmargin}{1.2em}%
+    \setlength{\itemsep}{2pt}%
+    \setlength{\topsep}{2pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\partopsep}{0pt}%
+  }%
+}{\end{list}}
 
 \begin{document}
 """
