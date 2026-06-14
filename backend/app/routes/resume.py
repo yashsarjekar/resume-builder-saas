@@ -641,6 +641,14 @@ async def download_resume_pdf(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
+    except RuntimeError as e:
+        # LaTeX compilation errors (pdflatex missing, compilation failure, timeout)
+        # are raised as RuntimeError — surface the message so it's diagnosable.
+        logger.error(f"PDF generation RuntimeError for resume {resume_id} (template={template_name}): {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"PDF generation failed: {str(e)}"
+        )
     except Exception as e:
         logger.error(f"PDF generation failed for resume {resume_id}: {str(e)}")
         raise HTTPException(

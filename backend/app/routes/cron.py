@@ -1,5 +1,7 @@
 import logging
 import os
+import shutil
+import subprocess
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 from pydantic import BaseModel
 from typing import Optional
@@ -297,4 +299,46 @@ def run_seed_keywords(
         "skipped":       skipped,
         "total_pending": pending,
         "total_in_bank": len(GLOBAL_KEYWORD_BANK),
+    }
+
+
+# ── POST /api/cron/check-latex ────────────────────────────────────────────
+
+@router.post("/check-latex")
+def check_latex(
+    x_cron_secret: str = Header(..., alias="X-Cron-Secret"),
+):
+    """
+    Diagnostic: verify that pdflatex is available on PATH.
+    Returns version string + full PATH so Railway deployment issues are visible.
+    Protected by X-Cron-Secret header.
+    """
+    settings = get_settings()
+    if not settings.CRON_SECRET or x_cron_secret != settings.CRON_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid cron secret",
+        )
+
+    pdflatex_path = shutil.which("pdflatex")
+    version_output = None
+    version_error  = None
+
+    if pdflatex_path:
+        try:
+            result = subprocess.run(
+                ["pdflatex", "--version"],
+                capture_output=True, text=True, timeout=10,
+            )
+            version_output = result.stdout[:500]
+            version_error  = result.stderr[:200] or None
+        except Exception as exc:
+            version_error = str(exc)
+
+    return {
+        "pdflatex_found": pdflatex_path is not None,
+        "pdflatex_path":  pdflatex_path,
+        "version":        version_output,
+        "error":          version_error,
+        "PATH":           os.environ.get("PATH", ""),
     }
