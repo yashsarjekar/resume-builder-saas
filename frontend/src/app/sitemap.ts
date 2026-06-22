@@ -106,18 +106,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  // Blog posts - use actual publishedAt dates from API
-  const sitemapData = await fetchSitemapData();
-  const blogPages: MetadataRoute.Sitemap = sitemapData.map((entry) => ({
-    url: `${baseUrl}/blog/${entry.slug}`,
-    lastModified: entry.updated_at
-      ? new Date(entry.updated_at)
-      : entry.published_at
-        ? new Date(entry.published_at)
-        : new Date('2026-02-20'),
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
-  }));
+  // Blog posts — wrapped in try/catch so a slow/down API never breaks
+  // the entire sitemap (which causes GSC "Temporary processing error")
+  let blogPages: MetadataRoute.Sitemap = [];
+  try {
+    const sitemapData = await fetchSitemapData();
+    blogPages = sitemapData.map((entry) => ({
+      url: `${baseUrl}/blog/${entry.slug}`,
+      lastModified: entry.updated_at
+        ? new Date(entry.updated_at)
+        : entry.published_at
+          ? new Date(entry.published_at)
+          : new Date('2026-06-14'),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }));
+  } catch {
+    // Return sitemap without blog posts rather than failing entirely
+  }
 
   return [...staticPages, ...jobPages, ...companyPages, ...blogPages];
 }

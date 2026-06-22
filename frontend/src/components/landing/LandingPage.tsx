@@ -430,6 +430,63 @@ export default function LandingPage() {
       <TestimonialsSection />
 
 
+      {/* ═══ FAQ ═════════════════════════════════════════════════════════ */}
+      <section className="py-20 px-4" id="faq">
+        <div className="container mx-auto max-w-3xl">
+          <div className="text-center mb-12 scroll-reveal">
+            <p style={{ fontSize: '12px', color: '#06b6d4', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '12px', fontWeight: 600 }}>
+              Got Questions?
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+              Frequently Asked Questions
+            </h2>
+          </div>
+
+          <div className="space-y-4 scroll-reveal">
+            {[
+              {
+                q: 'Is this AI resume builder free?',
+                a: 'Yes — Resume Builder AI offers a free plan that lets you create and download ATS-optimized resumes. A Pro plan is available for unlimited AI optimizations, premium templates, and the cover letter generator.',
+              },
+              {
+                q: 'What is an ATS resume and why does it matter?',
+                a: 'An ATS (Applicant Tracking System) resume is formatted so that automated software used by employers can correctly parse your experience and skills. Over 98% of Fortune 500 companies use ATS software — a resume that fails ATS scanning never reaches a human recruiter, no matter how qualified you are.',
+              },
+              {
+                q: 'How does the AI resume optimization work?',
+                a: 'You paste the job description and upload your existing resume. Our AI analyzes both, identifies the missing keywords the employer is scanning for, scores your ATS compatibility from 0–100, and rewrites your bullet points to match what the employer wants — all in under 60 seconds.',
+              },
+              {
+                q: 'Can I download my resume as a PDF?',
+                a: 'Yes. All resumes export to PDF instantly. Choose from multiple professional templates, including a LaTeX-compiled formal CV format that is completely ATS-clean and renders perfectly across all applicant tracking systems.',
+              },
+              {
+                q: 'Does it work for jobs outside India?',
+                a: 'Yes. Resume Builder AI supports job applications in the US, UK, Canada, Australia, and India. The AI tailors keyword selection and formatting conventions to the target market based on the job description you provide.',
+              },
+            ].map(({ q, a }) => (
+              <details
+                key={q}
+                className="group rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden"
+              >
+                <summary className="flex items-center justify-between gap-4 cursor-pointer px-6 py-5 text-white font-semibold text-base list-none select-none">
+                  {q}
+                  <span className="shrink-0 w-5 h-5 text-indigo-400 transition-transform group-open:rotate-45">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </span>
+                </summary>
+                <div className="px-6 pb-5 text-gray-400 text-sm leading-relaxed">
+                  {a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
       {/* ═══ FINAL CTA ══════════════════════════════════════════════════ */}
       <section className="py-24 px-4" style={{ borderTop: '1px solid rgba(99,102,241,0.25)', borderBottom: '1px solid rgba(99,102,241,0.15)', background: 'linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(139,92,246,0.12) 40%, rgba(6,182,212,0.08) 100%)', position: 'relative', overflow: 'hidden' }}>
         {/* Purple orb top-left */}
