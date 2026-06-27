@@ -510,12 +510,17 @@ class BlogGeneratorService:
 
         base_slug = _slugify(data.get("slug") or _slugify(data["title"]))
         slug      = base_slug
-        attempt   = 0
-        while db.query(BlogPost).filter(BlogPost.slug == slug).first():
-            attempt += 1
-            slug = f"{base_slug}-{datetime.utcnow().strftime('%Y%m%d')}"
-            if attempt > 1:
-                slug = f"{base_slug}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+
+        # If the slug already exists, this keyword maps to a topic already published.
+        # Mark it used and raise so run_daily_generation skips it — never create
+        # a dated-suffix duplicate that triggers Google duplicate-content penalties.
+        if db.query(BlogPost).filter(BlogPost.slug == slug).first():
+            kw.status  = "used"
+            kw.used_at = datetime.utcnow()
+            logger.warning(
+                f"Slug '{slug}' already exists for keyword '{kw.keyword}' — skipping to avoid duplicate"
+            )
+            raise ValueError(f"duplicate slug: {slug}")
 
         content: str      = data["content"]
         tags: list[str]   = data.get("tags", [kw.keyword])[:8]
@@ -612,6 +617,9 @@ class BlogGeneratorService:
                 report.blogs_published += 1
                 keywords_used.append(kw.keyword)
                 generated.append(post)
+            except ValueError as exc:
+                # Duplicate slug — silently skip, keyword already marked used
+                logger.info(f"Skipped duplicate topic for '{kw.keyword}': {exc}")
             except json.JSONDecodeError as exc:
                 msg = f"JSON parse error for '{kw.keyword}': {exc}"
                 logger.error(msg)
