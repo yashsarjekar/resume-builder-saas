@@ -151,7 +151,7 @@ export interface BlogSitemapEntry {
  * Fetch slug + dates for all published posts (used by sitemap.ts).
  */
 export async function fetchSitemapData(): Promise<BlogSitemapEntry[]> {
-  const data = await apiFetch<BlogSitemapEntry[]>('/api/blog/sitemap-data');
+  const data = await apiFetch<BlogSitemapEntry[]>('/api/blog/sitemap-data', 0);
   return data ?? [];
 }
 
